@@ -3,1221 +3,391 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vena Talks - Aplikasi Demo Chat</title>
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:wght@600;700&family=Cormorant+Garamond:wght@400;600;700&family=Cinzel:wght@600;700&family=Outfit:wght@400;600;700;800&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+    <title>Vena Talks - Hubungkan Hatimu</title>
+    <!-- Tailwind CSS untuk Desain -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons untuk Ikon Cantik -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- Manifest PWA agar bisa Diinstal di HP -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#C084FC">
+
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            overflow-x: hidden; 
-            background-color: #faf8f5;
-            font-family: 'Nunito', sans-serif;
-            transition: background 0.3s, color 0.3s;
-        }
-        input::placeholder, textarea::placeholder { color: rgba(128,128,128,0.6); }
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.3); border-radius: 2px; }
-
-        /* Animations */
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(16px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.08); }
-        }
-        @keyframes shimmer {
-            0%, 100% { opacity: 0.5; transform: scaleX(1); }
-            50% { opacity: 1; transform: scaleX(1.5); }
-        }
-        @keyframes bounce {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-6px); }
-        }
-
-        .screen {
-            display: none;
-            min-height: 100vh;
-            width: 100%;
-        }
-        .screen.active {
-            display: flex;
-            flex-direction: column;
-        }
-        .app-container {
-            width: 100%;
-            max-width: 480px;
-            margin: 0 auto;
-            min-height: 100vh;
-            background: inherit;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-        
-        /* Utility styles that adapt to themes */
-        .btn-primary {
-            width: 100%; padding: 15px; borderRadius: 14px;
-            border: none; color: #fff; font-size: 16px;
-            font-weight: 700; cursor: pointer;
-            transition: transform 0.15s, opacity 0.15s;
-        }
-        .input-field {
-            width: 100%; padding: 14px 16px; borderRadius: 14px;
-            font-size: 16px; outline: none; box-sizing: border-box;
-            transition: border-color 0.2s;
-        }
-        .avatar-circle {
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-weight: 700; color: #fff; flex-shrink: 0;
-        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        /* Hide scrollbar untuk Chrome, Safari dan Opera */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        /* Hide scrollbar untuk IE, Edge dan Firefox */
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body>
+<body class="bg-purple-50 text-slate-800 antialiased">
 
-    <!-- SCREEN 1: SPLASH -->
-    <div id="screen-splash" class="screen active">
-        <div style="margin: auto; text-align: center; animation: fadeUp 0.8s ease;">
-            <div id="splash-emoji" style="font-size: 72px; margin-bottom: 16px; animation: pulse 2s infinite;">🌸</div>
-            <h1 id="splash-title" style="font-size: 42px; font-weight: 700; margin: 0 0 8px;">Vena Talks</h1>
-            <p id="splash-tagline" style="font-size: 16px; margin: 0;">Bicara lebih dekat</p>
-            <div style="margin-top: 48px;">
-                <div id="splash-shimmer" style="width: 40px; height: 4px; border-radius: 2px; margin: 0 auto; animation: shimmer 1.5s infinite;"></div>
-            </div>
-        </div>
-        <p id="splash-copyright" style="position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); font-size: 12px;">© 2026 SRISP v1.0</p>
+    <!-- Container Utama Aplikasi -->
+    <div id="app" class="max-w-md mx-auto min-h-screen bg-white shadow-2xl relative flex flex-col overflow-hidden">
+        <!-- Konten aplikasi akan dirender secara dinamis oleh JavaScript di sini -->
     </div>
 
-    <!-- SCREEN 2: LOGIN -->
-    <div id="screen-login" class="screen">
-        <div style="margin: auto; width: 100%; max-width: 400px; padding: 24px;">
-            <div id="login-card" style="border-radius: 24px; padding: 32px; animation: fadeUp 0.5s ease;">
-                <div style="text-align: center; margin-bottom: 32px;">
-                    <div id="login-emoji" style="font-size: 48px; margin-bottom: 8px;">🌸</div>
-                    <h2 id="login-title" style="font-size: 28px; font-weight: 700; margin: 0 0 4px;">Vena Talks</h2>
-                    <p id="login-tagline" style="font-size: 14px; margin: 0;">Bicara lebih dekat</p>
-                </div>
+    <!-- Wadah reCAPTCHA Tersembunyi untuk Keamanan OTP (Wajib Ada) -->
+    <div id="recaptcha-container"></div>
 
-                <div id="login-demo-banner" style="border-radius: 10px; padding: 10px 14px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 14px;">ℹ️</span>
-                    <span id="login-demo-text" style="font-size: 12px;">Firebase belum dikonfigurasi. Gunakan mode demo.</span>
-                </div>
+    <!-- ========================================================== -->
+    <!-- SCRIPT UTAMA: FIREBASE SDK + LOGIKA APLIKASI VENA TALKS -->
+    <!-- ========================================================== -->
+    <script type="module">
+        // 1. IMPORT FIREBASE SDK LANGSUNG DARI INTERNET (CDN)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithPhoneNumber, RecaptchaVerifier, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-                <!-- Step Phone -->
-                <div id="login-step-phone">
-                    <label id="lbl-phone" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Nomor HP</label>
-                    <input type="tel" id="input-phone" class="input-field" placeholder="+62 8xx xxxx xxxx">
-                    <p id="phone-error" style="color: #EF4444; font-size: 13px; margin: 8px 0 0; display: none;">Nomor HP tidak valid</p>
-                    <button id="btn-send-otp" class="btn-primary" style="margin-top: 20px;">Kirim Kode OTP</button>
-                </div>
-
-                <!-- Step OTP -->
-                <div id="login-step-otp" style="display: none;">
-                    <p id="otp-sent-text" style="font-size: 14px; margin-bottom: 20px; text-align: center;">Kode dikirim ke <strong id="display-phone"></strong></p>
-                    <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 24px;">
-                        <input type="text" class="otp-input" maxlength="1" style="width: 44px; height: 52px; text-align: center; font-size: 22px; font-weight: 700; border-radius: 12px; outline: none;">
-                        <input type="text" class="otp-input" maxlength="1" style="width: 44px; height: 52px; text-align: center; font-size: 22px; font-weight: 700; border-radius: 12px; outline: none;">
-                        <input type="text" class="otp-input" maxlength="1" style="width: 44px; height: 52px; text-align: center; font-size: 22px; font-weight: 700; border-radius: 12px; outline: none;">
-                        <input type="text" class="otp-input" maxlength="1" style="width: 44px; height: 52px; text-align: center; font-size: 22px; font-weight: 700; border-radius: 12px; outline: none;">
-                        <input type="text" class="otp-input" maxlength="1" style="width: 44px; height: 52px; text-align: center; font-size: 22px; font-weight: 700; border-radius: 12px; outline: none;">
-                        <input type="text" class="otp-input" maxlength="1" style="width: 44px; height: 52px; text-align: center; font-size: 22px; font-weight: 700; border-radius: 12px; outline: none;">
-                    </div>
-                    <button id="btn-verify-otp" class="btn-primary">Verifikasi</button>
-                    <button id="btn-back-phone" class="btn-primary" style="background: transparent; box-shadow: none; margin-top: 12px; border-width: 2px; border-style: solid;">Kembali</button>
-                </div>
-            </div>
-            <p id="login-copyright" style="text-align: center; margin-top: 24px; font-size: 12px;">© 2026 SRISP v1.0</p>
-        </div>
-    </div>
-
-    <!-- SCREEN 3: SETUP PROFILE -->
-    <div id="screen-setup" class="screen">
-        <div style="margin: auto; width: 100%; max-width: 400px; padding: 24px;">
-            <div id="setup-card" style="border-radius: 24px; padding: 32px; animation: fadeUp 0.5s ease;">
-                <h2 id="setup-title" style="font-size: 24px; font-weight: 700; margin: 0 0 8px;">Atur Profil</h2>
-                <p id="setup-phone-display" style="font-size: 14px; margin: 0 0 28px;"></p>
-
-                <div style="text-align: center; margin-bottom: 24px;">
-                    <div id="avatar-preview-box" style="width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 12px; border: 3px dashed; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden;">
-                        <span id="camera-icon" style="font-size: 36px;">📷</span>
-                        <img id="avatar-img-preview" style="width: 100%; height: 100%; object-fit: cover; display: none;">
-                    </div>
-                    <input type="file" id="input-avatar-file" accept="image/*" style="display: none;">
-                    <button id="btn-upload-photo" style="background: none; border-width: 1.5px; border-style: solid; border-radius: 8px; padding: 6px 16px; font-size: 13px; cursor: pointer;">Upload Foto</button>
-                </div>
-
-                <label id="lbl-username" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Username</label>
-                <input type="text" id="input-username" class="input-field" placeholder="Nama panggilanmu">
-
-                <button id="btn-save-profile" class="btn-primary" style="margin-top: 24px;">Simpan</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- SCREEN 4: CHAT LIST -->
-    <div id="screen-chats" class="screen">
-        <div class="app-container">
-            <!-- Header Chats -->
-            <div id="chats-header" style="padding: 20px 20px 16px; position: sticky; top: 0; z-index: 10;">
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <div id="user-avatar" class="avatar-circle" style="width: 38px; height: 38px; font-size: 16px;"></div>
-                        <div>
-                            <h2 style="margin: 0; font-size: 18px; font-weight: 700; color: #fff;">Vena Talks</h2>
-                            <p id="user-name-display" style="margin: 0; font-size: 12px; color: rgba(255,255,255,0.8);"></p>
-                        </div>
-                    </div>
-                    <div style="display: flex; gap: 8px;">
-                        <button id="btn-trigger-newchat" style="background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 38px; height: 38px; cursor: pointer; font-size: 18px; color: #fff;">✏️</button>
-                        <button id="btn-trigger-settings" style="background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 38px; height: 38px; cursor: pointer; font-size: 18px; color: #fff;">⚙️</button>
-                    </div>
-                </div>
-                <div style="position: relative;">
-                    <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); fontSize: 16px; opacity: 0.6;">🔍</span>
-                    <input type="text" id="chat-search" style="width: 100%; padding: 11px 14px 11px 40px; border-radius: 14px; border: none; background: rgba(255,255,255,0.25); color: #fff; font-size: 14px; outline: none;" placeholder="Cari teman...">
-                </div>
-            </div>
-
-            <!-- List Container -->
-            <div id="chats-list-container" style="flex: 1; overflow-y: auto;"></div>
-
-            <p class="copyright-text" style="text-align: center; padding: 12px 0; font-size: 11px; opacity: 0.6;">© 2026 SRISP v1.0</p>
-        </div>
-    </div>
-
-    <!-- SCREEN 5: CHAT ROOM -->
-    <div id="screen-chatroom" class="screen">
-        <div class="app-container" style="height: 100vh;">
-            <!-- Room Header -->
-            <div id="room-header" style="padding: 12px 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.05);">
-                <button id="btn-room-back" style="background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; font-size: 18px; color: #fff;">←</button>
-                <div style="position: relative;">
-                    <div id="room-contact-avatar" class="avatar-circle" style="width: 40px; height: 40px; font-size: 15px;"></div>
-                    <div id="room-contact-online-dot" style="width: 10px; height: 10px; border-radius: 50%; position: absolute; bottom: 0; right: 0; border: 2px solid #fff;"></div>
-                </div>
-                <div style="flex: 1;">
-                    <p id="room-contact-name" style="margin: 0; font-weight: 700; color: #fff; font-size: 16px;"></p>
-                    <p id="room-contact-status" style="margin: 0; font-size: 12px; color: rgba(255,255,255,0.8);"></p>
-                </div>
-                <div style="display: flex; gap: 8px;">
-                    <button style="background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; font-size: 16px; color: #fff;">📞</button>
-                    <button style="background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; font-size: 16px; color: #fff;">📹</button>
-                </div>
-            </div>
-
-            <!-- Messages Area -->
-            <div id="room-messages-area" style="flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 8px;"></div>
-
-            <!-- Input Bar -->
-            <div id="room-input-bar" style="padding: 12px 16px; display: flex; align-items: flex-end; gap: 8px; border-top-width: 1px; border-style: solid;">
-                <input type="file" id="input-chat-image" accept="image/*" style="display: none;">
-                <button id="btn-chat-img-trigger" style="border: none; border-radius: 50%; width: 42px; height: 42px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">📷</button>
-                <div style="flex: 1; position: relative;">
-                    <textarea id="chat-textarea" rows="1" style="width: 100%; padding: 11px 14px; border-radius: 22px; outline: none; resize: none; box-sizing: border-box; max-height: 120px; overflow-y: auto; line-height: 1.5; font-size: 15px;" placeholder="Ketik pesan..."></textarea>
-                </div>
-                <button id="btn-chat-send" style="border: none; border-radius: 50%; width: 42px; height: 42px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; transition: all 0.2s;">
-                    <span style="transform: rotate(45deg); display: block; color: white;">➤</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- SCREEN 6: SETTINGS -->
-    <div id="screen-settings" class="screen">
-        <div class="app-container">
-            <div id="settings-header" style="padding: 16px 20px; display: flex; align-items: center; gap: 12px;">
-                <button id="btn-settings-back" style="background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; font-size: 18px; color: #fff;">←</button>
-                <h2 id="settings-title" style="margin: 0; color: #fff; font-size: 20px;">Pengaturan</h2>
-            </div>
-
-            <!-- Profile Widget -->
-            <div id="settings-profile-card" style="margin: 20px; border-radius: 18px; padding: 20px; display: flex; align-items: center; gap: 14px;">
-                <div id="settings-user-avatar" class="avatar-circle" style="width: 60px; height: 60px; font-size: 22px;"></div>
-                <div>
-                    <p id="settings-user-name" style="margin: 0; font-weight: 700; font-size: 18px;"></p>
-                    <p id="settings-user-phone" style="margin: 0; font-size: 13px; opacity: 0.6;"></p>
-                </div>
-            </div>
-
-            <!-- Theme Cards -->
-            <div id="settings-theme-card" style="margin: 0 20px 20px; border-radius: 18px; padding: 20px;">
-                <h3 id="settings-theme-lbl" style="margin: 0 0 14px; font-size: 15px; font-weight: 700;">Pilih Tema</h3>
-                <div style="display: flex; gap: 10px;">
-                    <button class="theme-opt-btn" data-theme="soft" style="flex: 1; padding: 12px 8px; border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: 600; text-align: center;">
-                        <div style="font-size: 20px; margin-bottom: 4px;">🌸</div>
-                        <span class="theme-name-text" data-id="Lembut" data-en="Soft">Lembut</span>
-                    </button>
-                    <button class="theme-opt-btn" data-theme="elegant" style="flex: 1; padding: 12px 8px; border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: 600; text-align: center;">
-                        <div style="font-size: 20px; margin-bottom: 4px;">✨</div>
-                        <span class="theme-name-text" data-id="Elegan" data-en="Elegant">Elegan</span>
-                    </button>
-                    <button class="theme-opt-btn" data-theme="sporty" style="flex: 1; padding: 12px 8px; border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: 600; text-align: center;">
-                        <div style="font-size: 20px; margin-bottom: 4px;">⚡</div>
-                        <span class="theme-name-text" data-id="Sporty" data-en="Sporty">Sporty</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Language Section -->
-            <div id="settings-lang-card" style="margin: 0 20px 20px; border-radius: 18px; padding: 20px;">
-                <h3 id="settings-lang-lbl" style="margin: 0 0 14px; font-size: 15px; font-weight: 700;">Bahasa</h3>
-                <div style="display: flex; gap: 10px;">
-                    <button class="lang-opt-btn" data-lang="id" style="flex: 1; padding: 12px; border-radius: 12px; cursor: pointer; font-size: 14px; font-weight: 600;">🇮🇩 Indonesia</button>
-                    <button class="lang-opt-btn" data-lang="en" style="flex: 1; padding: 12px; border-radius: 12px; cursor: pointer; font-size: 14px; font-weight: 600;">🇬🇧 English</button>
-                </div>
-            </div>
-
-            <!-- Logout Button -->
-            <div style="margin: 0 20px;">
-                <button id="btn-logout" style="width: 100%; padding: 14px; border-radius: 14px; background: #FEE2E2; border: 2px solid #FECACA; color: #DC2626; font-size: 15px; font-weight: 700; cursor: pointer;">
-                    🚪 <span id="logout-text">Keluar</span>
-                </button>
-            </div>
-
-            <p class="copyright-text" style="text-align: center; padding: 24px 0 12px; font-size: 11px; opacity: 0.6;">© 2026 SRISP v1.0</p>
-        </div>
-    </div>
-
-    <!-- SCREEN 7: NEW CHAT -->
-    <div id="screen-newchat" class="screen">
-        <div class="app-container">
-            <div id="newchat-header" style="padding: 16px 20px; display: flex; align-items: center; gap: 12px;">
-                <button id="btn-newchat-back" style="background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; font-size: 18px; color: #fff;">←</button>
-                <h2 id="newchat-title" style="margin: 0; color: #fff; font-size: 20px;">Chat Baru</h2>
-            </div>
-
-            <div style="padding: 16px;">
-                <input type="text" id="newchat-search" class="input-field" placeholder="Cari teman...">
-            </div>
-
-            <div id="newchat-contacts-list" style="flex: 1; overflow-y: auto;"></div>
-        </div>
-    </div>
-
-
-    <!-- ========================================== -->
-    <!-- LOGIC APPLICATION (JAVASCRIPT) -->
-    <!-- ========================================== -->
-    <script>
-        // CONFIG & APP DATA
-        const THEMES = {
-            soft: {
-                bg: "#FDF6FF", bgSecondary: "#F3E8FF", bgTertiary: "#EDD9FF", surface: "#FFFFFF", surfaceSecondary: "#FAF0FF",
-                primary: "#C084FC", primaryDark: "#A855F7", primaryLight: "#E9D5FF", accent: "#F9A8D4", accentDark: "#EC4899",
-                text: "#4B2067", textSecondary: "#7C3AED", textMuted: "#A78BCA", textLight: "#D8B4FE", bubble: "#F3E8FF",
-                bubbleOwn: "#C084FC", bubbleOwnText: "#FFFFFF", border: "#E9D5FF", shadow: "rgba(192, 132, 252, 0.15)",
-                gradient: "linear-gradient(135deg, #FDF6FF 0%, #F3E8FF 50%, #EDD9FF 100%)", headerGrad: "linear-gradient(135deg, #C084FC, #F9A8D4)",
-                font: "'Nunito', sans-serif", fontDisplay: "'Playfair Display', serif", emoji: "🌸"
-            },
-            elegant: {
-                bg: "#0D0D14", bgSecondary: "#13131F", bgTertiary: "#1A1A2E", surface: "#16162A", surfaceSecondary: "#1E1E35",
-                primary: "#C9A84C", primaryDark: "#A8882E", primaryLight: "#F0D080", accent: "#8B6FD4", accentDark: "#6B4FBF",
-                text: "#F5EDD0", textSecondary: "#C9A84C", textMuted: "#7A7A9A", textLight: "#3A3A5A", bubble: "#1E1E35",
-                bubbleOwn: "#C9A84C", bubbleOwnText: "#0D0D14", border: "#2A2A45", shadow: "rgba(201, 168, 76, 0.12)",
-                gradient: "linear-gradient(135deg, #0D0D14 0%, #13131F 50%, #1A1A2E 100%)", headerGrad: "linear-gradient(135deg, #C9A84C, #8B6FD4)",
-                font: "'Cormorant Garamond', serif", fontDisplay: "'Cinzel', serif", emoji: "✨"
-            },
-            sporty: {
-                bg: "#F0F4FF", bgSecondary: "#E0EAFF", bgTertiary: "#C7D9FF", surface: "#FFFFFF", surfaceSecondary: "#F5F8FF",
-                primary: "#2563EB", primaryDark: "#1D4ED8", primaryLight: "#BFDBFE", accent: "#F97316", accentDark: "#EA580C",
-                text: "#0F172A", textSecondary: "#1D4ED8", textMuted: "#64748B", textLight: "#CBD5E1", bubble: "#EFF6FF",
-                bubbleOwn: "#2563EB", bubbleOwnText: "#FFFFFF", border: "#BFDBFE", shadow: "rgba(37, 99, 235, 0.12)",
-                gradient: "linear-gradient(135deg, #F0F4FF 0%, #E0EAFF 50%, #C7D9FF 100%)", headerGrad: "linear-gradient(135deg, #2563EB, #F97316)",
-                font: "'Outfit', sans-serif", fontDisplay: "'Barlow Condensed', sans-serif", emoji: "⚡"
-            }
+        // 2. KONFIGURASI PROJECT FIREBASE (Ganti dengan data asli dari Firebase Console jika berbeda)
+        const firebaseConfig = {
+            apiKey: "AIzaSyA1...", // <-- GANTI DENGAN API KEY ASLI KAMU JIKA BERBEDA
+            authDomain: "appsvena-talks.firebaseapp.com",
+            projectId: "appsvena-talks",
+            storageBucket: "appsvena-talks.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:abcdef..."
         };
 
-        const T = {
-            id: {
-                appName: "Vena Talks", tagline: "Bicara lebih dekat", login: "Masuk", phoneNumber: "Nomor HP", phonePlaceholder: "+62 8xx xxxx xxxx",
-                sendOtp: "Kirim Kode OTP", enterOtp: "Masukkan Kode OTP", otpSent: "Kode dikirim ke", verify: "Verifikasi", resend: "Kirim Ulang",
-                setupProfile: "Atur Profil", username: "Username", usernamePlaceholder: "Nama panggilanmu", uploadPhoto: "Upload Foto", save: "Simpan",
-                chats: "Percakapan", newChat: "Chat Baru", search: "Cari teman...", typeMessage: "Ketik pesan...", send: "Kirim", settings: "Pengaturan",
-                theme: "Tema", language: "Bahasa", logout: "Keluar", today: "Hari ini", yesterday: "Kemarin", online: "Online", offline: "Offline",
-                typing: "sedang mengetik...", noChats: "Belum ada percakapan", startChat: "Mulai chat baru", chooseTheme: "Pilih Tema", demo: "Mode Demo",
-                demoNote: "Firebase belum dikonfigurasi. Gunakan mode demo.", back: "Kembali"
-            },
-            en: {
-                appName: "Vena Talks", tagline: "Talk closer", login: "Sign In", phoneNumber: "Phone Number", phonePlaceholder: "+1 xxx xxx xxxx",
-                sendOtp: "Send OTP Code", enterOtp: "Enter OTP Code", otpSent: "Code sent to", verify: "Verify", resend: "Resend",
-                setupProfile: "Setup Profile", username: "Username", usernamePlaceholder: "Your display name", uploadPhoto: "Upload Photo", save: "Save",
-                chats: "Chats", newChat: "New Chat", search: "Search friends...", typeMessage: "Type a message...", send: "Send", settings: "Settings",
-                theme: "Theme", language: "Language", logout: "Sign Out", today: "Today", yesterday: "Yesterday", online: "Online", offline: "Offline",
-                typing: "is typing...", noChats: "No conversations yet", startChat: "Start a new chat", chooseTheme: "Choose Theme", demo: "Demo Mode",
-                demoNote: "Firebase not configured. Using demo mode.", back: "Back"
-            }
-        };
+        // Inisialisasi Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-        // State variables
-        let currentTheme = "soft";
-        let currentLang = "id";
-        let userProfile = { name: "Saya", phone: "", avatarUrl: null };
-        let activeContactId = null;
-        let isPartnerTyping = false;
-        let partnerTypingTimeout = null;
+        // Variabel Global Internal Aplikasi
+        let confirmationResult = null;
+        let currentUser = null;
+        let currentScreen = "login-phone"; // Pilihan: login-phone, login-otp, chat-list, chat-room
+        let activeContact = null;
+        let messagesListenerUnsubscribe = null;
 
-        const DEMO_CONTACTS = [
-            { id: "1", name: "Rina Sari", phone: "+6281234567890", avatarUrl: null, online: true, lastSeen: new Date() },
-            { id: "2", name: "Budi Santoso", phone: "+6289876543210", avatarUrl: null, online: false, lastSeen: new Date(Date.now() - 3600000) },
-            { id: "3", name: "Dewi Kusuma", phone: "+6285555666777", avatarUrl: null, online: true, lastSeen: new Date() }
+        // Data Kontak Simulasi (Bisa kamu kembangkan ke Firestore nantinya)
+        const CONTACTS = [
+            { id: "vena_bot", name: "Vena AI Assistant", avatar: "🤖", status: "Online", bio: "Siap membantumu kapan saja ✨" },
+            { id: "support_team", name: "Vena Support Team", avatar: "👑", status: "Offline", bio: "Hubungi kami jika ada kendala sistem." }
         ];
 
-        let DEMO_MESSAGES = {
-            "1": [
-                { id: "m1", text: "Halo! Apa kabar? 😊", from: "1", time: new Date(Date.now() - 3600000 * 2), read: true },
-                { id: "m2", text: "Baik banget! Kamu gimana?", from: "me", time: new Date(Date.now() - 3600000 * 2 + 60000), read: true },
-                { id: "m3", text: "Alhamdulillah baik juga. Udah nyoba Vena Talks?", from: "1", time: new Date(Date.now() - 3600000), read: true },
-                { id: "m4", text: "Lagi nyoba nih, keren banget! 🔥", from: "me", time: new Date(Date.now() - 1800000), read: true }
-            ],
-            "2": [
-                { id: "m5", text: "Bro, meeting jam berapa?", from: "2", time: new Date(Date.now() - 7200000), read: true },
-                { id: "m6", text: "Jam 3 sore ya", from: "me", time: new Date(Date.now() - 7000000), read: true }
-            ],
-            "3": [
-                { id: "m7", text: "Hai! 👋", from: "3", time: new Date(Date.now() - 600000), read: false }
-            ]
-        };
+        // 3. PENGATUR ALUR LAYAR & RENDER (STATE MANAGEMENT)
+        const appContainer = document.getElementById("app");
 
-        // Utility helper functions
-        function formatTime(dateObj) {
-            return dateObj.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+        function changeScreen(screenName) {
+            currentScreen = screenName;
+            renderApp();
         }
 
-        function getInitials(name) {
-            return name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
-        }
-
-        function getAvatarColor(name, themeObj) {
-            const colors = [themeObj.primary, themeObj.accent, themeObj.primaryDark, themeObj.accentDark];
-            const idx = name.charCodeAt(0) % colors.length;
-            return colors[idx];
-        }
-
-        function switchScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
-            
-            // Screen specific render hooks
-            if (screenId === 'screen-chats') renderChatList();
-            if (screenId === 'screen-newchat') renderNewChatContacts();
-            if (screenId === 'screen-settings') loadSettingsData();
-            if (screenId === 'screen-chatroom') renderChatRoom();
-        }
-
-        // Apply theme color tokens into DOM styling rules dynamically
-        function applyTheme(themeName) {
-            currentTheme = themeName;
-            const theme = THEMES[themeName];
-            
-            // Global custom properties or direct injection
-            document.body.style.background = theme.bg;
-            document.body.style.fontFamily = theme.font;
-            document.body.style.color = theme.text;
-
-            // Splash Screen Update
-            const splash = document.getElementById('screen-splash');
-            splash.style.background = theme.gradient;
-            document.getElementById('splash-emoji').innerText = theme.emoji;
-            
-            const spTitle = document.getElementById('splash-title');
-            spTitle.style.background = theme.headerGrad;
-            spTitle.style.webkitBackgroundClip = 'text';
-            spTitle.style.webkitTextFillColor = 'transparent';
-            spTitle.style.fontFamily = theme.fontDisplay;
-            document.getElementById('splash-tagline').style.color = theme.textMuted;
-            document.getElementById('splash-shimmer').style.background = theme.headerGrad;
-            document.getElementById('splash-copyright').style.color = theme.textMuted;
-
-            // Login Screen Update
-            document.getElementById('screen-login').style.background = theme.gradient;
-            const loginCard = document.getElementById('login-card');
-            loginCard.style.background = theme.surface;
-            loginCard.style.boxShadow = `0 20px 60px ${theme.shadow}`;
-            document.getElementById('login-emoji').innerText = theme.emoji;
-            
-            const logTitle = document.getElementById('login-title');
-            logTitle.style.background = theme.headerGrad;
-            logTitle.style.webkitBackgroundClip = 'text';
-            logTitle.style.webkitTextFillColor = 'transparent';
-            logTitle.style.fontFamily = theme.fontDisplay;
-            document.getElementById('login-tagline').style.color = theme.textMuted;
-            
-            const banner = document.getElementById('login-demo-banner');
-            banner.style.background = theme.primaryLight;
-            document.getElementById('login-demo-text').style.color = theme.textSecondary;
-
-            document.getElementById('lbl-phone').style.color = theme.textSecondary;
-            styleInput(document.getElementById('input-phone'), theme);
-            stylePrimaryBtn(document.getElementById('btn-send-otp'), theme);
-            stylePrimaryBtn(document.getElementById('btn-verify-otp'), theme);
-            
-            const backBtn = document.getElementById('btn-back-phone');
-            stylePrimaryBtn(backBtn, theme);
-            backBtn.style.background = 'transparent';
-            backBtn.style.color = theme.primary;
-            backBtn.style.borderColor = theme.border;
-
-            document.querySelectorAll('.otp-input').forEach(input => {
-                input.style.border = `2px solid ${theme.border}`;
-                input.style.background = theme.surfaceSecondary;
-                input.style.color = theme.text;
-                input.style.fontFamily = theme.font;
-            });
-            document.getElementById('login-copyright').style.color = theme.textMuted;
-
-            // Setup Screen Update
-            document.getElementById('screen-setup').style.background = theme.gradient;
-            const setupCard = document.getElementById('setup-card');
-            setupCard.style.background = theme.surface;
-            setupCard.style.boxShadow = `0 20px 60px ${theme.shadow}`;
-            document.getElementById('setup-title').style.color = theme.text;
-            document.getElementById('setup-title').style.fontFamily = theme.fontDisplay;
-            document.getElementById('setup-phone-display').style.color = theme.textMuted;
-            
-            const avBox = document.getElementById('avatar-preview-box');
-            avBox.style.background = theme.bgSecondary;
-            avBox.style.borderColor = theme.primary;
-            
-            const upPhotoBtn = document.getElementById('btn-upload-photo');
-            upPhotoBtn.style.borderColor = theme.primary;
-            upPhotoBtn.style.color = theme.primary;
-            upPhotoBtn.style.fontFamily = theme.font;
-
-            document.getElementById('lbl-username').style.color = theme.textSecondary;
-            styleInput(document.getElementById('input-username'), theme);
-            stylePrimaryBtn(document.getElementById('btn-save-profile'), theme);
-
-            // Chats Screen Update
-            document.getElementById('chats-header').style.background = theme.headerGrad;
-            document.getElementById('chats-header').style.fontFamily = theme.font;
-            
-            // Room Screen Update
-            document.getElementById('room-header').style.background = theme.headerGrad;
-            document.getElementById('room-header').style.boxShadow = `0 2px 12px ${theme.shadow}`;
-            const msgArea = document.getElementById('room-messages-area');
-            msgArea.style.backgroundImage = `radial-gradient(circle at 20% 50%, ${theme.primaryLight}22 0%, transparent 50%), radial-gradient(circle at 80% 20%, ${theme.accent}11 0%, transparent 50%)`;
-            
-            const inputBar = document.getElementById('room-input-bar');
-            inputBar.style.background = theme.surface;
-            inputBar.style.borderColor = theme.border;
-            
-            const chatTa = document.getElementById('chat-textarea');
-            chatTa.style.border = `2px solid ${theme.border}`;
-            chatTa.style.background = theme.bgSecondary;
-            chatTa.style.color = theme.text;
-            chatTa.style.fontFamily = theme.font;
-            
-            document.getElementById('btn-chat-img-trigger').style.background = theme.bgSecondary;
-            
-            const sendBtn = document.getElementById('btn-chat-send');
-            sendBtn.style.background = theme.border; // initial empty state color
-
-            // Settings Screen Update
-            document.getElementById('settings-header').style.background = theme.headerGrad;
-            document.getElementById('settings-header').style.fontFamily = theme.fontDisplay;
-            
-            const sProfCard = document.getElementById('settings-profile-card');
-            sProfCard.style.background = theme.surface;
-            sProfCard.style.boxShadow = `0 4px 20px ${theme.shadow}`;
-            document.getElementById('settings-user-name').style.color = theme.text;
-            
-            const sThCard = document.getElementById('settings-theme-card');
-            sThCard.style.background = theme.surface;
-            sThCard.style.boxShadow = `0 4px 20px ${theme.shadow}`;
-            document.getElementById('settings-theme-lbl').style.color = theme.text;
-            
-            const sLgCard = document.getElementById('settings-lang-card');
-            sLgCard.style.background = theme.surface;
-            sLgCard.style.boxShadow = `0 4px 20px ${theme.shadow}`;
-            document.getElementById('settings-lang-lbl').style.color = theme.text;
-
-            // Update Theme Buttons inside settings
-            document.querySelectorAll('.theme-opt-btn').forEach(btn => {
-                const bThemeKey = btn.getAttribute('data-theme');
-                const thData = THEMES[bThemeKey];
-                btn.style.fontFamily = theme.font;
-                if (bThemeKey === currentTheme) {
-                    btn.style.border = `2px solid ${thData.primary}`;
-                    btn.style.background = thData.primaryLight;
-                    btn.style.color = thData.primaryDark;
-                } else {
-                    btn.style.border = `2px solid ${theme.border}`;
-                    btn.style.background = theme.bgSecondary;
-                    btn.style.color = theme.textMuted;
-                }
-            });
-
-            // Update Lang Buttons
-            document.querySelectorAll('.lang-opt-btn').forEach(btn => {
-                btn.style.fontFamily = theme.font;
-                const bLang = btn.getAttribute('data-lang');
-                if (bLang === currentLang) {
-                    btn.style.border = `2px solid ${theme.primary}`;
-                    btn.style.background = theme.primaryLight;
-                    btn.style.color = theme.primaryDark;
-                } else {
-                    btn.style.border = `2px solid ${theme.border}`;
-                    btn.style.background = theme.bgSecondary;
-                    btn.style.color = theme.textMuted;
-                }
-            });
-
-            // New Chat Update
-            document.getElementById('newchat-header').style.background = theme.headerGrad;
-            styleInput(document.getElementById('newchat-search'), theme);
-            document.getElementById('newchat-search').style.background = theme.surface;
-
-            document.querySelectorAll('.copyright-text').forEach(el => el.style.color = theme.textMuted);
-        }
-
-        function styleInput(el, theme) {
-            el.style.border = `2px solid ${theme.border}`;
-            el.style.background = theme.surfaceSecondary;
-            el.style.color = theme.text;
-            el.style.fontFamily = theme.font;
-        }
-
-        function stylePrimaryBtn(el, theme) {
-            el.style.background = theme.headerGrad;
-            el.style.boxShadow = `0 4px 20px ${theme.shadow}`;
-            el.style.fontFamily = theme.font;
-        }
-
-        // Multi-Language translation applier
-        function applyLanguage(langCode) {
-            currentLang = langCode;
-            const labels = T[langCode];
-
-            // Setup localized textual properties
-            document.getElementById('lbl-phone').innerText = labels.phoneNumber;
-            document.getElementById('input-phone').placeholder = labels.phonePlaceholder;
-            document.getElementById('btn-send-otp').innerText = labels.sendOtp;
-            document.getElementById('lbl-username').innerText = labels.username;
-            document.getElementById('input-username').placeholder = labels.usernamePlaceholder;
-            document.getElementById('btn-save-profile').innerText = labels.save;
-            document.getElementById('btn-verify-otp').innerText = labels.verify;
-            document.getElementById('btn-back-phone').innerText = labels.back;
-            document.getElementById('login-demo-text').innerText = labels.demoNote;
-            document.getElementById('setup-title').innerText = labels.setupProfile;
-            document.getElementById('btn-upload-photo').innerText = labels.uploadPhoto;
-            document.getElementById('chat-search').placeholder = labels.search;
-            document.getElementById('chat-textarea').placeholder = labels.typeMessage;
-            document.getElementById('settings-title').innerText = labels.settings;
-            document.getElementById('settings-theme-lbl').innerText = labels.chooseTheme;
-            document.getElementById('settings-lang-lbl').innerText = labels.language;
-            document.getElementById('logout-text').innerText = labels.logout;
-            document.getElementById('newchat-title').innerText = labels.newChat;
-            document.getElementById('newchat-search').placeholder = labels.search;
-
-            // Translate item lists names inside settings theme switcher
-            document.querySelectorAll('.theme-name-text').forEach(span => {
-                span.innerText = (langCode === 'id') ? span.getAttribute('data-id') : span.getAttribute('data-en');
-            });
-
-            // Rerender lists to mirror label updates if visible
-            if (document.getElementById('screen-chats').classList.contains('active')) renderChatList();
-        }
-
-        // Components Generation Helpers (Pure DOM Nodes dynamic insertion instead of framework templates)
-        function makeAvatarElement(contact, theme, size = 44) {
-            const wrapper = document.createElement('div');
-            wrapper.className = "avatar-circle";
-            wrapper.style.width = size + 'px';
-            wrapper.style.height = size + 'px';
-            wrapper.style.fontSize = (size * 0.36) + 'px';
-            wrapper.style.border = `2px solid ${theme.border}`;
-            
-            if (contact.avatarUrl) {
-                const img = document.createElement('img');
-                img.src = contact.avatarUrl;
-                img.style.width = '100%';
-                img.style.height = '100%';
-                img.style.borderRadius = '50%';
-                img.style.objectFit = 'cover';
-                wrapper.appendChild(img);
+        // Jalankan Pendengar Status Login (Auto-login jika session masih ada)
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                changeScreen("chat-list");
             } else {
-                wrapper.style.background = `linear-gradient(135deg, ${getAvatarColor(contact.name, theme)}, ${theme.accent})`;
-                wrapper.innerText = getInitials(contact.name);
+                currentUser = null;
+                changeScreen("login-phone");
             }
-            return wrapper;
+        });
+
+        // 4. LOGIKA AUTHENTICATION (OTP VIA SMS)
+        function initRecaptcha() {
+            if (!window.recaptchaVerifier) {
+                window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+                    'size': 'invisible'
+                });
+            }
         }
 
-        function appendOnlineDot(parent, online, theme) {
-            const dot = document.createElement('div');
-            dot.style.width = '10px';
-            dot.style.height = '10px';
-            dot.style.borderRadius = '50%';
-            dot.style.background = online ? "#22C55E" : theme.textMuted;
-            dot.style.border = `2px solid ${theme.surface}`;
-            dot.style.position = 'absolute';
-            dot.style.bottom = '0';
-            dot.style.right = '0';
-            parent.appendChild(dot);
-        }
-
-        // Render functions
-        function renderChatList() {
-            const theme = THEMES[currentTheme];
-            const labels = T[currentLang];
-            const query = document.getElementById('chat-search').value.toLowerCase();
-            const container = document.getElementById('chats-list-container');
-            container.innerHTML = "";
-
-            // Render User Header Profile Card Info
-            const uAv = document.getElementById('user-avatar');
-            uAv.innerHTML = "";
-            uAv.appendChild(makeAvatarElement(userProfile, theme, 38));
-            document.getElementById('user-name-display').innerText = userProfile.name;
-
-            const filtered = DEMO_CONTACTS.filter(c => c.name.toLowerCase().includes(query) || c.phone.includes(query));
-
-            if (filtered.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 60px; color: ${theme.textMuted};">
-                        <div style="font-size: 48px; margin-bottom: 12px;">💬</div>
-                        <p style="font-size: 16px;">${labels.noChats}</p>
-                        <button id="btn-empty-startchat" style="border: none; border-radius: 12px; padding: 12px 24px; color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 12px;">${labels.startChat}</button>
-                    </div>`;
-                document.getElementById('btn-empty-startchat').style.background = theme.headerGrad;
-                document.getElementById('btn-empty-startchat').onclick = () => switchScreen('screen-newchat');
+        function handleSendOTP() {
+            const phoneInput = document.getElementById("input-phone").value.trim();
+            if (!phoneInput.startsWith("+")) {
+                alert("Nomor HP harus diawali dengan kode negara, contoh: +628123456789");
                 return;
             }
 
-            filtered.forEach((contact, idx) => {
-                const messages = DEMO_MESSAGES[contact.id] || [];
-                const lastMsg = messages[messages.length - 1] || null;
-                const unreadCount = messages.filter(m => m.from !== 'me' && !m.read).length;
+            initRecaptcha();
+            const appVerifier = window.recaptchaVerifier;
 
-                const item = document.createElement('div');
-                item.style.display = 'flex';
-                item.style.alignItems = 'center';
-                item.style.gap = '14px';
-                item.style.padding = '14px 20px';
-                item.style.borderBottom = `1px solid ${theme.border}`;
-                item.style.cursor = 'pointer';
-                item.style.background = theme.surface;
-                item.style.animation = `fadeUp 0.3s ease ${idx * 0.05}s both`;
+            const btn = document.getElementById("btn-send-otp");
+            btn.innerText = "Mengirim SMS...";
+            btn.disabled = true;
 
-                item.onmouseenter = () => item.style.background = theme.bgSecondary;
-                item.onmouseleave = () => item.style.background = theme.surface;
-                item.onclick = () => openChatRoom(contact);
+            signInWithPhoneNumber(auth, phoneInput, appVerifier)
+                .then((result) => {
+                    confirmationResult = result;
+                    alert("Kode OTP berhasil dikirim ke " + phoneInput);
+                    changeScreen("login-otp");
+                })
+                .catch((error) => {
+                    alert("Gagal mengirim SMS: " + error.message);
+                    btn.innerText = "Kirim Kode Verifikasi";
+                    btn.disabled = false;
+                });
+        }
 
-                // Left Avatar
-                const avWrapper = document.createElement('div');
-                avWrapper.style.position = 'relative';
-                avWrapper.appendChild(makeAvatarElement(contact, theme, 44));
-                appendOnlineDot(avWrapper, contact.online, theme);
-                item.appendChild(avWrapper);
+        function handleVerifyOTP() {
+            const otpInput = document.getElementById("input-otp").value.trim();
+            if (otpInput.length !== 6) {
+                alert("Kode OTP harus terdiri dari 6 digit angka!");
+                return;
+            }
 
-                // Details Middle Section
-                const middle = document.createElement('div');
-                middle.style.flex = '1';
-                middle.style.minWidth = '0';
+            const btn = document.getElementById("btn-verify-otp");
+            btn.innerText = "Memverifikasi...";
+            btn.disabled = true;
 
-                const metaRow = document.createElement('div');
-                metaRow.style.display = 'flex';
-                metaRow.style.justifyContent = 'space-between';
-                metaRow.style.alignItems = 'center';
+            confirmationResult.confirm(otpInput)
+                .then((result) => {
+                    currentUser = result.user;
+                    alert("Login Berhasil!");
+                    changeScreen("chat-list");
+                })
+                .catch((error) => {
+                    alert("Kode OTP salah atau sudah kedaluwarsa!");
+                    btn.innerText = "Verifikasi & Masuk";
+                    btn.disabled = false;
+                });
+        }
 
-                const nameSpan = document.createElement('span');
-                nameSpan.style.fontWeight = '700';
-                nameSpan.style.color = theme.text;
-                nameSpan.style.fontSize = '15px';
-                nameSpan.innerText = contact.name;
-                metaRow.appendChild(nameSpan);
+        function handleLogout() {
+            if (confirm("Apakah kamu yakin ingin keluar dari Vena Talks?")) {
+                signOut(auth).then(() => {
+                    if (messagesListenerUnsubscribe) messagesListenerUnsubscribe();
+                    activeContact = null;
+                    changeScreen("login-phone");
+                });
+            }
+        }
 
-                if (lastMsg) {
-                    const timeSpan = document.createElement('span');
-                    timeSpan.style.fontSize = '11px';
-                    timeSpan.style.color = theme.textMuted;
-                    timeSpan.innerText = formatTime(lastMsg.time);
-                    metaRow.appendChild(timeSpan);
-                }
-                middle.appendChild(metaRow);
+        // 5. LOGIKA REAL-TIME CHAT (FIRESTORE)
+        async function handleSendMessage() {
+            const chatInput = document.getElementById("chat-message-input");
+            const text = chatInput.value.trim();
+            if (!text || !activeContact) return;
 
-                const msgRow = document.createElement('div');
-                msgRow.style.display = 'flex';
-                msgRow.style.justifyContent = 'space-between';
-                msgRow.style.alignItems = 'center';
-                msgRow.style.marginTop = '2px';
+            chatInput.value = ""; // Kosongkan kolom input segera
 
-                const contentSpan = document.createElement('span');
-                contentSpan.style.fontSize = '13px';
-                contentSpan.style.color = theme.textMuted;
-                contentSpan.style.overflow = 'hidden';
-                contentSpan.style.textOverflow = 'ellipsis';
-                contentSpan.style.whiteSpace = 'nowrap';
-                contentSpan.style.maxWidth = '200px';
+            try {
+                // Menyimpan pesan langsung ke sub-koleksi dokumen Firestore
+                await addDoc(collection(db, "chats", activeContact.id, "messages"), {
+                    text: text,
+                    image: null,
+                    from: currentUser.uid, // Disimpan menggunakan ID Unik Firebase kamu
+                    senderPhone: currentUser.phoneNumber,
+                    time: Date.now(),
+                    read: false
+                });
                 
-                if (lastMsg) {
-                    const prefix = lastMsg.from === 'me' ? 'Kamu: ' : '';
-                    contentSpan.innerText = prefix + (lastMsg.image ? '📷 Foto' : lastMsg.text);
-                } else {
-                    contentSpan.innerText = contact.phone;
+                // Simulasi Balasan Otomatis Khusus untuk Vena AI Bot
+                if (activeContact.id === "vena_bot") {
+                    setTimeout(async () => {
+                        await addDoc(collection(db, "chats", activeContact.id, "messages"), {
+                            text: `Halo! Ini adalah respon otomatis dari Vena AI. Pesanmu yang berbunyi "${text}" telah diterima sistem dengan aman! 🤖✨`,
+                            image: null,
+                            from: "vena_bot",
+                            senderPhone: "System",
+                            time: Date.now(),
+                            read: false
+                        });
+                    }, 1500);
                 }
-                msgRow.appendChild(contentSpan);
 
-                if (unreadCount > 0) {
-                    const badge = document.createElement('span');
-                    badge.style.background = theme.primary;
-                    badge.style.color = '#fff';
-                    badge.style.borderRadius = '50%';
-                    badge.style.minWidth = '20px';
-                    badge.style.height = '20px';
-                    badge.style.display = 'flex';
-                    badge.style.alignItems = 'center';
-                    badge.style.justifyContent = 'center';
-                    badge.style.fontSize = '11px';
-                    badge.style.fontWeight = '700';
-                    badge.style.padding = '0 4px';
-                    badge.innerText = unreadCount;
-                    msgRow.appendChild(badge);
-                }
-                middle.appendChild(msgRow);
-
-                item.appendChild(middle);
-                container.appendChild(item);
-            });
+            } catch (error) {
+                console.error("Gagal mengirim pesan ke Firestore:", error);
+            }
         }
 
-        function renderNewChatContacts() {
-            const theme = THEMES[currentTheme];
-            const query = document.getElementById('newchat-search').value.toLowerCase();
-            const container = document.getElementById('newchat-contacts-list');
-            container.innerHTML = "";
+        function listenToMessages(contactId) {
+            if (messagesListenerUnsubscribe) messagesListenerUnsubscribe();
 
-            const filtered = DEMO_CONTACTS.filter(c => c.name.toLowerCase().includes(query) || c.phone.includes(query));
+            const q = query(
+                collection(db, "chats", contactId, "messages"),
+                orderBy("time", "asc")
+            );
 
-            filtered.forEach(contact => {
-                const row = document.createElement('div');
-                row.style.display = 'flex';
-                row.style.alignItems = 'center';
-                row.style.gap = '14px';
-                row.style.padding = '12px 20px';
-                row.style.cursor = 'pointer';
-                row.style.borderBottom = `1px solid ${theme.border}`;
-                row.style.background = theme.surface;
+            messagesListenerUnsubscribe = onSnapshot(q, (querySnapshot) => {
+                const chatBox = document.getElementById("chat-box-messages");
+                if (!chatBox) return;
 
-                row.onmouseenter = () => row.style.background = theme.bgSecondary;
-                row.onmouseleave = () => row.style.background = theme.surface;
-                row.onclick = () => openChatRoom(contact);
+                chatBox.innerHTML = ""; // Bersihkan kontainer chat layar lama
 
-                const avWrapper = document.createElement('div');
-                avWrapper.style.position = 'relative';
-                avWrapper.appendChild(makeAvatarElement(contact, theme, 44));
-                appendOnlineDot(avWrapper, contact.online, theme);
-                row.appendChild(avWrapper);
+                querySnapshot.forEach((doc) => {
+                    const msg = doc.data();
+                    const isMe = msg.from === currentUser.uid;
 
-                const info = document.createElement('div');
-                const nP = document.createElement('p');
-                nP.style.margin = '0'; nP.style.fontWeight = '700'; nP.style.color = theme.text;
-                nP.innerText = contact.name;
-                const pP = document.createElement('p');
-                pP.style.margin = '0'; pP.style.fontSize = '13px'; pP.style.color = theme.textMuted;
-                pP.innerText = contact.phone;
+                    const msgBubble = document.createElement("div");
+                    msgBubble.className = `flex ${isMe ? 'justify-end' : 'justify-start'} mb-3 animate-fade-in`;
+                    
+                    const timeString = new Date(msg.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-                info.appendChild(nP);
-                info.appendChild(pP);
-                row.appendChild(info);
-                container.appendChild(row);
+                    msgBubble.innerHTML = `
+                        <div class="max-w-[75%] rounded-2xl px-4 py-2.5 shadow-sm ${isMe ? 'bg-purple-500 text-white rounded-br-none' : 'bg-slate-100 text-slate-800 rounded-bl-none'}">
+                            <p class="text-[15px] leading-relaxed break-words">${msg.text}</p>
+                            <span class="block text-[10px] mt-1 text-right ${isMe ? 'text-purple-200' : 'text-slate-400'}">${timeString}</span>
+                        </div>
+                    `;
+                    chatBox.appendChild(msgBubble);
+                });
+
+                // Auto gulung/scroll ke pesan paling bawah otomatis
+                chatBox.scrollTop = chatBox.scrollHeight;
             });
-        }
-
-        function loadSettingsData() {
-            const theme = THEMES[currentTheme];
-            const containerAv = document.getElementById('settings-user-avatar');
-            containerAv.innerHTML = "";
-            containerAv.appendChild(makeAvatarElement(userProfile, theme, 60));
-
-            document.getElementById('settings-user-name').innerText = userProfile.name;
-            document.getElementById('settings-user-phone').innerText = userProfile.phone;
         }
 
         function openChatRoom(contact) {
-            activeContactId = contact.id;
-            // Mark all messages from this companion as read
-            if (DEMO_MESSAGES[contact.id]) {
-                DEMO_MESSAGES[contact.id].forEach(m => { if (m.from !== 'me') m.read = true; });
-            }
-            switchScreen('screen-chatroom');
+            activeContact = contact;
+            changeScreen("chat-room");
+            listenToMessages(contact.id);
         }
 
-        function renderChatRoom() {
-            const theme = THEMES[currentTheme];
-            const labels = T[currentLang];
-            const contact = DEMO_CONTACTS.find(c => c.id === activeContactId);
-            if (!contact) return;
-
-            // Header Meta Updates
-            const roomAv = document.getElementById('room-contact-avatar');
-            roomAv.innerHTML = "";
-            roomAv.appendChild(makeAvatarElement(contact, theme, 40));
-            document.getElementById('room-contact-online-dot').style.background = contact.online ? "#22C55E" : theme.textMuted;
-            document.getElementById('room-contact-online-dot').style.borderColor = theme.surface;
-            
-            document.getElementById('room-contact-name').innerText = contact.name;
-            
-            const statusEl = document.getElementById('room-contact-status');
-            if (isPartnerTyping) {
-                statusEl.innerText = labels.typing;
-            } else {
-                statusEl.innerText = contact.online ? labels.online : labels.offline;
+        // 6. RENDERER HTML KODE INTERFACE (UI)
+        function renderApp() {
+            // A. LAYAR INPUT NOMOR HP
+            if (currentScreen === "login-phone") {
+                appContainer.innerHTML = `
+                    <div class="flex-1 flex flex-col justify-center items-center px-6 py-12 bg-gradient-to-b from-purple-50 to-white">
+                        <div class="w-20 h-20 bg-purple-500 rounded-3xl flex items-center justify-center text-white text-4xl shadow-lg shadow-purple-200 mb-6">💜</div>
+                        <h1 class="text-2xl font-bold text-slate-800 mb-2">Selamat Datang di Vena Talks</h1>
+                        <p class="text-sm text-slate-500 text-center mb-8">Masuk menggunakan nomor ponselmu untuk menikmati obrolan aman terlindungi.</p>
+                        
+                        <div class="w-full space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Nomor Telepon (Gunakan Kode Negara)</label>
+                                <input type="tel" id="input-phone" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-base focus:outline-none focus:border-purple-500 transition" placeholder="+628123456789" value="+62">
+                            </div>
+                            <button id="btn-send-otp" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold py-3.5 rounded-xl shadow-md shadow-purple-100 transition duration-200">Kirim Kode Verifikasi</button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById("btn-send-otp").onclick = handleSendOTP;
             }
 
-            // Messages Render Loop
-            const messagesArea = document.getElementById('room-messages-area');
-            messagesArea.innerHTML = "";
-            const list = DEMO_MESSAGES[contact.id] || [];
+            // B. LAYAR VERIFIKASI KODE OTP SMS
+            else if (currentScreen === "login-otp") {
+                appContainer.innerHTML = `
+                    <div class="flex-1 flex flex-col justify-center items-center px-6 py-12 bg-gradient-to-b from-purple-50 to-white">
+                        <div class="w-16 h-16 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center mb-6"><i data-lucide="shield-check" class="w-8 h-8"></i></div>
+                        <h1 class="text-xl font-bold text-slate-800 mb-2">Verifikasi Nomormu</h1>
+                        <p class="text-sm text-slate-500 text-center mb-8">Masukkan 6 digit kode OTP unik yang telah kami kirimkan ke nomor ponselmu.</p>
+                        
+                        <div class="w-full space-y-4">
+                            <input type="text" id="input-otp" maxlength="6" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-center text-2xl font-bold tracking-[0.5em] focus:outline-none focus:border-purple-500 transition" placeholder="000000">
+                            <button id="btn-verify-otp" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold py-3.5 rounded-xl shadow-md shadow-purple-100 transition duration-200">Verifikasi & Masuk</button>
+                            <button id="btn-back-otp" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium py-2 rounded-xl text-xs transition">Kembali ganti nomor</button>
+                        </div>
+                    </div>
+                `;
+                lucide.createIcons();
+                document.getElementById("btn-verify-otp").onclick = handleVerifyOTP;
+                document.getElementById("btn-back-otp").onclick = () => changeScreen("login-phone");
+            }
 
-            list.forEach((msg, idx) => {
-                const isMe = msg.from === 'me';
-                const row = document.createElement('div');
-                row.style.display = 'flex';
-                row.style.justifyContent = isMe ? 'flex-end' : 'flex-start';
-                row.style.animation = `fadeUp 0.2s ease ${idx * 0.02}s both`;
+            // C. LAYAR DAFTAR KONTAK OBROLAN (CHAT LIST)
+            else if (currentScreen === "chat-list") {
+                appContainer.innerHTML = `
+                    <!-- Header -->
+                    <div class="bg-purple-500 text-white px-4 py-4 flex items-center justify-between sticky top-0 z-10 shadow-md">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center font-bold text-xl">V</div>
+                            <div>
+                                <h2 class="font-bold text-base">Vena Talks</h2>
+                                <p class="text-xs text-purple-100">${currentUser ? currentUser.phoneNumber : ''}</p>
+                            </div>
+                        </div>
+                        <button id="btn-logout" class="p-2 hover:bg-white/10 rounded-full transition"><i data-lucide="log-out" class="w-5 h-5"></i></button>
+                    </div>
+                    
+                    <!-- Search Bar -->
+                    <div class="p-3 bg-slate-50 border-b border-slate-100">
+                        <div class="bg-white border border-slate-200 rounded-xl px-3 py-2 flex items-center gap-2"><i data-lucide="search" class="w-4 h-4 text-slate-400"></i><input type="text" placeholder="Cari obrolan..." class="w-full text-sm bg-transparent outline-none"></div>
+                    </div>
 
-                if (!isMe) {
-                    const avLeft = document.createElement('div');
-                    avLeft.style.marginRight = '8px';
-                    avLeft.style.alignSelf = 'flex-end';
-                    avLeft.appendChild(makeAvatarElement(contact, theme, 28));
-                    row.appendChild(avLeft);
-                }
+                    <!-- List Items -->
+                    <div id="contacts-container" class="flex-1 overflow-y-auto divide-y divide-slate-100">
+                        <!-- Diisi via loop di bawah -->
+                    </div>
+                `;
+                lucide.createIcons();
+                document.getElementById("btn-logout").onclick = handleLogout;
 
-                const bubble = document.createElement('div');
-                bubble.style.maxWidth = '72%';
-                bubble.style.padding = msg.image ? '6px' : '10px 14px';
-                bubble.style.borderRadius = isMe ? "18px 18px 4px 18px" : "18px 18px 18px 4px";
-                bubble.style.background = isMe ? theme.bubbleOwn : theme.bubble;
-                bubble.style.color = isMe ? theme.bubbleOwnText : theme.text;
-                bubble.style.boxShadow = `0 2px 8px ${theme.shadow}`;
-
-                if (msg.image) {
-                    const img = document.createElement('img');
-                    img.src = msg.image;
-                    img.style.maxWidth = '100%';
-                    img.style.maxHeight = '240px';
-                    img.style.borderRadius = '12px';
-                    img.style.display = 'block';
-                    img.style.objectFit = 'cover';
-                    bubble.appendChild(img);
-                }
-
-                if (msg.text) {
-                    const p = document.createElement('p');
-                    p.style.margin = '0'; p.style.fontSize = '15px'; p.style.lineHeight = '1.5';
-                    p.innerText = msg.text;
-                    bubble.appendChild(p);
-                }
-
-                // Time and read ticks row
-                const meta = document.createElement('div');
-                meta.style.display = 'flex'; meta.style.alignItems = 'center'; meta.style.justifyContent = 'flex-end';
-                meta.style.gap = '4px'; meta.style.marginTop = '4px';
-
-                const timeS = document.createElement('span');
-                timeS.style.fontSize = '10px'; timeS.style.opacity = '0.6';
-                timeS.innerText = formatTime(msg.time);
-                meta.appendChild(timeS);
-
-                if (isMe) {
-                    const tickS = document.createElement('span');
-                    tickS.style.fontSize = '12px'; tickS.style.opacity = msg.read ? '1' : '0.5';
-                    tickS.innerText = msg.read ? "✓✓" : "✓";
-                    meta.appendChild(tickS);
-                }
-
-                bubble.appendChild(meta);
-                row.appendChild(bubble);
-                messagesArea.appendChild(row);
-            });
-
-            // If partner is currently simulated as typing, draw bouncy dot layout
-            if (isPartnerTyping) {
-                const tRow = document.createElement('div');
-                tRow.style.display = 'flex'; tRow.style.alignItems = 'center'; tRow.style.gap = '8px';
-                tRow.appendChild(makeAvatarElement(contact, theme, 28));
-
-                const tBubble = document.createElement('div');
-                tBubble.style.padding = '10px 14px';
-                tBubble.style.borderRadius = "18px 18px 18px 4px";
-                tBubble.style.background = theme.bubble;
-                tBubble.style.display = 'flex'; tBubble.style.gap = '4px'; tBubble.style.alignItems = 'center';
-
-                [0, 1, 2].forEach(i => {
-                    const dot = document.createElement('div');
-                    dot.style.width = '7px'; dot.style.height = '7px'; dot.style.borderRadius = '50%';
-                    dot.style.background = theme.textMuted;
-                    dot.style.animation = `bounce 1s ease ${i * 0.2}s infinite`;
-                    tBubble.appendChild(dot);
+                const listContainer = document.getElementById("contacts-container");
+                CONTACTS.forEach(c => {
+                    const row = document.createElement("div");
+                    row.className = "p-4 flex items-center justify-between hover:bg-purple-50/50 cursor-pointer transition";
+                    row.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-2xl">${c.avatar}</div>
+                            <div>
+                                <h4 class="font-semibold text-sm text-slate-800">${c.name}</h4>
+                                <p class="text-xs text-slate-400 truncate max-w-[200px]">${c.bio}</p>
+                            </div>
+                        </div>
+                        <div class="text-right"><span class="inline-block w-2 h-2 rounded-full ${c.status === 'Online' ? 'bg-emerald-400' : 'bg-slate-300'}"></span><p class="text-[10px] text-slate-400 mt-1">${c.status}</p></div>
+                    `;
+                    row.onclick = () => openChatRoom(c);
+                    listContainer.appendChild(row);
                 });
-
-                tRow.appendChild(tBubble);
-                messagesArea.appendChild(tRow);
             }
 
-            // Scroll to bottom
-            messagesArea.scrollTop = messagesArea.scrollHeight;
-        }
+            // D. LAYAR RUANG OBROLAN (CHAT ROOM)
+            else if (currentScreen === "chat-room") {
+                appContainer.innerHTML = `
+                    <!-- Room Header -->
+                    <div class="bg-white border-b border-slate-100 px-3 py-3.5 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+                        <div class="flex items-center gap-2">
+                            <button id="btn-back-to-list" class="p-1.5 hover:bg-slate-100 rounded-full text-slate-600 transition"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
+                            <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-xl">${activeContact.avatar}</div>
+                            <div>
+                                <h3 class="font-bold text-sm text-slate-800">${activeContact.name}</h3>
+                                <p class="text-[11px] ${activeContact.status === 'Online' ? 'text-emerald-500 font-medium' : 'text-slate-400'}">${activeContact.status}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1 text-slate-500"><button class="p-2 hover:bg-slate-50 rounded-full"><i data-lucide="phone" class="w-4 h-4"></i></button><button class="p-2 hover:bg-slate-50 rounded-full"><i data-lucide="more-vertical" class="w-4 h-4"></i></button></div>
+                    </div>
 
-        function triggerPartnerReplySim(cId) {
-            const replies = [
-                "Oke siap! 👍", "Haha iya betul 😄", "Wah keren!", "Makasih ya 🙏",
-                "Beneran? 😮", "Sip sip!", "Nanti aku kabarin", "Ok noted!"
-            ];
+                    <!-- Kotak Riwayat Chat (Scrollable) -->
+                    <div id="chat-box-messages" class="flex-1 overflow-y-auto p-4 bg-slate-50/60 no-scrollbar">
+                        <div class="text-center my-4"><span class="text-xs bg-slate-200 text-slate-500 px-3 py-1 rounded-full">Mengambil pesan aman...</span></div>
+                    </div>
 
-            // Trigger typing indicator on a randomized delayed interval loop
-            setTimeout(() => {
-                if (activeContactId === cId) {
-                    isPartnerTyping = true;
-                    renderChatRoom();
-                }
-
-                setTimeout(() => {
-                    isPartnerTyping = false;
-                    const randText = replies[Math.floor(Math.random() * replies.length)];
-                    const newMsg = {
-                        id: "r" + Date.now(),
-                        text: randText,
-                        from: cId,
-                        time: new Date(),
-                        read: (activeContactId === cId)
-                    };
-
-                    if (!DEMO_MESSAGES[cId]) DEMO_MESSAGES[cId] = [];
-                    DEMO_MESSAGES[cId].push(newMsg);
-
-                    if (activeContactId === cId) {
-                        renderChatRoom();
-                    } else {
-                        // Refresh lists background updates
-                        if (document.getElementById('screen-chats').classList.contains('active')) renderChatList();
-                    }
-                }, 1500 + Math.random() * 1000);
-
-            }, 1000);
-        }
-
-        function dispatchSentMessage(msgPayload) {
-            if (!activeContactId) return;
-            const newM = {
-                id: "m" + Date.now(),
-                from: "me",
-                time: new Date(),
-                read: false,
-                ...msgPayload
-            };
-
-            if (!DEMO_MESSAGES[activeContactId]) DEMO_MESSAGES[activeContactId] = [];
-            DEMO_MESSAGES[activeContactId].push(newM);
-            
-            renderChatRoom();
-
-            // Clear text inputs
-            document.getElementById('chat-textarea').value = "";
-            document.getElementById('btn-chat-send').style.background = THEMES[currentTheme].border;
-
-            // Execute reply side-effects
-            triggerPartnerReplySim(activeContactId);
-        }
-
-
-        // EVENT HANDLERS & BINDINGS SETUP
-        window.addEventListener('DOMContentLoaded', () => {
-            // Setup Initial Visual View states
-            applyTheme('soft');
-            applyLanguage('id');
-
-            // Automatic advance splash screen animation to landing auth gateway
-            setTimeout(() => {
-                switchScreen('screen-login');
-            }, 2200);
-
-            // Auth Login Events 
-            const phoneInput = document.getElementById('input-phone');
-            const sendOtpBtn = document.getElementById('btn-send-otp');
-            
-            sendOtpBtn.onclick = () => {
-                const phoneVal = phoneInput.value.trim();
-                if (phoneVal.length < 10) {
-                    document.getElementById('phone-error').style.display = 'block';
-                    return;
-                }
-                document.getElementById('phone-error').style.display = 'none';
-                sendOtpBtn.innerText = "⏳ Mengirim...";
-                sendOtpBtn.style.opacity = '0.7';
-
-                setTimeout(() => {
-                    sendOtpBtn.innerText = T[currentLang].sendOtp;
-                    sendOtpBtn.style.opacity = '1';
-                    document.getElementById('login-step-phone').style.display = 'none';
-                    document.getElementById('login-step-otp').style.display = 'block';
-                    document.getElementById('display-phone').innerText = phoneVal;
-                    userProfile.phone = phoneVal;
-                }, 1200);
-            };
-
-            // Back button on OTP phase
-            document.getElementById('btn-back-phone').onclick = () => {
-                document.getElementById('login-step-otp').style.display = 'none';
-                document.getElementById('login-step-phone').style.display = 'block';
-                document.querySelectorAll('.otp-input').forEach(i => i.value = "");
-            };
-
-            // Automatic moving cursor index alignment focus within OTP multi box grid cells arrays
-            const otpCells = document.querySelectorAll('.otp-input');
-            otpCells.forEach((cell, idx) => {
-                cell.oninput = (e) => {
-                    // Filter numeric values only
-                    cell.value = cell.value.replace(/\D/g, '');
-                    if (cell.value && idx < 5) {
-                        otpCells[idx + 1].focus();
-                    }
-                    // Check if complete
-                    const values = Array.from(otpCells).map(c => c.value).join('');
-                    if (values.length === 6) {
-                        triggerVerifyCode();
-                    }
+                    <!-- Input Bar Bottom -->
+                    <div class="p-3 bg-white border-t border-slate-100 flex items-center gap-2 sticky bottom-0">
+                        <button class="p-2 text-slate-400 hover:text-purple-500 transition"><i data-lucide="plus" class="w-5 h-5"></i></button>
+                        <div class="flex-1 bg-slate-100 rounded-xl px-4 py-2.5 flex items-center">
+                            <input type="text" id="chat-message-input" placeholder="Ketik pesan..." class="w-full text-sm bg-transparent outline-none text-slate-700">
+                        </div>
+                        <button id="btn-send-message" class="w-10 h-10 bg-purple-500 hover:bg-purple-600 text-white rounded-xl flex items-center justify-center shadow-md shadow-purple-100 transition"><i data-lucide="send" class="w-4 h-4"></i></button>
+                    </div>
+                `;
+                lucide.createIcons();
+                document.getElementById("btn-back-to-list").onclick = () => {
+                    if (messagesListenerUnsubscribe) messagesListenerUnsubscribe();
+                    activeContact = null;
+                    changeScreen("chat-list");
                 };
-                cell.onkeydown = (e) => {
-                    if (e.key === 'Backspace' && !cell.value && idx > 0) {
-                        otpCells[idx - 1].focus();
-                    }
-                };
-            });
-
-            function triggerVerifyCode() {
-                const verifyBtn = document.getElementById('btn-verify-otp');
-                verifyBtn.innerText = "⏳ Memverifikasi...";
-                verifyBtn.style.opacity = '0.7';
-
-                setTimeout(() => {
-                    verifyBtn.innerText = T[currentLang].verify;
-                    verifyBtn.style.opacity = '1';
-                    // Advance to Setup screen configuration hook
-                    document.getElementById('setup-phone-display').innerText = userProfile.phone;
-                    switchScreen('screen-setup');
-                }, 1000);
-            }
-
-            document.getElementById('btn-verify-otp').onclick = triggerVerifyCode;
-
-            // Avatar Upload Interaction inside Setup Panel screen views configurations
-            const avBox = document.getElementById('avatar-preview-box');
-            const fileInput = document.getElementById('input-avatar-file');
-            
-            avBox.onclick = () => fileInput.click();
-            document.getElementById('btn-upload-photo').onclick = () => fileInput.click();
-
-            fileInput.onchange = (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-                const r = new FileReader();
-                r.onload = (ev) => {
-                    userProfile.avatarUrl = ev.target.result;
-                    document.getElementById('camera-icon').style.display = 'none';
-                    const imgPrev = document.getElementById('avatar-img-preview');
-                    imgPrev.src = ev.target.result;
-                    imgPrev.style.display = 'block';
-                };
-                r.readAsDataURL(file);
-            };
-
-            // Save user profile profile context
-            document.getElementById('btn-save-profile').onclick = () => {
-                const uName = document.getElementById('input-username').value.trim();
-                if (!uName) return;
-                userProfile.name = uName;
-                switchScreen('screen-chats');
-            };
-
-            // Real-time search indexing binding listeners handles arrays triggers
-            document.getElementById('chat-search').oninput = renderChatList;
-            document.getElementById('newchat-search').oninput = renderNewChatContacts();
-
-            // Trigger action navigation routes buttons triggers items events
-            document.getElementById('btn-trigger-newchat').onclick = () => switchScreen('screen-newchat');
-            document.getElementById('btn-trigger-settings').onclick = () => switchScreen('screen-settings');
-            document.getElementById('btn-newchat-back').onclick = () => switchScreen('screen-chats');
-            document.getElementById('btn-settings-back').onclick = () => switchScreen('screen-chats');
-            document.getElementById('btn-room-back').onclick = () => {
-                activeContactId = null;
-                switchScreen('screen-chats');
-            };
-
-            // Settings interactive adjustments callbacks mappings items functions closures bindings loops
-            document.querySelectorAll('.theme-opt-btn').forEach(btn => {
-                btn.onclick = () => applyTheme(btn.getAttribute('data-theme'));
-            });
-
-            document.querySelectorAll('.lang-opt-btn').forEach(btn => {
-                btn.onclick = () => {
-                    applyLanguage(btn.getAttribute('data-lang'));
-                    applyTheme(currentTheme); // redraw highlights borders adjustments state tokens classes updates variables lists maps
-                };
-            });
-
-            document.getElementById('btn-logout').onclick = () => {
-                // Clear state structures cache resets instances values fields properties configurations variables sets controls views hooks
-                userProfile = { name: "Saya", phone: "", avatarUrl: null };
-                document.getElementById('input-username').value = "";
-                document.getElementById('input-phone').value = "";
-                document.getElementById('camera-icon').style.display = 'block';
-                document.getElementById('avatar-img-preview').style.display = 'none';
-                document.getElementById('avatar-img-preview').src = "";
-                document.getElementById('login-step-otp').style.display = 'none';
-                document.getElementById('login-step-phone').style.display = 'block';
-                otpCells.forEach(c => c.value = "");
                 
-                switchScreen('screen-login');
-            };
-
-            // Textarea Typing Text Validation Handler Rules 
-            const chatTa = document.getElementById('chat-textarea');
-            const chatSendBtn = document.getElementById('btn-chat-send');
-
-            chatTa.oninput = () => {
-                const currentThTokens = THEMES[currentTheme];
-                if (chatTa.value.trim().length > 0) {
-                    chatSendBtn.style.background = currentThTokens.headerGrad;
-                } else {
-                    chatSendBtn.style.background = currentThTokens.border;
-                }
-            };
-
-            chatTa.onkeydown = (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    const text = chatTa.value.trim();
-                    if (text) dispatchSentMessage({ text });
-                }
-            };
-
-            chatSendBtn.onclick = () => {
-                const text = chatTa.value.trim();
-                if (text) dispatchSentMessage({ text });
-            };
-
-            // Attachment upload handler inside conversation chat window
-            const chatImgInput = document.getElementById('input-chat-image');
-            document.getElementById('btn-chat-img-trigger').onclick = () => chatImgInput.click();
-            chatImgInput.onchange = (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-                const r = new FileReader();
-                r.onload = (ev) => {
-                    dispatchSentMessage({ text: "", image: ev.target.result });
+                // Trigger Kirim dengan tombol klik atau menekan tombol Enter
+                document.getElementById("btn-send-message").onclick = handleSendMessage;
+                document.getElementById("chat-message-input").onkeydown = (e) => {
+                    if (e.key === "Enter") handleSendMessage();
                 };
-                r.readAsDataURL(file);
-                chatImgInput.value = ""; // flush cache pointer references
-            };
 
-        });
+                // Muat ulang isi pesan aktif real-time dari Firestore
+                if (activeContact) listenToMessages(activeContact.id);
+            }
+        }
+
+        // Pemicu Awal Pemuatan Tampilan
+        renderApp();
+    </script>
+
+    <!-- Script PWA Pendaftar Service Worker Otomatis -->
+    <script>
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("sw.js")
+                .then(() => console.log("PWA Service Worker Aktif Pasang"))
+                .catch(err => console.log("Gagal PWA:", err));
+        }
     </script>
 </body>
 </html>
