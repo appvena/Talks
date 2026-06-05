@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="theme-color" content="#A855F7"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="Vena Talks"/>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="apple-touch-icon" href="icon-192.png"/>
+  <title>Vena Talks</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --pri: #A855F7;
+      --pri2: #7C3AED;
+      --acc: #EC4899;
+      --grad: linear-gradient(135deg, #667eea 0%, #A855F7 50%, #EC4899 100%);
+      --glass: rgba(255,255,255,0.15);
+      --glass2: rgba(255,255,255,0.25);
+      --glassBdr: rgba(255,255,255,0.3);
+      --shadow: 0 8px 32px rgba(168,85,247,0.25);
+      --blur: blur(16px);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    html,body { height:100%; overflow:hidden; font-family:'Nunito',sans-serif; }
+    body { background: linear-gradient(135deg,#0f0c29,#302b63,#24243e); }
+    #root { height:100%; height:100dvh; overflow:hidden; }
+    input,textarea,button { font-family:'Nunito',sans-serif; }
+    input::placeholder,textarea::placeholder { color:rgba(255,255,255,0.45); }
+    ::-webkit-scrollbar { width:3px; }
+    ::-webkit-scrollbar-thumb { background:rgba(168,85,247,0.4); border-radius:2px; }
+
+    /* Glass card */
+    .glass {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 20px;
+    }
+    .glass-light {
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .glass-dark {
+      background: rgba(0,0,0,0.25);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* Candy button */
+    .btn-candy {
+      background: linear-gradient(135deg,#A855F7,#EC4899);
+      border: none;
+      border-radius: 50px;
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(168,85,247,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-candy::before {
+      content:'';
+      position:absolute;
+      top:0;left:0;right:0;
+      height:50%;
+      background:rgba(255,255,255,0.15);
+      border-radius:50px 50px 0 0;
+    }
+    .btn-candy:active { transform:scale(0.96); }
+    .btn-candy:disabled { opacity:0.5; cursor:not-allowed; }
+
+    .btn-ghost {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 50px;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-ghost:active { background:rgba(255,255,255,0.2); }
+
+    /* Input glass */
+    .inp-glass {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border: 1.5px solid rgba(255,255,255,0.2);
+      border-radius: 16px;
+      color: #fff;
+      width: 100%;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .inp-glass:focus { border-color: rgba(168,85,247,0.7); }
+
+    /* Animations */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+    @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
+    @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+    @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+    @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+    @keyframes slideIn { from{transform:translateY(100%)} to{transform:translateY(0)} }
+
+    /* Screen wrapper */
+    .screen { 
+      position:absolute; inset:0; 
+      display:flex; flex-direction:column;
+      max-width:480px; margin:0 auto;
+      animation: fadeIn 0.3s ease;
+    }
+
+    /* Header glass */
+    .hdr {
+      background: linear-gradient(135deg, rgba(168,85,247,0.6), rgba(236,72,153,0.5));
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+    /* Chat bubbles */
+    .bub-me {
+      background: linear-gradient(135deg,#A855F7,#EC4899);
+      border-radius: 18px 18px 4px 18px;
+      box-shadow: 0 2px 12px rgba(168,85,247,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+      position: relative;
+    }
+    .bub-other {
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 18px 18px 18px 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    /* Message area bg */
+    .msg-bg {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: linear-gradient(180deg, rgba(15,12,41,0.8) 0%, rgba(48,43,99,0.8) 100%);
+    }
+
+    /* Bottom input bar */
+    .inp-bar {
+      background: rgba(15,12,41,0.8);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding: 10px 12px;
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    /* Avatar */
+    .av {
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(255,255,255,0.3);
+      flex-shrink: 0;
+    }
+    .av-placeholder {
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+      border: 2px solid rgba(255,255,255,0.3);
+    }
+
+    /* Online dot */
+    .dot-online {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #22C55E;
+      border: 2px solid rgba(15,12,41,0.8);
+      position: absolute;
+      bottom: 0; right: 0;
+    }
+    .dot-offline {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #64748B;
+      border: 2px solid rgba(15,12,41,0.8);
+      position: absolute;
+      bottom: 0; right: 0;
+    }
+
+    /* Profile view overlay */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      animation: fadeIn 0.2s ease;
+    }
+    .sheet {
+      width: 100%;
+      max-width: 480px;
+      border-radius: 24px 24px 0 0;
+      padding: 24px;
+      animation: slideIn 0.3s ease;
+      background: linear-gradient(180deg, rgba(48,43,99,0.95), rgba(15,12,41,0.98));
+      border-top: 1px solid rgba(255,255,255,0.15);
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    /* Spinner */
+    .spin { 
+      width:20px;height:20px;
+      border:3px solid rgba(168,85,247,0.3);
+      border-top:3px solid #A855F7;
+      border-radius:50%;
+      animation:spin 0.8s linear infinite;
+      flex-shrink:0;
+    }
+
+    /* Context menu */
+    .ctx {
+      position: fixed;
+      z-index: 1000;
+      border-radius: 16px;
+      overflow: hidden;
+      background: rgba(30,20,60,0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.15);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      animation: fadeUp 0.15s ease;
+      min-width: 160px;
+    }
+    .ctx-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 12px 16px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #fff;
+      font-family: 'Nunito',sans-serif;
+      font-size: 14px;
+      text-align: left;
+      transition: background 0.1s;
+    }
+    .ctx-btn:hover { background: rgba(255,255,255,0.1); }
+    .ctx-btn.danger { color: #F87171; }
+
+    /* Settings row */
+    .srow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-bottom: 8px;
+    }
+    .srow:hover { background: rgba(255,255,255,0.08); }
+
+    /* Badge */
+    .badge {
+      background: linear-gradient(135deg,#A855F7,#EC4899);
+      color: #fff;
+      border-radius: 50%;
+      min-width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 0 4px;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(168,85,247,0.4);
+    }
+
+    /* Toggle */
+    .toggle {
+      width: 44px; height: 24px;
+      border-radius: 12px;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .toggle-thumb {
+      position: absolute;
+      top: 2px;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: #fff;
+      transition: left 0.2s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    }
+  </style>
+</head>
+<body>
+<div id="root"><div style="height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;color:rgba(255,255,255,0.6);font-family:Nunito,sans-serif;gap:16px"><div style="width:48px;height:48px;border:4px solid rgba(168,85,247,0.3);border-top:4px solid #A855F7;border-radius:50%;animation:spin 0.8s linear infinite"></div><p style="font-size:14px">Memuat Vena Talks...</p></div></div>
+
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore,doc,setDoc,getDoc,collection,addDoc,query,where,orderBy,onSnapshot,updateDoc,getDocs,serverTimestamp,deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getStorage,ref,uploadString,getDownloadURL,deleteObject } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+const app = initializeApp({
+  apiKey:"AIzaSyCXD0MNvi7LCZbBnP-CdbVE3jsyUhxnhXE",
+  authDomain:"appsvena-talks.firebaseapp.com",
+  projectId:"appsvena-talks",
+  storageBucket:"appsvena-talks.firebasestorage.app",
+  messagingSenderId:"48785751855",
+  appId:"1:48785751855:web:4d349b50005fc8d3256bda"
+});
+const db=getFirestore(app);
+const st=getStorage(app);
+window._db=db; window._st=st;
+window._fs={doc,setDoc,getDoc,collection,addDoc,query,where,orderBy,onSnapshot,updateDoc,getDocs,serverTimestamp,deleteDoc,ref,uploadString,getDownloadURL,deleteObject};
+window._fbOk=true;
+window.dispatchEvent(new Event("fbOk"));
+</script>
+
+<!-- Service Worker -->
+<script>
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("sw.js",{scope:"./"})
+    .then(r=>{window._sw=r; console.log("SW ok");})
+    .catch(e=>console.log("SW skip:",e.message));
+}
+window.notif=(title,body,icon)=>{
+  if(Notification.permission!=="granted"||document.visibilityState==="visible")return;
+  try{
+    const opts={body,icon:icon||"icon-192.png",badge:"icon-192.png",vibrate:[200,100,200],tag:"vt",renotify:true};
+    window._sw?window._sw.showNotification(title,opts):new Notification(title,opts);
+  }catch(e){}
+};
+// Request permission
+document.addEventListener("click",()=>{
+  if(Notification.permission==="default") Notification.requestPermission();
+},{once:true});
+</script>
+
+<script type="text/babel" data-presets="react">
+const {useState,useEffect,useRef,useCallback,useMemo}=React;
+
+// ── COLORS ──────────────────────────────────────────────────
+const AVG=["linear-gradient(135deg,#A855F7,#EC4899)","linear-gradient(135deg,#3B82F6,#06B6D4)","linear-gradient(135deg,#10B981,#06B6D4)","linear-gradient(135deg,#F59E0B,#EF4444)","linear-gradient(135deg,#8B5CF6,#3B82F6)"];
+const avGrad=(n)=>AVG[(n||"A").charCodeAt(0)%AVG.length];
+
+// ── STRINGS ─────────────────────────────────────────────────
+const S={
+  id:{
+    tagline:"Bicara lebih dekat",
+    setup:"Buat Profil",nameL:"Nama Tampilan",namePH:"Nama kamu...",
+    phoneL:"Nomor HP",phonePH:"085xxx atau +628xxx",
+    bioL:"Bio",bioPH:"Ceritakan dirimu...",
+    uploadPhoto:"📷 Upload Foto",save:"Simpan & Masuk",saving:"Menyimpan...",
+    nameReq:"Nama wajib diisi",phoneReq:"Nomor HP wajib diisi",
+    chats:"Percakapan",newChat:"Chat Baru",search:"Cari...",
+    searchPH:"Cari nomor HP teman...",searchBtn:"Cari",
+    notFound:"User tidak ditemukan 😔",startMsg:"Mulai Chat",
+    typeMsg:"Ketik pesan...",online:"Online",lastseen:"Terakhir dilihat",
+    typing:"sedang mengetik...",noChats:"Belum ada percakapan",
+    startChat:"Mulai chat baru",settings:"Pengaturan",
+    editProfile:"Edit Profil",editName:"Edit Nama",
+    chooseTheme:"Tema",language:"Bahasa",logout:"Keluar",
+    reply:"Balas",fwd:"Teruskan",del:"Hapus",copy:"Salin",
+    msgDel:"Pesan dihapus",fwdTo:"Teruskan ke...",
+    autoTheme:"Tema Otomatis",profile:"Profil",
+    copyright:"© 2026 SRISP | Vena Talks v5.0",
+    renameContact:"Ganti Nama Kontak",renameMe:"Ganti Nama Saya",
+    newName:"Nama baru...",rename:"Ganti",
+    sendImg:"📷",noContacts:"Belum ada kontak",
+  },
+  en:{
+    tagline:"Talk closer",
+    setup:"Create Profile",nameL:"Display Name",namePH:"Your name...",
+    phoneL:"Phone Number",phonePH:"085xxx or +628xxx",
+    bioL:"Bio",bioPH:"Tell about yourself...",
+    uploadPhoto:"📷 Upload Photo",save:"Save & Enter",saving:"Saving...",
+    nameReq:"Name is required",phoneReq:"Phone is required",
+    chats:"Chats",newChat:"New Chat",search:"Search...",
+    searchPH:"Search friend's phone...",searchBtn:"Search",
+    notFound:"User not found 😔",startMsg:"Start Chat",
+    typeMsg:"Type a message...",online:"Online",lastseen:"Last seen",
+    typing:"is typing...",noChats:"No conversations yet",
+    startChat:"Start a new chat",settings:"Settings",
+    editProfile:"Edit Profile",editName:"Edit Name",
+    chooseTheme:"Theme",language:"Language",logout:"Sign Out",
+    reply:"Reply",fwd:"Forward",del:"Delete",copy:"Copy",
+    msgDel:"Message deleted",fwdTo:"Forward to...",
+    autoTheme:"Auto Theme",profile:"Profile",
+    copyright:"© 2026 SRISP | Vena Talks v5.0",
+    renameContact:"Rename Contact",renameMe:"Change My Name",
+    newName:"New name...",rename:"Rename",
+    sendImg:"📷",noContacts:"No contacts yet",
+  }
+};
+
+// ── UTILS ────────────────────────────────────────────────────
+const fmtT=d=>{try{const dt=d?.toDate?d.toDate():new Date(d);if(isNaN(dt))return"";return dt.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});}catch{return"";}};
+const fmtD=d=>{try{const dt=d?.toDate?d.toDate():new Date(d);if(isNaN(dt))return"";const diff=new Date()-dt;if(diff<86400000)return fmtT(d);if(diff<172800000)return"Kemarin";return dt.toLocaleDateString("id-ID",{day:"2-digit",month:"short"});}catch{return"";}};
+const ini=n=>(n||"?").split(" ").map(x=>x[0]).join("").toUpperCase().slice(0,2);
+const normPhone=p=>{let n=p.replace(/[\s\-().]/g,"").trim();if(n.startsWith("+"))n=n.slice(1);return n;};
+const allFmts=p=>{const n=normPhone(p);const s=new Set([n]);if(n.startsWith("62")){s.add("0"+n.slice(2));}else if(n.startsWith("08")){s.add("62"+n.slice(1));}else if(n.startsWith("8")&&n.length>=9){s.add("0"+n);s.add("62"+n);}return Array.from(s);};
+const cid=(a,b)=>[a,b].sort().join("__");
+
+// ── FB OPS ───────────────────────────────────────────────────
+const fsSave=async(col,id,data)=>{const{doc,setDoc}=window._fs;await setDoc(doc(window._db,col,id),data,{merge:true});};
+const fsGet=async(col,id)=>{const{doc,getDoc}=window._fs;const s=await getDoc(doc(window._db,col,id));return s.exists()?{id:s.id,...s.data()}:null;};
+const fsFind=async(phone)=>{
+  const{collection,query,where,getDocs}=window._fs;
+  for(const fmt of allFmts(phone)){
+    const q=query(collection(window._db,"users"),where("phone","==",fmt));
+    const s=await getDocs(q);
+    if(!s.empty){const d=s.docs[0];return{uid:d.id,...d.data()};}
+  }
+  return null;
+};
+const fsOnline=async(uid,online)=>{try{const{doc,updateDoc,serverTimestamp}=window._fs;await updateDoc(doc(window._db,"users",uid),{online,lastSeen:serverTimestamp()});}catch(e){}};
+const uploadImg=async(path,dataUrl)=>{
+  if(!dataUrl?.startsWith("data:"))return dataUrl;
+  const{ref,uploadString,getDownloadURL}=window._fs;
+  const r=ref(window._st,path);
+  await uploadString(r,dataUrl,"data_url");
+  return getDownloadURL(r);
+};
+const sendMsg=async(chatId,msg)=>{
+  const{collection,addDoc,serverTimestamp}=window._fs;
+  await addDoc(collection(window._db,"chats",chatId,"messages"),{...msg,time:serverTimestamp()});
+};
+
+// ── AVATAR COMPONENT ─────────────────────────────────────────
+function Av({u,size=44,dot=false,onClick}){
+  const s=size;
+  return React.createElement("div",{style:{position:"relative",flexShrink:0,cursor:onClick?"pointer":"default"},onClick},
+    u?.avatarUrl
+      ?React.createElement("img",{src:u.avatarUrl,className:"av",style:{width:s,height:s}})
+      :React.createElement("div",{className:"av-placeholder",style:{width:s,height:s,background:avGrad(u?.name||"?"),fontSize:s*.34}}),
+    dot&&React.createElement("div",{className:u?.online?"dot-online":"dot-offline"})
+  );
+}
+
+// ── SPLASH ───────────────────────────────────────────────────
+function Splash(){
+  return React.createElement("div",{style:{height:"100%",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",color:"#fff"}},
+    React.createElement("div",{style:{textAlign:"center",animation:"fadeUp 0.8s ease"}},
+      React.createElement("div",{style:{fontSize:80,marginBottom:16,animation:"pulse 2s infinite",filter:"drop-shadow(0 0 20px rgba(168,85,247,0.8))"}},"\uD83C\uDF38"),
+      React.createElement("h1",{style:{fontFamily:"Playfair Display,serif",fontSize:42,fontWeight:700,background:"linear-gradient(135deg,#fff,#E9D5FF)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",margin:"0 0 8px"}},"Vena Talks"),
+      React.createElement("p",{style:{color:"rgba(255,255,255,0.6)",fontSize:15}},"Bicara lebih dekat"),
+      React.createElement("div",{style:{marginTop:40,display:"flex",gap:8,justifyContent:"center"}},
+        [0,1,2].map(i=>React.createElement("div",{key:i,style:{width:8,height:8,borderRadius:"50%",background:"rgba(168,85,247,0.8)",animation:`bounce 1s ease ${i*.2}s infinite`}}))
+      )
+    ),
+    React.createElement("p",{style:{position:"absolute",bottom:24,color:"rgba(255,255,255,0.3)",fontSize:11}},"© 2026 SRISP | Vena Talks v5.0")
+  );
+}
+
+// ── SETUP / EDIT PROFILE ─────────────────────────────────────
+function Setup({initUser,lang,onDone}){
+  const s=S[lang];
+  const [name,setName]=useState(initUser?.name||"");
+  const [phone,setPhone]=useState(initUser?.phone||"");
+  const [bio,setBio]=useState(initUser?.bio||"");
+  const [av,setAv]=useState(initUser?.avatarUrl||null);
+  const [loading,setLoading]=useState(false);
+  const [err,setErr]=useState("");
+  const fRef=useRef();
+  const isEdit=!!initUser?.uid;
+
+  const pick=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>setAv(ev.target.result);r.readAsDataURL(f);};
+
+  const save=async()=>{
+    if(!name.trim()){setErr(s.nameReq);return;}
+    if(!isEdit&&!phone.trim()){setErr(s.phoneReq);return;}
+    setLoading(true);setErr("");
+    try{
+      const uid=initUser?.uid||("u"+normPhone(phone)+Date.now().toString(36));
+      let avatar=av;
+      if(window._fbOk&&av?.startsWith("data:")) avatar=await uploadImg(`avatars/${uid}.jpg`,av);
+      const prof={uid,name:name.trim(),phone:isEdit?initUser.phone:normPhone(phone),bio:bio.trim(),avatarUrl:avatar||null,online:true};
+      if(window._fbOk) await fsSave("users",uid,prof);
+      localStorage.setItem("vt_uid",uid);
+      localStorage.setItem("vt",JSON.stringify(prof));
+      onDone(prof);
+    }catch(e){setErr(e.message||"Error");}
+    setLoading(false);
+  };
+
+  return React.createElement("div",{style:{height:"100%",overflow:"auto",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-start",padding:"24px 20px 40px",color:"#fff"}},
+    // Header
+    React.createElement("div",{style:{textAlign:"center",marginBottom:28,marginTop:20}},
+      React.createElement("div",{style:{fontSize:40,marginBottom:8,filter:"drop-shadow(0 0 12px rgba(168,85,247,0.8))"}},"\uD83C\uDF38"),
+      React.createElement("h2",{style:{fontFamily:"Playfair Display,serif",fontSize:26,fontWeight:700,background:"linear-gradient(135deg,#fff,#E9D5FF)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",margin:0}},"Vena Talks"),
+      React.createElement("p",{style:{color:"rgba(255,255,255,0.5)",fontSize:13,marginTop:4}},s.setup)
+    ),
+    // Card
+    React.createElement("div",{className:"glass",style:{width:"100%",maxWidth:420,padding:24,animation:"fadeUp 0.5s ease"}},
+      // Avatar
+      React.createElement("div",{style:{textAlign:"center",marginBottom:20}},
+        React.createElement("div",{onClick:()=>fRef.current.click(),style:{width:90,height:90,borderRadius:"50%",margin:"0 auto 10px",cursor:"pointer",overflow:"hidden",border:"3px solid rgba(168,85,247,0.6)",boxShadow:"0 0 20px rgba(168,85,247,0.3)",position:"relative"}},
+          av
+            ?React.createElement("img",{src:av,style:{width:"100%",height:"100%",objectFit:"cover"}})
+            :React.createElement("div",{style:{width:"100%",height:"100%",background:"rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:32}},"📷")
+        ),
+        React.createElement("input",{ref:fRef,type:"file",accept:"image/*",style:{display:"none"},onChange:pick}),
+        React.createElement("button",{className:"btn-ghost",onClick:()=>fRef.current.click(),style:{fontSize:13,padding:"6px 16px"}},s.uploadPhoto)
+      ),
+      // Fields
+      [[s.nameL,name,setName,s.namePH,"text"],[s.phoneL,phone,e=>setPhone(e),"phonePH","tel",isEdit],[s.bioL,bio,setBio,s.bioPH,"text"]].map(([l,v,sv,ph,tp,disabled],i)=>
+        (!disabled)&&React.createElement("div",{key:i,style:{marginBottom:14}},
+          React.createElement("label",{style:{display:"block",color:"rgba(255,255,255,0.7)",fontSize:12,fontWeight:600,marginBottom:5,textTransform:"uppercase",letterSpacing:.5}},l),
+          React.createElement("input",{className:"inp-glass",style:{padding:"12px 14px",fontSize:15},placeholder:ph,value:v,onChange:e=>typeof sv==="function"?sv(e.target.value):sv(e),type:tp})
+        )
+      ),
+      err&&React.createElement("p",{style:{color:"#F87171",fontSize:13,margin:"0 0 12px",textAlign:"center"}},err),
+      React.createElement("button",{className:"btn-candy",onClick:save,disabled:loading,style:{width:"100%",padding:14,fontSize:16,display:"flex",alignItems:"center",justifyContent:"center",gap:8}},
+        loading?React.createElement("div",{className:"spin"}):null,
+        loading?s.saving:s.save
+      )
+    )
+  );
+}
+
+// ── FIND USER ────────────────────────────────────────────────
+function FindUser({me,lang,contacts,onSelect,onBack}){
+  const s=S[lang];
+  const [q,setQ]=useState("");
+  const [loading,setLoading]=useState(false);
+  const [result,setResult]=useState(null);
+  const [notFound,setNotFound]=useState(false);
+
+  const search=async()=>{
+    if(!q.trim())return;
+    setLoading(true);setResult(null);setNotFound(false);
+    try{
+      const u=await fsFind(q);
+      if(u&&u.uid!==me.uid)setResult(u);
+      else setNotFound(true);
+    }catch(e){setNotFound(true);}
+    setLoading(false);
+  };
+
+  return React.createElement("div",{className:"screen",style:{color:"#fff"}},
+    React.createElement("div",{className:"hdr"},
+      React.createElement("button",{className:"btn-ghost",onClick:onBack,style:{width:36,height:36,padding:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,flexShrink:0}},"←"),
+      React.createElement("h2",{style:{flex:1,fontSize:18,fontWeight:700,color:"#fff"}},s.newChat)
+    ),
+    React.createElement("div",{style:{flex:1,overflow:"auto",padding:16}},
+      // Search bar
+      React.createElement("div",{style:{display:"flex",gap:8,marginBottom:16}},
+        React.createElement("input",{className:"inp-glass",style:{flex:1,padding:"12px 14px",fontSize:15},placeholder:s.searchPH,value:q,onChange:e=>setQ(e.target.value),type:"tel",onKeyDown:e=>e.key==="Enter"&&search(),autoFocus:true}),
+        React.createElement("button",{className:"btn-candy",onClick:search,disabled:loading,style:{padding:"12px 18px",fontSize:14,display:"flex",alignItems:"center",gap:6,flexShrink:0}},
+          loading?React.createElement("div",{className:"spin"}):null,
+          s.searchBtn
+        )
+      ),
+      // Result
+      result&&React.createElement("div",{className:"glass",style:{padding:16,display:"flex",alignItems:"center",gap:14,marginBottom:12,animation:"fadeUp 0.3s ease"}},
+        React.createElement("div",{style:{position:"relative"}},React.createElement(Av,{u:result,size:52,dot:true})),
+        React.createElement("div",{style:{flex:1}},
+          React.createElement("p",{style:{margin:0,fontWeight:700,fontSize:16}},result.name),
+          React.createElement("p",{style:{margin:0,fontSize:13,color:"rgba(255,255,255,0.5)"}},result.phone),
+          result.bio&&React.createElement("p",{style:{margin:"3px 0 0",fontSize:12,color:"rgba(255,255,255,0.4)"}},result.bio)
+        ),
+        React.createElement("button",{className:"btn-candy",onClick:()=>onSelect(result),style:{padding:"10px 16px",fontSize:13}},s.startMsg)
+      ),
+      notFound&&React.createElement("p",{style:{textAlign:"center",color:"rgba(255,255,255,0.4)",marginTop:20,fontSize:14}},s.notFound),
+      // Existing contacts
+      contacts.length>0&&React.createElement("div",null,
+        React.createElement("p",{style:{color:"rgba(255,255,255,0.4)",fontSize:12,fontWeight:600,letterSpacing:.5,marginBottom:10,textTransform:"uppercase"}},"Kontak"),
+        contacts.map(c=>React.createElement("div",{key:c.uid,onClick:()=>onSelect(c),className:"glass-light",style:{display:"flex",alignItems:"center",gap:12,padding:"12px 14px",marginBottom:8,borderRadius:14,cursor:"pointer"}},
+          React.createElement("div",{style:{position:"relative"}},React.createElement(Av,{u:c,size:44,dot:true})),
+          React.createElement("div",null,
+            React.createElement("p",{style:{margin:0,fontWeight:700,fontSize:15}},c.displayName||c.name),
+            React.createElement("p",{style:{margin:0,fontSize:13,color:"rgba(255,255,255,0.45)"}},c.phone)
+          )
+        ))
+      )
+    )
+  );
+}
+
+// ── PROFILE VIEW ─────────────────────────────────────────────
+function ProfileView({u,lang,onClose,onStartChat,onRename}){
+  const s=S[lang];
+  const [renaming,setRenaming]=useState(false);
+  const [newName,setNewName]=useState(u.displayName||u.name||"");
+
+  return React.createElement("div",{className:"overlay",onClick:onClose},
+    React.createElement("div",{className:"sheet",onClick:e=>e.stopPropagation()},
+      // Handle bar
+      React.createElement("div",{style:{width:40,height:4,borderRadius:2,background:"rgba(255,255,255,0.2)",margin:"0 auto 20px"}}),
+      // Avatar & name
+      React.createElement("div",{style:{textAlign:"center",marginBottom:20}},
+        React.createElement("div",{style:{display:"inline-block",position:"relative",marginBottom:12}},
+          React.createElement(Av,{u,size:88,dot:true})
+        ),
+        React.createElement("h2",{style:{color:"#fff",fontSize:22,fontWeight:700,margin:"0 0 4px"}},u.displayName||u.name),
+        React.createElement("p",{style:{color:"rgba(255,255,255,0.5)",fontSize:14}},u.phone)
+      ),
+      u.bio&&React.createElement("div",{className:"glass-light",style:{borderRadius:14,padding:"12px 16px",marginBottom:12}},
+        React.createElement("p",{style:{color:"rgba(255,255,255,0.4)",fontSize:11,fontWeight:600,letterSpacing:.5,marginBottom:4,textTransform:"uppercase"}},"Bio"),
+        React.createElement("p",{style:{color:"#fff",fontSize:14,lineHeight:1.6}},u.bio)
+      ),
+      // Rename
+      renaming
+        ?React.createElement("div",{className:"glass-light",style:{borderRadius:14,padding:14,marginBottom:12}},
+            React.createElement("p",{style:{color:"rgba(255,255,255,0.5)",fontSize:12,marginBottom:8}},s.renameContact),
+            React.createElement("div",{style:{display:"flex",gap:8}},
+              React.createElement("input",{className:"inp-glass",style:{flex:1,padding:"10px 12px",fontSize:14},value:newName,onChange:e=>setNewName(e.target.value),placeholder:s.newName,autoFocus:true}),
+              React.createElement("button",{className:"btn-candy",onClick:()=>{onRename(newName);setRenaming(false);},style:{padding:"10px 16px",fontSize:13,flexShrink:0}},s.rename)
+            )
+          )
+        :React.createElement("button",{className:"btn-ghost",onClick:()=>setRenaming(true),style:{width:"100%",padding:"11px",fontSize:14,marginBottom:8}},`✏️ ${s.renameContact}`),
+      React.createElement("button",{className:"btn-candy",onClick:onStartChat,style:{width:"100%",padding:13,fontSize:15}},`💬 ${s.startMsg}`)
+    )
+  );
+}
+
+// ── CHAT LIST ────────────────────────────────────────────────
+function ChatList({me,lang,contacts,lastMsgs,unread,onOpen,onNew,onSettings,onProfileView}){
+  const s=S[lang];
+  const [search,setSearch]=useState("");
+  const filtered=contacts.filter(c=>{
+    const dn=c.displayName||c.name||"";
+    return dn.toLowerCase().includes(search.toLowerCase())||c.phone.includes(search);
+  });
+
+  return React.createElement("div",{className:"screen",style:{color:"#fff"}},
+    // Header
+    React.createElement("div",{className:"hdr"},
+      React.createElement("div",{style:{display:"flex",alignItems:"center",gap:10,flex:1,cursor:"pointer"},onClick:onSettings},
+        React.createElement("div",{style:{position:"relative"}},React.createElement(Av,{u:me,size:36})),
+        React.createElement("div",null,
+          React.createElement("h2",{style:{margin:0,fontSize:17,fontWeight:800,color:"#fff",fontFamily:"Playfair Display,serif"}},"Vena Talks"),
+          React.createElement("p",{style:{margin:0,fontSize:12,color:"rgba(255,255,255,0.65)"}},me.name)
+        )
+      ),
+      React.createElement("button",{className:"btn-ghost",onClick:onNew,style:{width:38,height:38,padding:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:17}},"✏️"),
+      React.createElement("button",{className:"btn-ghost",onClick:onSettings,style:{width:38,height:38,padding:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:17}},"⚙️")
+    ),
+    // Search
+    React.createElement("div",{style:{padding:"10px 14px",background:"rgba(0,0,0,0.2)",borderBottom:"1px solid rgba(255,255,255,0.06)"}},
+      React.createElement("div",{style:{position:"relative"}},
+        React.createElement("span",{style:{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",fontSize:14,opacity:.5}},"🔍"),
+        React.createElement("input",{className:"inp-glass",style:{padding:"10px 14px 10px 36px",fontSize:14,borderRadius:50},placeholder:s.search,value:search,onChange:e=>setSearch(e.target.value)})
+      )
+    ),
+    // List
+    React.createElement("div",{style:{flex:1,overflowY:"auto"}},
+      filtered.length===0
+        ?React.createElement("div",{style:{textAlign:"center",padding:"60px 20px",color:"rgba(255,255,255,0.3)"}},
+            React.createElement("div",{style:{fontSize:48,marginBottom:12,filter:"grayscale(0.5)"}},"💬"),
+            React.createElement("p",{style:{fontSize:15,marginBottom:16,color:"rgba(255,255,255,0.4)"}},s.noChats),
+            React.createElement("button",{className:"btn-candy",onClick:onNew,style:{padding:"12px 24px",fontSize:14}},s.startChat)
+          )
+        :filtered.map((c,i)=>{
+            const lm=lastMsgs[c.uid];
+            const ur=unread[c.uid]||0;
+            const dn=c.displayName||c.name||"";
+            return React.createElement("div",{key:c.uid,style:{display:"flex",alignItems:"center",gap:13,padding:"12px 16px",cursor:"pointer",borderBottom:"1px solid rgba(255,255,255,0.05)",transition:"background 0.15s",animation:`fadeUp 0.3s ease ${i*.04}s both"},onMouseEnter:e=>e.currentTarget.style.background="rgba(255,255,255,0.05)",onMouseLeave:e=>e.currentTarget.style.background="transparent"},
+              // Avatar with long-press for profile
+              React.createElement("div",{style:{position:"relative"},
+                onClick:e=>{e.stopPropagation();onProfileView(c);},
+              },React.createElement(Av,{u:c,size:50,dot:true})),
+              React.createElement("div",{style:{flex:1,minWidth:0},onClick:()=>onOpen(c)},
+                React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3}},
+                  React.createElement("span",{style:{fontWeight:700,color:"#fff",fontSize:15}},dn),
+                  lm&&React.createElement("span",{style:{fontSize:11,color:ur>0?"#A855F7":"rgba(255,255,255,0.35)",fontWeight:ur>0?700:400}},fmtD(lm.time))
+                ),
+                React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
+                  React.createElement("span",{style:{fontSize:13,color:ur>0?"rgba(255,255,255,0.8)":"rgba(255,255,255,0.38)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:220,fontWeight:ur>0?600:400}},
+                    lm?(lm.deleted?"🚫 "+s.msgDel:lm.fromUid===me.uid?"Kamu: "+(lm.image?"📷 Foto":lm.text):(lm.image?"📷 Foto":lm.text)):(c.bio||c.phone||"")
+                  ),
+                  ur>0&&React.createElement("div",{className:"badge"},ur)
+                )
+              )
+            );
+          })
+    ),
+    React.createElement("p",{style:{textAlign:"center",padding:"8px 0",color:"rgba(255,255,255,0.2)",fontSize:10,background:"rgba(0,0,0,0.2)"}},s.copyright)
+  );
+}
+
+// ── CHAT ROOM ────────────────────────────────────────────────
+function ChatRoom({me,lang,contact,onBack,contacts,onForward,onProfileView}){
+  const s=S[lang];
+  const [msgs,setMsgs]=useState([]);
+  const [text,setText]=useState("");
+  const [replyTo,setReplyTo]=useState(null);
+  const [isTyping,setTyping]=useState(false);
+  const [uploading,setUploading]=useState(false);
+  const [loading,setLoading]=useState(true);
+  const [ctxMenu,setCtxMenu]=useState(null);
+  const bottomRef=useRef();
+  const fileRef=useRef();
+  const typRef=useRef();
+  const chatID=cid(me.uid,contact.uid);
+  const dn=contact.displayName||contact.name||"";
+
+  useEffect(()=>{
+    if(!window._fbOk)return;
+    const{collection,query,orderBy,onSnapshot}=window._fs;
+    const q=query(collection(window._db,"chats",chatID,"messages"),orderBy("time","asc"));
+    let first=true;
+    const unsub=onSnapshot(q,snap=>{
+      const ms=snap.docs.map(d=>({id:d.id,...d.data()}));
+      setMsgs(ms);setLoading(false);
+      if(!first){
+        const last=ms[ms.length-1];
+        if(last?.fromUid!==me.uid&&!last?.deleted){
+          window.notif?.(dn,last.image?"📷 Foto":last.text,contact.avatarUrl);
+        }
+      }
+      first=false;
+      // Mark read
+      snap.docs.forEach(d=>{
+        const m=d.data();
+        if(m.toUid===me.uid&&!m.read){
+          const{doc,updateDoc}=window._fs;
+          updateDoc(doc(window._db,"chats",chatID,"messages",d.id),{read:true}).catch(()=>{});
+        }
+      });
+    },e=>{ console.error(e); setLoading(false); });
+    return()=>unsub();
+  },[chatID]);
+
+  useEffect(()=>{
+    setTimeout(()=>bottomRef.current?.scrollIntoView({behavior:"smooth"}),80);
+  },[msgs]);
+
+  useEffect(()=>{
+    const ti=setTimeout(()=>setTyping(true),8000);
+    return()=>clearTimeout(ti);
+  },[]);
+
+  const doSend=async()=>{
+    if(!text.trim())return;
+    const msg={text:text.trim(),image:null,fromUid:me.uid,toUid:contact.uid,read:false,deleted:false,replyTo:replyTo?{id:replyTo.id,text:replyTo.image?"📷 Foto":replyTo.text,fromUid:replyTo.fromUid}:null};
+    setText("");setReplyTo(null);
+    try{await sendMsg(chatID,msg);}catch(e){console.error(e);}
+  };
+
+  const doSendImg=async e=>{
+    const f=e.target.files[0];if(!f)return;
+    setUploading(true);
+    try{
+      const r=new FileReader();
+      r.onload=async ev=>{
+        try{
+          // Upload to Storage (bukan simpan di Firestore)
+          const url=await uploadImg(`chats/${chatID}/${Date.now()}.jpg`,ev.target.result);
+          await sendMsg(chatID,{text:"",image:url,fromUid:me.uid,toUid:contact.uid,read:false,deleted:false,replyTo:null});
+        }catch(err){console.error(err);}
+        setUploading(false);
+      };
+      r.readAsDataURL(f);
+    }catch(err){setUploading(false);console.error(err);}
+    e.target.value="";
+  };
+
+  const doDelete=async id=>{
+    const{doc,updateDoc}=window._fs;
+    await updateDoc(doc(window._db,"chats",chatID,"messages",id),{deleted:true,text:"",image:null});
+  };
+
+  const handleKey=e=>{
+    if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();doSend();}
+    clearTimeout(typRef.current);typRef.current=setTimeout(()=>setTyping(false),3000);
+  };
+
+  const showCtx=(msg,e)=>{
+    e.preventDefault();e.stopPropagation();
+    const x=e.touches?e.touches[0].clientX:e.clientX;
+    const y=e.touches?e.touches[0].clientY:e.clientY;
+    setCtxMenu({msg,pos:{x,y}});
+  };
+
+  const lastSeen=contact.online?s.online:`${s.lastseen} ${fmtT(contact.lastSeen)}`;
+
+  return React.createElement("div",{className:"screen",style:{color:"#fff"},onClick:()=>ctxMenu&&setCtxMenu(null)},
+    // Header
+    React.createElement("div",{className:"hdr"},
+      React.createElement("button",{className:"btn-ghost",onClick:onBack,style:{width:36,height:36,padding:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,flexShrink:0}},"←"),
+      React.createElement("div",{style:{display:"flex",alignItems:"center",gap:10,flex:1,cursor:"pointer"},onClick:()=>onProfileView(contact)},
+        React.createElement("div",{style:{position:"relative"}},React.createElement(Av,{u:contact,size:38,dot:true})),
+        React.createElement("div",null,
+          React.createElement("p",{style:{margin:0,fontWeight:700,color:"#fff",fontSize:16}},dn),
+          React.createElement("p",{style:{margin:0,fontSize:12,color:"rgba(255,255,255,0.6)"}},isTyping?s.typing:lastSeen)
+        )
+      )
+    ),
+    // Messages
+    React.createElement("div",{className:"msg-bg"},
+      loading&&React.createElement("div",{style:{textAlign:"center",padding:40}},React.createElement("div",{className:"spin",style:{margin:"0 auto"}})),
+      msgs.map((msg,i)=>{
+        const isMe=msg.fromUid===me.uid;
+        let showDate=false;
+        if(i===0)showDate=true;
+        else{
+          try{
+            const a=msgs[i-1].time?.toDate?.()?.toDateString();
+            const b=msg.time?.toDate?.()?.toDateString();
+            showDate=a!==b;
+          }catch(e){}
+        }
+        return React.createElement("div",{key:msg.id},
+          showDate&&React.createElement("div",{style:{textAlign:"center",margin:"10px 0"}},
+            React.createElement("span",{className:"glass-dark",style:{fontSize:11,padding:"4px 14px",borderRadius:20,display:"inline-block"}},
+              (() => {try{return msg.time?.toDate?.()?.toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long"});}catch{return "";}})()
+            )
+          ),
+          React.createElement("div",{style:{display:"flex",justifyContent:isMe?"flex-end":"flex-start",marginBottom:2,animation:"fadeUp 0.15s ease both"}},
+            !isMe&&React.createElement("div",{style:{marginRight:6,alignSelf:"flex-end",cursor:"pointer"},onClick:()=>onProfileView(contact)},React.createElement(Av,{u:contact,size:24})),
+            React.createElement("div",{
+              className:isMe?"bub-me":"bub-other",
+              style:{maxWidth:"72%",padding:msg.image&&!msg.deleted?"5px":"9px 13px",cursor:"context-menu"},
+              onContextMenu:e=>!msg.deleted&&showCtx(msg,e),
+              onTouchStart:e=>{if(msg.deleted)return;const ti=setTimeout(()=>showCtx(msg,e),500);e.currentTarget._lt=ti;},
+              onTouchEnd:e=>clearTimeout(e.currentTarget._lt),
+            },
+              // Reply preview
+              msg.replyTo&&!msg.deleted&&React.createElement("div",{style:{background:"rgba(0,0,0,0.2)",borderLeft:`3px solid ${isMe?"rgba(255,255,255,0.6)":"rgba(168,85,247,0.8)"}`,borderRadius:8,padding:"5px 9px",marginBottom:6}},
+                React.createElement("p",{style:{margin:0,fontWeight:700,fontSize:10,opacity:.7}},msg.replyTo.fromUid===me.uid?me.name:dn),
+                React.createElement("p",{style:{margin:0,fontSize:11,opacity:.6,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:180}},msg.replyTo.text)
+              ),
+              // Content
+              msg.deleted
+                ?React.createElement("p",{style:{margin:0,fontSize:13,fontStyle:"italic",opacity:.45}},"🚫 "+s.msgDel)
+                :React.createElement(React.Fragment,null,
+                    msg.image&&React.createElement("img",{src:msg.image,style:{maxWidth:"100%",maxHeight:200,borderRadius:10,display:"block",objectFit:"cover"}}),
+                    msg.text&&React.createElement("p",{style:{margin:0,fontSize:15,lineHeight:1.5,wordBreak:"break-word",color:isMe?"#fff":"rgba(255,255,255,0.9)"}},msg.text)
+                  ),
+              // Time + read
+              React.createElement("div",{style:{display:"flex",alignItems:"center",justifyContent:"flex-end",gap:3,marginTop:3}},
+                React.createElement("span",{style:{fontSize:10,opacity:.5,color:isMe?"rgba(255,255,255,0.8)":"rgba(255,255,255,0.5)"}},fmtT(msg.time)),
+                isMe&&!msg.deleted&&React.createElement("span",{style:{fontSize:10,color:msg.read?"#93C5FD":"rgba(255,255,255,0.5)"}},msg.read?"✓✓":"✓")
+              )
+            )
+          )
+        );
+      }),
+      isTyping&&React.createElement("div",{style:{display:"flex",alignItems:"center",gap:7}},
+        React.createElement(Av,{u:contact,size:24}),
+        React.createElement("div",{className:"bub-other",style:{padding:"10px 14px",display:"flex",gap:4,alignItems:"center"}},
+          [0,1,2].map(i=>React.createElement("div",{key:i,style:{width:6,height:6,borderRadius:"50%",background:"rgba(255,255,255,0.5)",animation:`bounce 1s ease ${i*.2}s infinite`}}))
+        )
+      ),
+      React.createElement("div",{ref:bottomRef})
+    ),
+    // Reply preview
+    replyTo&&React.createElement("div",{style:{padding:"8px 14px",background:"rgba(0,0,0,0.3)",borderTop:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",gap:10,flexShrink:0}},
+      React.createElement("div",{style:{flex:1,borderLeft:"3px solid rgba(168,85,247,0.8)",paddingLeft:9}},
+        React.createElement("p",{style:{margin:0,fontSize:11,color:"#A855F7",fontWeight:700}},replyTo.fromUid===me.uid?me.name:dn),
+        React.createElement("p",{style:{margin:0,fontSize:12,color:"rgba(255,255,255,0.45)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}},replyTo.image?"📷 Foto":replyTo.text)
+      ),
+      React.createElement("button",{onClick:()=>setReplyTo(null),style:{background:"none",border:"none",color:"rgba(255,255,255,0.4)",cursor:"pointer",fontSize:18}},"✕")
+    ),
+    // Input bar
+    React.createElement("div",{className:"inp-bar"},
+      React.createElement("input",{ref:fileRef,type:"file",accept:"image/*",style:{display:"none"},onChange:doSendImg}),
+      React.createElement("button",{className:"btn-ghost",onClick:()=>fileRef.current.click(),disabled:uploading,style:{width:42,height:42,padding:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,flexShrink:0}},
+        uploading?React.createElement("div",{className:"spin"}):s.sendImg
+      ),
+      React.createElement("textarea",{value:text,onChange:e=>setText(e.target.value),onKeyDown:handleKey,placeholder:s.typeMsg,rows:1,style:{flex:1,padding:"11px 14px",borderRadius:22,border:"1.5px solid rgba(255,255,255,0.15)",background:"rgba(255,255,255,0.08)",color:"#fff",fontFamily:"Nunito,sans-serif",fontSize:15,outline:"none",resize:"none",maxHeight:100,lineHeight:1.5,backdropFilter:"blur(10px)"}}),
+      React.createElement("button",{className:"btn-candy",onClick:doSend,disabled:!text.trim(),style:{width:42,height:42,padding:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,flexShrink:0,borderRadius:"50%",opacity:text.trim()?1:0.4}},
+        React.createElement("span",{style:{transform:"rotate(45deg)",display:"block"}},"➤")
+      )
+    ),
+    // Context menu
+    ctxMenu&&React.createElement("div",{className:"ctx",style:{top:Math.min(ctxMenu.pos.y,window.innerHeight-220),left:Math.min(ctxMenu.pos.x,window.innerWidth-170)}},
+      [{ic:"↩️",lb:s.reply,fn:()=>setReplyTo(ctxMenu.msg)},
+       {ic:"📋",lb:s.copy,fn:()=>navigator.clipboard?.writeText(ctxMenu.msg.text||"")},
+       {ic:"↗️",lb:s.fwd,fn:()=>{onForward(ctxMenu.msg);setCtxMenu(null);}},
+       ...(ctxMenu.msg.fromUid===me.uid?[{ic:"🗑️",lb:s.del,fn:()=>doDelete(ctxMenu.msg.id),danger:true}]:[])
+      ].map((item,i)=>React.createElement("button",{key:i,className:"ctx-btn"+(item.danger?" danger":""),onClick:()=>{item.fn();setCtxMenu(null);}},
+        React.createElement("span",null,item.ic),React.createElement("span",null,item.lb)
+      ))
+    )
+  );
+}
+
+// ── SETTINGS ────────────────────────────────────────────────
+function Settings({me,lang,onLang,onLogout,onBack,onEdit,onRenameMe}){
+  const s=S[lang];
+  const [renaming,setRenaming]=useState(false);
+  const [newName,setNewName]=useState(me.name||"");
+
+  return React.createElement("div",{className:"screen",style:{color:"#fff",overflowY:"auto"}},
+    React.createElement("div",{className:"hdr"},
+      React.createElement("button",{className:"btn-ghost",onClick:onBack,style:{width:36,height:36,padding:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,flexShrink:0}},"←"),
+      React.createElement("h2",{style:{flex:1,fontSize:18,fontWeight:700,color:"#fff"}},s.settings)
+    ),
+    React.createElement("div",{style:{padding:"16px 16px 40px"}},
+      // Profile card
+      React.createElement("div",{className:"glass",style:{padding:18,display:"flex",alignItems:"center",gap:14,marginBottom:14,cursor:"pointer"},onClick:onEdit},
+        React.createElement(Av,{u:me,size:58}),
+        React.createElement("div",{style:{flex:1}},
+          React.createElement("p",{style:{margin:0,fontWeight:700,fontSize:17}},me.name),
+          React.createElement("p",{style:{margin:0,fontSize:13,color:"rgba(255,255,255,0.45)"}},me.bio||me.phone),
+          React.createElement("p",{style:{margin:"4px 0 0",fontSize:12,color:"#A855F7",fontWeight:600}},s.editProfile+" →")
+        )
+      ),
+      // Rename me
+      renaming
+        ?React.createElement("div",{className:"glass",style:{borderRadius:16,padding:14,marginBottom:10}},
+            React.createElement("p",{style:{color:"rgba(255,255,255,0.5)",fontSize:12,marginBottom:8}},s.renameMe),
+            React.createElement("div",{style:{display:"flex",gap:8}},
+              React.createElement("input",{className:"inp-glass",style:{flex:1,padding:"10px 12px",fontSize:14},value:newName,onChange:e=>setNewName(e.target.value),autoFocus:true}),
+              React.createElement("button",{className:"btn-candy",onClick:()=>{onRenameMe(newName);setRenaming(false);},style:{padding:"10px 16px",fontSize:13,flexShrink:0}},s.rename)
+            )
+          )
+        :React.createElement("div",{className:"srow glass-light",style:{marginBottom:6,borderRadius:14},onClick:()=>setRenaming(true)},
+            React.createElement("span",{style:{fontSize:20}},"✏️"),
+            React.createElement("span",{style:{flex:1,fontSize:14,fontWeight:600}},s.renameMe),
+            React.createElement("span",{style:{color:"rgba(255,255,255,0.3)",fontSize:16}},"›")
+          ),
+      // Language
+      React.createElement("div",{className:"glass",style:{borderRadius:16,padding:16,marginBottom:10}},
+        React.createElement("p",{style:{color:"rgba(255,255,255,0.5)",fontSize:12,fontWeight:600,letterSpacing:.5,marginBottom:10,textTransform:"uppercase"}},s.language),
+        React.createElement("div",{style:{display:"flex",gap:8}},
+          ["id","en"].map(l=>React.createElement("button",{key:l,onClick:()=>onLang(l),style:{flex:1,padding:"10px",borderRadius:12,cursor:"pointer",border:`1.5px solid ${lang===l?"rgba(168,85,247,0.7)":"rgba(255,255,255,0.15)"}`,background:lang===l?"rgba(168,85,247,0.2)":"rgba(255,255,255,0.05)",color:lang===l?"#E9D5FF":"rgba(255,255,255,0.5)",fontFamily:"Nunito,sans-serif",fontSize:13,fontWeight:600}},
+            l==="id"?"🇮🇩 Indonesia":"🇬🇧 English"
+          ))
+        )
+      ),
+      // Logout
+      React.createElement("button",{className:"btn-ghost",onClick:onLogout,style:{width:"100%",padding:13,fontSize:14,color:"#F87171",border:"1.5px solid rgba(248,113,113,0.3)",borderRadius:14,marginTop:6}},`🚪 ${s.logout}`),
+      React.createElement("p",{style:{textAlign:"center",marginTop:20,color:"rgba(255,255,255,0.2)",fontSize:10}},s.copyright)
+    )
+  );
+}
+
+// ── FORWARD SHEET ─────────────────────────────────────────────
+function ForwardSheet({me,lang,contacts,msg,onClose,onForward}){
+  const s=S[lang];
+  return React.createElement("div",{className:"overlay",onClick:onClose},
+    React.createElement("div",{className:"sheet",onClick:e=>e.stopPropagation(),style:{maxHeight:"60vh"}},
+      React.createElement("div",{style:{width:40,height:4,borderRadius:2,background:"rgba(255,255,255,0.2)",margin:"0 auto 16px"}}),
+      React.createElement("h3",{style:{color:"#fff",fontSize:16,fontWeight:700,marginBottom:16}},s.fwdTo),
+      contacts.map(c=>React.createElement("div",{key:c.uid,onClick:()=>onForward(c,msg),style:{display:"flex",alignItems:"center",gap:12,padding:"10px 0",cursor:"pointer",borderBottom:"1px solid rgba(255,255,255,0.08)"}},
+        React.createElement(Av,{u:c,size:40}),
+        React.createElement("p",{style:{margin:0,fontWeight:700,color:"#fff"}},c.displayName||c.name)
+      ))
+    )
+  );
+}
+
+// ── MAIN APP ────────────────────────────────────────────────
+function App(){
+  const [screen,setScreen]=useState("splash");
+  const [lang,setLang]=useState(()=>localStorage.getItem("vt_lang")||"id");
+  const [me,setMe]=useState(null);
+  const [contacts,setContacts]=useState([]);
+  const [lastMsgs,setLastMsgs]=useState({});
+  const [unread,setUnread]=useState({});
+  const [active,setActive]=useState(null);
+  const [fwdData,setFwdData]=useState(null);
+  const [profileView,setProfileView]=useState(null);
+  const unsubsRef=useRef([]);
+
+  // Init
+  useEffect(()=>{
+    const go=async()=>{
+      const uid=localStorage.getItem("vt_uid");
+      const vt=localStorage.getItem("vt");
+      if(uid&&vt){
+        try{
+          const p=JSON.parse(vt);
+          setMe(p);
+          const saved=localStorage.getItem("vt_c");
+          if(saved) setContacts(JSON.parse(saved));
+          if(window._fbOk){
+            const fresh=await fsGet("users",uid);
+            if(fresh){setMe(fresh);localStorage.setItem("vt",JSON.stringify(fresh));}
+            fsOnline(uid,true);
+          }
+          setScreen("chats");
+        }catch(e){setScreen("setup");}
+      }else{
+        setScreen("setup");
+      }
+    };
+    const ti=setTimeout(go,1800);
+    return()=>clearTimeout(ti);
+  },[]);
+
+  // Listen contacts last messages
+  useEffect(()=>{
+    if(!me||!window._fbOk||contacts.length===0)return;
+    unsubsRef.current.forEach(u=>u());
+    unsubsRef.current=[];
+    contacts.forEach(c=>{
+      const id=cid(me.uid,c.uid);
+      const{collection,query,orderBy,onSnapshot}=window._fs;
+      const q=query(collection(window._db,"chats",id,"messages"),orderBy("time","desc"));
+      let first=true;
+      const unsub=onSnapshot(q,snap=>{
+        if(!snap.empty){
+          const last=snap.docs[0].data();
+          setLastMsgs(prev=>{
+            if(!first&&last.fromUid!==me.uid&&!last.deleted){
+              const lt=last.time?.toMillis?.()|| 0;
+              const pt=prev[c.uid]?.time?.toMillis?.()|| 0;
+              if(lt>pt) window.notif?.(c.displayName||c.name,last.image?"📷 Foto":last.text,c.avatarUrl);
+            }
+            first=false;
+            return{...prev,[c.uid]:last};
+          });
+          const ur=snap.docs.filter(d=>{const m=d.data();return m.toUid===me.uid&&!m.read&&!m.deleted;}).length;
+          setUnread(prev=>({...prev,[c.uid]:ur}));
+        }
+      });
+      unsubsRef.current.push(unsub);
+    });
+    return()=>{unsubsRef.current.forEach(u=>u());};
+  },[me,contacts]);
+
+  // Online status
+  useEffect(()=>{
+    if(!me||!window._fbOk)return;
+    fsOnline(me.uid,true);
+    const off=()=>fsOnline(me.uid,false);
+    window.addEventListener("beforeunload",off);
+    const iv=setInterval(()=>fsOnline(me.uid,true),45000);
+    return()=>{window.removeEventListener("beforeunload",off);clearInterval(iv);};
+  },[me]);
+
+  // Back button
+  useEffect(()=>{
+    const handler=()=>{
+      if(fwdData){setFwdData(null);return;}
+      if(profileView){setProfileView(null);return;}
+      if(screen==="chat"){setScreen("chats");return;}
+      if(screen==="newchat"||screen==="settings"||screen==="profile"){
+        setScreen(screen==="profile"?"settings":"chats");return;
+      }
+      window.history.pushState(null,"",window.location.href);
+    };
+    window.history.pushState(null,"",window.location.href);
+    window.addEventListener("popstate",handler);
+    return()=>window.removeEventListener("popstate",handler);
+  },[screen,fwdData,profileView]);
+
+  const addContact=c=>{
+    if(!contacts.find(x=>x.uid===c.uid)){
+      const updated=[...contacts,c];
+      setContacts(updated);
+      localStorage.setItem("vt_c",JSON.stringify(updated));
+    }
+    setActive(c);setScreen("chat");
+    setUnread(prev=>({...prev,[c.uid]:0}));
+  };
+
+  const openChat=c=>{
+    setActive(c);setScreen("chat");
+    setUnread(prev=>({...prev,[c.uid]:0}));
+  };
+
+  const renameContact=(uid,newName)=>{
+    const updated=contacts.map(c=>c.uid===uid?{...c,displayName:newName}:c);
+    setContacts(updated);
+    localStorage.setItem("vt_c",JSON.stringify(updated));
+    if(active?.uid===uid) setActive(prev=>({...prev,displayName:newName}));
+  };
+
+  const renameMe=async(newName)=>{
+    if(!newName.trim())return;
+    const updated={...me,name:newName.trim()};
+    setMe(updated);
+    localStorage.setItem("vt",JSON.stringify(updated));
+    if(window._fbOk) await fsSave("users",me.uid,{name:newName.trim()});
+  };
+
+  const doForward=async(toContact,msg)=>{
+    const id=cid(me.uid,toContact.uid);
+    await sendMsg(id,{text:msg.text||"",image:msg.image||null,fromUid:me.uid,toUid:toContact.uid,read:false,deleted:false,replyTo:null});
+    if(!contacts.find(x=>x.uid===toContact.uid)){
+      const updated=[...contacts,toContact];
+      setContacts(updated);
+      localStorage.setItem("vt_c",JSON.stringify(updated));
+    }
+    setFwdData(null);
+  };
+
+  const logout=()=>{
+    if(me&&window._fbOk) fsOnline(me.uid,false);
+    ["vt_uid","vt","vt_c","vt_lang"].forEach(k=>localStorage.removeItem(k));
+    unsubsRef.current.forEach(u=>u());
+    setMe(null);setContacts([]);setScreen("setup");
+  };
+
+  const handleLang=l=>{setLang(l);localStorage.setItem("vt_lang",l);};
+
+  return React.createElement("div",{style:{position:"relative",height:"100%",overflow:"hidden"}},
+    // Screens
+    screen==="splash"&&React.createElement(Splash,null),
+    screen==="setup"&&React.createElement(Setup,{initUser:me,lang,onDone:p=>{setMe(p);setScreen("chats");}}),
+    screen==="chats"&&me&&React.createElement(ChatList,{me,lang,contacts,lastMsgs,unread,onOpen:openChat,onNew:()=>setScreen("newchat"),onSettings:()=>setScreen("settings"),onProfileView:c=>setProfileView(c)}),
+    screen==="newchat"&&me&&React.createElement(FindUser,{me,lang,contacts,onSelect:addContact,onBack:()=>setScreen("chats")}),
+    screen==="chat"&&active&&me&&React.createElement(ChatRoom,{me,lang,contact:active,onBack:()=>setScreen("chats"),contacts,onForward:msg=>setFwdData(msg),onProfileView:c=>setProfileView(c)}),
+    screen==="settings"&&me&&React.createElement(Settings,{me,lang,onLang:handleLang,onLogout:logout,onBack:()=>setScreen("chats"),onEdit:()=>setScreen("profile"),onRenameMe:renameMe}),
+    screen==="profile"&&me&&React.createElement(Setup,{initUser:me,lang,onDone:p=>{setMe(p);localStorage.setItem("vt",JSON.stringify(p));setScreen("settings");}}),
+    // Profile view overlay
+    profileView&&React.createElement(ProfileView,{u:{...profileView,displayName:contacts.find(c=>c.uid===profileView.uid)?.displayName},lang,onClose:()=>setProfileView(null),onStartChat:()=>{addContact(profileView);setProfileView(null);},onRename:n=>{renameContact(profileView.uid,n);setProfileView(null);}}),
+    // Forward sheet
+    fwdData&&React.createElement(ForwardSheet,{me,lang,contacts:contacts.filter(c=>c.uid!==active?.uid),msg:fwdData,onClose:()=>setFwdData(null),onForward:doForward})
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+</script>
+</body>
+</html>
