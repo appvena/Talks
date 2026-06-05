@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="theme-color" content="#C084FC"/>
+  <meta name="description" content="Vena Talks - Bicara lebih dekat"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <meta name="apple-mobile-web-app-title" content="Vena Talks"/>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="apple-touch-icon" href="icon-192.png"/>
+  <title>Vena Talks</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:wght@600;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:"Nunito",sans-serif;background:#FDF6FF;overscroll-behavior:none;}
+    #root{min-height:100vh;min-height:100dvh;}
+    input::placeholder,textarea::placeholder{color:rgba(128,128,128,0.5);}
+    ::-webkit-scrollbar{width:3px;}
+    ::-webkit-scrollbar-thumb{background:rgba(128,128,128,0.25);border-radius:2px;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+    @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+    @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+<div id="root"><div style="height:100vh;display:flex;align-items:center;justify-content:center;font-size:48px">🌸</div></div>
+
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore,doc,setDoc,getDoc,collection,addDoc,query,where,orderBy,onSnapshot,updateDoc,getDocs,serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getStorage,ref,uploadString,getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+const cfg = {
+  apiKey:"AIzaSyCXD0MNvi7LCZbBnP-CdbVE3jsyUhxnhXE",
+  authDomain:"appsvena-talks.firebaseapp.com",
+  projectId:"appsvena-talks",
+  storageBucket:"appsvena-talks.firebasestorage.app",
+  messagingSenderId:"48785751855",
+  appId:"1:48785751855:web:4d349b50005fc8d3256bda"
+};
+const app = initializeApp(cfg);
+const db  = getFirestore(app);
+const st  = getStorage(app);
+
+window._db = db;
+window._st = st;
+window._fs = { doc,setDoc,getDoc,collection,addDoc,query,where,orderBy,onSnapshot,updateDoc,getDocs,serverTimestamp,ref,uploadString,getDownloadURL };
+window._fbOk = true;
+window.dispatchEvent(new Event("fbOk"));
+</script>
+
+<script type="text/babel" data-presets="react">
+const {useState,useEffect,useRef,useCallback} = React;
+
+// ── THEMES ──────────────────────────────────────────────────
+const TH = {
+  soft:{
+    bg:"#FDF6FF",bg2:"#F3E8FF",surf:"#fff",surf2:"#FAF0FF",
+    pri:"#C084FC",priD:"#A855F7",priL:"#E9D5FF",
+    acc:"#F9A8D4",txt:"#4B2067",txt2:"#7C3AED",txm:"#A78BCA",
+    bub:"#F3E8FF",bubO:"#C084FC",bubOT:"#fff",
+    bdr:"#E9D5FF",shd:"rgba(192,132,252,0.18)",
+    grad:"linear-gradient(135deg,#FDF6FF,#F3E8FF,#EDD9FF)",
+    hdr:"linear-gradient(135deg,#C084FC,#F9A8D4)",
+    font:"Nunito,sans-serif",fontD:"Playfair Display,serif",em:"🌸",
+    name:"Soft",nameId:"Lembut",
+  },
+  elegant:{
+    bg:"#0D0D14",bg2:"#13131F",surf:"#16162A",surf2:"#1E1E35",
+    pri:"#C9A84C",priD:"#A8882E",priL:"#2A2010",
+    acc:"#8B6FD4",txt:"#F5EDD0",txt2:"#C9A84C",txm:"#7A7A9A",
+    bub:"#1E1E35",bubO:"#C9A84C",bubOT:"#0D0D14",
+    bdr:"#2A2A45",shd:"rgba(201,168,76,0.12)",
+    grad:"linear-gradient(135deg,#0D0D14,#13131F,#1A1A2E)",
+    hdr:"linear-gradient(135deg,#C9A84C,#8B6FD4)",
+    font:"Outfit,sans-serif",fontD:"Playfair Display,serif",em:"✨",
+    name:"Elegant",nameId:"Elegan",
+  },
+  sporty:{
+    bg:"#F0F4FF",bg2:"#E0EAFF",surf:"#fff",surf2:"#F5F8FF",
+    pri:"#2563EB",priD:"#1D4ED8",priL:"#BFDBFE",
+    acc:"#F97316",txt:"#0F172A",txt2:"#1D4ED8",txm:"#64748B",
+    bub:"#EFF6FF",bubO:"#2563EB",bubOT:"#fff",
+    bdr:"#BFDBFE",shd:"rgba(37,99,235,0.12)",
+    grad:"linear-gradient(135deg,#F0F4FF,#E0EAFF,#C7D9FF)",
+    hdr:"linear-gradient(135deg,#2563EB,#F97316)",
+    font:"Outfit,sans-serif",fontD:"Outfit,sans-serif",em:"⚡",
+    name:"Sporty",nameId:"Sporty",
+  },
+};
+
+// ── STRINGS ─────────────────────────────────────────────────
+const S = {
+  id:{
+    tagline:"Bicara lebih dekat",setupTitle:"Buat Profil",
+    nameLabel:"Nama Tampilan",namePH:"Nama kamu...",
+    phoneLabel:"Nomor HP",phonePH:"08xxx atau +628xxx",
+    bioLabel:"Bio",bioPH:"Ceritakan dirimu...",
+    uploadPhoto:"Upload Foto",save:"Simpan & Masuk",saving:"Menyimpan...",
+    nameRequired:"Nama wajib diisi",phoneRequired:"Nomor HP wajib diisi",
+    chats:"Percakapan",newChat:"Chat Baru",search:"Cari...",
+    searchUser:"Cari no HP teman...",searchBtn:"Cari",
+    userNotFound:"User tidak ditemukan.",addChat:"Mulai Chat",
+    typeMsg:"Ketik pesan...",online:"Online",
+    lastseen:"Terakhir dilihat pukul",typing:"sedang mengetik...",
+    noChats:"Belum ada percakapan",startChat:"Mulai chat baru",
+    settings:"Pengaturan",editProfile:"Edit Profil",
+    chooseTheme:"Pilih Tema",language:"Bahasa",
+    logout:"Keluar & Hapus Data",
+    reply:"Balas",forward:"Teruskan",del:"Hapus",copy:"Salin",
+    msgDeleted:"Pesan dihapus",forwardTo:"Teruskan ke...",
+    autoTheme:"Tema Otomatis",copyright:"© 2026 SRISP | Vena Talks v4.2",
+    changePass:"Ganti Password",oldPass:"Password Lama",
+    newPass:"Password Baru",confirmPass:"Konfirmasi Password",
+    passChanged:"Password berhasil diubah ✅",
+    passNoMatch:"Password tidak sama!",passTooShort:"Min. 6 karakter.",
+    connecting:"Menghubungkan...",
+  },
+  en:{
+    tagline:"Talk closer",setupTitle:"Create Profile",
+    nameLabel:"Display Name",namePH:"Your name...",
+    phoneLabel:"Phone Number",phonePH:"08xxx or +628xxx",
+    bioLabel:"Bio",bioPH:"Tell about yourself...",
+    uploadPhoto:"Upload Photo",save:"Save & Enter",saving:"Saving...",
+    nameRequired:"Name is required",phoneRequired:"Phone is required",
+    chats:"Chats",newChat:"New Chat",search:"Search...",
+    searchUser:"Search friend's phone...",searchBtn:"Search",
+    userNotFound:"User not found.",addChat:"Start Chat",
+    typeMsg:"Type a message...",online:"Online",
+    lastseen:"Last seen at",typing:"is typing...",
+    noChats:"No conversations yet",startChat:"Start a new chat",
+    settings:"Settings",editProfile:"Edit Profile",
+    chooseTheme:"Choose Theme",language:"Language",
+    logout:"Sign Out & Clear Data",
+    reply:"Reply",forward:"Forward",del:"Delete",copy:"Copy",
+    msgDeleted:"Message deleted",forwardTo:"Forward to...",
+    autoTheme:"Auto Theme",copyright:"© 2026 SRISP | Vena Talks v4.2",
+    changePass:"Change Password",oldPass:"Old Password",
+    newPass:"New Password",confirmPass:"Confirm Password",
+    passChanged:"Password changed ✅",
+    passNoMatch:"Passwords don't match!",passTooShort:"Min. 6 characters.",
+    connecting:"Connecting...",
+  },
+};
+
+// ── UTILS ────────────────────────────────────────────────────
+const fmtT = d=>{try{const dt=d?.toDate?d.toDate():new Date(d);return dt.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});}catch{return"";}};
+const fmtD = d=>{try{const dt=d?.toDate?d.toDate():new Date(d);const diff=new Date()-dt;if(diff<86400000)return fmtT(d);if(diff<172800000)return"Kemarin";return dt.toLocaleDateString("id-ID",{day:"2-digit",month:"short"});}catch{return"";}};
+const ini  = n=>(n||"?").split(" ").map(x=>x[0]).join("").toUpperCase().slice(0,2);
+const abg  = (n,th)=>{const c=[th.pri,th.acc,th.priD];return c[(n||"A").charCodeAt(0)%c.length];};
+const normPhone = p=>{
+  // Simpan apa adanya setelah hapus spasi/strip
+  return p.replace(/[\s\-().]/g,"").trim();
+};
+const allPhoneFormats = p=>{
+  // Kembalikan semua kemungkinan format nomor yang sama
+  let n=p.replace(/[\s\-().+]/g,"").trim();
+  const formats=new Set();
+  formats.add(n);
+  if(n.startsWith("62")){formats.add("0"+n.slice(2));formats.add("+"+n);}
+  else if(n.startsWith("08")){formats.add("62"+n.slice(1));formats.add("+62"+n.slice(1));formats.add(n);}
+  else if(n.startsWith("8")&&n.length>=9){formats.add("0"+n);formats.add("62"+n);formats.add("+62"+n);}
+  return Array.from(formats);
+};
+const chatId = (a,b)=>[a,b].sort().join("_");
+
+// ── FIREBASE OPS ─────────────────────────────────────────────
+async function saveUser(uid,data){
+  const {doc,setDoc}=window._fs;
+  await setDoc(doc(window._db,"users",uid),data,{merge:true});
+}
+async function getUser(uid){
+  const {doc,getDoc}=window._fs;
+  const s=await getDoc(doc(window._db,"users",uid));
+  return s.exists()?{uid,...s.data()}:null;
+}
+async function findUserByPhone(phone){
+  const {collection,query,where,getDocs}=window._fs;
+  const formats=allPhoneFormats(phone);
+  for(const fmt of formats){
+    const q=query(collection(window._db,"users"),where("phone","==",fmt));
+    const s=await getDocs(q);
+    if(!s.empty){const d=s.docs[0];return{uid:d.id,...d.data()};}
+  }
+  return null;
+}
+async function uploadAvatar(uid,dataUrl){
+  if(!dataUrl||!dataUrl.startsWith("data:"))return dataUrl;
+  const {ref,uploadString,getDownloadURL}=window._fs;
+  const r=ref(window._st,`avatars/${uid}.jpg`);
+  await uploadString(r,dataUrl,"data_url");
+  return getDownloadURL(r);
+}
+async function uploadChatImg(cid,dataUrl){
+  if(!dataUrl||!dataUrl.startsWith("data:"))return dataUrl;
+  const {ref,uploadString,getDownloadURL}=window._fs;
+  const r=ref(window._st,`chats/${cid}/${Date.now()}.jpg`);
+  await uploadString(r,dataUrl,"data_url");
+  return getDownloadURL(r);
+}
+async function sendMessage(cid,msg){
+  const {collection,addDoc,serverTimestamp}=window._fs;
+  await addDoc(collection(window._db,"chats",cid,"messages"),{...msg,time:serverTimestamp()});
+}
+async function updateOnline(uid,online){
+  try{
+    const {doc,updateDoc,serverTimestamp}=window._fs;
+    await updateDoc(doc(window._db,"users",uid),{online,lastSeen:serverTimestamp()});
+  }catch(e){}
+}
+
+// ── COMPONENTS ───────────────────────────────────────────────
+function Av({u,size=44,th,dot=false}){
+  return React.createElement("div",{style:{position:"relative",flexShrink:0}},
+    u.avatarUrl
+      ?React.createElement("img",{src:u.avatarUrl,style:{width:size,height:size,borderRadius:"50%",objectFit:"cover",border:`2px solid ${th.bdr}`}})
+      :React.createElement("div",{style:{width:size,height:size,borderRadius:"50%",background:`linear-gradient(135deg,${abg(u.name,th)},${th.acc})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:size*.36,fontWeight:700,color:"#fff",fontFamily:th.fontD,border:`2px solid ${th.bdr}`}},ini(u.name||"?")),
+    dot&&React.createElement("div",{style:{width:Math.max(10,size*.22),height:Math.max(10,size*.22),borderRadius:"50%",background:u.online?"#22C55E":th.txm,border:`2px solid ${th.surf}`,position:"absolute",bottom:0,right:0}})
+  );
+}
+
+function Spin({th}){
+  return React.createElement("div",{style:{width:20,height:20,border:`3px solid ${th.priL}`,borderTop:`3px solid ${th.pri}`,borderRadius:"50%",animation:"spin 0.8s linear infinite"}});
+}
+
+// ── SPLASH ───────────────────────────────────────────────────
+function Splash({th,s}){
+  return React.createElement("div",{style:{minHeight:"100vh",background:th.grad,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:th.font}},
+    React.createElement("div",{style:{textAlign:"center",animation:"fadeUp 0.8s ease"}},
+      React.createElement("div",{style:{fontSize:80,marginBottom:16,animation:"pulse 2s infinite"}},th.em),
+      React.createElement("h1",{style:{fontFamily:th.fontD,fontSize:42,fontWeight:700,background:th.hdr,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",margin:"0 0 8px"}},"Vena Talks"),
+      React.createElement("p",{style:{color:th.txm,fontSize:15}},s.tagline),
+      React.createElement("div",{style:{marginTop:40,display:"flex",gap:6,justifyContent:"center"}},
+        [0,1,2].map(i=>React.createElement("div",{key:i,style:{width:8,height:8,borderRadius:"50%",background:th.pri,opacity:.3+i*.35,animation:`bounce 1s ease ${i*.2}s infinite`}}))
+      )
+    ),
+    React.createElement("p",{style:{position:"absolute",bottom:24,color:th.txm,fontSize:11}},s.copyright)
+  );
+}
+
+// ── SETUP PROFILE ────────────────────────────────────────────
+function Setup({th,s,initUser,onDone}){
+  const [name,setName]=useState(initUser?.name||"");
+  const [phone,setPhone]=useState(initUser?.phone||"");
+  const [bio,setBio]=useState(initUser?.bio||"");
+  const [av,setAv]=useState(initUser?.avatarUrl||null);
+  const [loading,setLoading]=useState(false);
+  const [err,setErr]=useState("");
+  const fRef=useRef();
+
+  const pick=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>setAv(ev.target.result);r.readAsDataURL(f);};
+
+  const save=async()=>{
+    if(!name.trim()){setErr(s.nameRequired);return;}
+    if(!phone.trim()){setErr(s.phoneRequired);return;}
+    setLoading(true);setErr("");
+    try{
+      const uid=initUser?.uid||("u_"+normPhone(phone)+"_"+Date.now());
+      let avatar=av;
+      if(window._fbOk&&av&&av.startsWith("data:")) avatar=await uploadAvatar(uid,av);
+      const prof={uid,name:name.trim(),phone:normPhone(phone),bio:bio.trim(),avatarUrl:avatar||null,online:true,lastSeen:new Date().toISOString(),createdAt:new Date().toISOString()};
+      if(window._fbOk) await saveUser(uid,prof);
+      localStorage.setItem("vt_uid",uid);
+      localStorage.setItem("vt_prof",JSON.stringify(prof));
+      onDone(prof);
+    }catch(e){console.error(e);setErr("Error: "+e.message);}
+    setLoading(false);
+  };
+
+  const inp={width:"100%",padding:"13px 16px",borderRadius:14,border:`2px solid ${th.bdr}`,background:th.surf2,color:th.txt,fontFamily:th.font,fontSize:15,outline:"none",boxSizing:"border-box"};
+
+  return React.createElement("div",{style:{minHeight:"100vh",background:th.grad,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:th.font,padding:20}},
+    React.createElement("div",{style:{width:"100%",maxWidth:420,background:th.surf,borderRadius:24,padding:28,boxShadow:`0 20px 60px ${th.shd}`,animation:"fadeUp 0.5s ease"}},
+      React.createElement("div",{style:{textAlign:"center",marginBottom:24}},
+        React.createElement("div",{style:{fontSize:48,marginBottom:6}},th.em),
+        React.createElement("h2",{style:{fontFamily:th.fontD,fontSize:26,fontWeight:700,background:th.hdr,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",margin:0}}),"Vena Talks",
+        React.createElement("p",{style:{color:th.txm,fontSize:13,marginTop:4}},s.setupTitle)
+      ),
+      // Avatar
+      React.createElement("div",{style:{textAlign:"center",marginBottom:20}},
+        React.createElement("div",{onClick:()=>fRef.current.click(),style:{width:90,height:90,borderRadius:"50%",margin:"0 auto 10px",background:av?"transparent":th.bg2,border:`3px dashed ${th.pri}`,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",overflow:"hidden"}},
+          av?React.createElement("img",{src:av,style:{width:"100%",height:"100%",objectFit:"cover"}}):React.createElement("span",{style:{fontSize:32}},"📷")
+        ),
+        React.createElement("input",{ref:fRef,type:"file",accept:"image/*",style:{display:"none"},onChange:pick}),
+        React.createElement("button",{onClick:()=>fRef.current.click(),style:{background:"none",border:`1.5px solid ${th.pri}`,color:th.pri,borderRadius:8,padding:"5px 14px",fontFamily:th.font,fontSize:13,cursor:"pointer"}},s.uploadPhoto)
+      ),
+      // Fields
+      [{l:s.nameLabel,v:name,s:setName,ph:s.namePH,t:"text"},{l:s.phoneLabel,v:phone,s:setPhone,ph:s.phonePH,t:"tel"},{l:s.bioLabel,v:bio,s:setBio,ph:s.bioPH,t:"text"}].map(({l,v,s:sv,ph,t},i)=>
+        React.createElement("div",{key:i,style:{marginBottom:14}},
+          React.createElement("label",{style:{display:"block",color:th.txt2,fontSize:13,fontWeight:600,marginBottom:5}},l),
+          React.createElement("input",{style:inp,placeholder:ph,value:v,onChange:e=>sv(e.target.value),type:t})
+        )
+      ),
+      err&&React.createElement("p",{style:{color:"#EF4444",fontSize:13,margin:"0 0 12px"}},err),
+      React.createElement("button",{onClick:save,disabled:loading,style:{width:"100%",padding:14,borderRadius:14,background:th.hdr,border:"none",color:"#fff",fontFamily:th.font,fontSize:16,fontWeight:700,cursor:"pointer",opacity:loading?.75:1,display:"flex",alignItems:"center",justifyContent:"center",gap:8}},
+        loading?React.createElement(Spin,{th}):null,
+        loading?s.saving:s.save
+      )
+    )
+  );
+}
+
+// ── FIND USER ────────────────────────────────────────────────
+function FindUser({th,s,me,contacts,onSelect,onBack}){
+  const [q,setQ]=useState("");
+  const [loading,setLoading]=useState(false);
+  const [result,setResult]=useState(null);
+  const [notFound,setNotFound]=useState(false);
+
+  const search=async()=>{
+    if(!q.trim())return;
+    setLoading(true);setResult(null);setNotFound(false);
+    try{
+      const phone=normPhone(q);
+      if(phone===me.phone){setNotFound(true);setLoading(false);return;}
+      const u=await findUserByPhone(phone);
+      if(u)setResult(u);
+      else setNotFound(true);
+    }catch(e){setNotFound(true);}
+    setLoading(false);
+  };
+
+  return React.createElement("div",{style:{minHeight:"100vh",background:th.bg,fontFamily:th.font,maxWidth:480,margin:"0 auto"}},
+    React.createElement("div",{style:{background:th.hdr,padding:"16px 20px",display:"flex",alignItems:"center",gap:12}},
+      React.createElement("button",{onClick:onBack,style:{background:"rgba(255,255,255,0.2)",border:"none",borderRadius:"50%",width:36,height:36,cursor:"pointer",color:"#fff",fontSize:20,display:"flex",alignItems:"center",justifyContent:"center"}},"←"),
+      React.createElement("h2",{style:{margin:0,color:"#fff",fontFamily:th.fontD,fontSize:20}},s.newChat)
+    ),
+    React.createElement("div",{style:{padding:16}},
+      React.createElement("div",{style:{display:"flex",gap:8}},
+        React.createElement("input",{style:{flex:1,padding:"12px 16px",borderRadius:14,border:`2px solid ${th.bdr}`,background:th.surf,color:th.txt,fontFamily:th.font,fontSize:15,outline:"none"},placeholder:s.searchUser,value:q,onChange:e=>setQ(e.target.value),type:"tel",onKeyDown:e=>e.key==="Enter"&&search(),autoFocus:true}),
+        React.createElement("button",{onClick:search,disabled:loading,style:{padding:"12px 20px",borderRadius:14,background:th.hdr,border:"none",color:"#fff",fontFamily:th.font,fontSize:14,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",gap:6}},
+          loading?React.createElement(Spin,{th}):s.searchBtn
+        )
+      ),
+      // Existing contacts
+      contacts.length>0&&React.createElement("div",{style:{marginTop:16}},
+        contacts.map(c=>React.createElement("div",{key:c.uid,onClick:()=>onSelect(c),style:{display:"flex",alignItems:"center",gap:12,padding:"12px 0",cursor:"pointer",borderBottom:`1px solid ${th.bdr}`}},
+          React.createElement(Av,{u:c,th,size:44,dot:true}),
+          React.createElement("div",null,
+            React.createElement("p",{style:{margin:0,fontWeight:700,color:th.txt}},c.name),
+            React.createElement("p",{style:{margin:0,fontSize:13,color:th.txm}},c.phone)
+          )
+        ))
+      ),
+      // Result
+      result&&React.createElement("div",{style:{marginTop:16,background:th.surf,borderRadius:16,padding:16,boxShadow:`0 4px 20px ${th.shd}`,display:"flex",alignItems:"center",gap:14}},
+        React.createElement(Av,{u:result,th,size:52,dot:true}),
+        React.createElement("div",{style:{flex:1}},
+          React.createElement("p",{style:{margin:0,fontWeight:700,color:th.txt,fontSize:16}},result.name),
+          React.createElement("p",{style:{margin:0,fontSize:13,color:th.txm}},result.phone),
+          result.bio&&React.createElement("p",{style:{margin:"2px 0 0",fontSize:12,color:th.txm}},result.bio)
+        ),
+        React.createElement("button",{onClick:()=>onSelect(result),style:{background:th.hdr,border:"none",borderRadius:12,padding:"10px 16px",color:"#fff",fontFamily:th.font,fontSize:14,fontWeight:700,cursor:"pointer"}},s.addChat)
+      ),
+      notFound&&React.createElement("p",{style:{textAlign:"center",color:th.txm,marginTop:20,fontSize:14}},s.userNotFound)
+    )
+  );
+}
+
+// ── CHAT LIST ────────────────────────────────────────────────
+function ChatList({th,s,me,contacts,lastMsgs,unreadCounts,onOpen,onNew,onSettings}){
+  const [search,setSearch]=useState("");
+  const filtered=contacts.filter(c=>(c.name||"").toLowerCase().includes(search.toLowerCase())||(c.phone||"").includes(search));
+
+  return React.createElement("div",{style:{minHeight:"100vh",background:th.bg,fontFamily:th.font,display:"flex",flexDirection:"column",maxWidth:480,margin:"0 auto"}},
+    React.createElement("div",{style:{background:th.hdr,padding:"18px 20px 12px",position:"sticky",top:0,zIndex:10}},
+      React.createElement("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}},
+        React.createElement("div",{style:{display:"flex",alignItems:"center",gap:10},onClick:onSettings},
+          React.createElement(Av,{u:me,th,size:36}),
+          React.createElement("div",null,
+            React.createElement("h2",{style:{margin:0,fontSize:17,fontWeight:700,color:"#fff",fontFamily:th.fontD}},"Vena Talks"),
+            React.createElement("p",{style:{margin:0,fontSize:12,color:"rgba(255,255,255,0.85)"}},me.name)
+          )
+        ),
+        React.createElement("div",{style:{display:"flex",gap:8}},
+          React.createElement("button",{onClick:onNew,style:{background:"rgba(255,255,255,0.2)",border:"none",borderRadius:"50%",width:38,height:38,cursor:"pointer",fontSize:16,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center"}},"✏️"),
+          React.createElement("button",{onClick:onSettings,style:{background:"rgba(255,255,255,0.2)",border:"none",borderRadius:"50%",width:38,height:38,cursor:"pointer",fontSize:16,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center"}},"⚙️")
+        )
+      ),
+      React.createElement("div",{style:{position:"relative"}},
+        React.createElement("span",{style:{position:"absolute",left:13,top:"50%",transform:"translateY(-50%)",fontSize:13,opacity:.7}},"🔍"),
+        React.createElement("input",{style:{width:"100%",padding:"10px 14px 10px 36px",borderRadius:14,border:"none",background:"rgba(255,255,255,0.25)",color:"#fff",fontFamily:th.font,fontSize:14,outline:"none",boxSizing:"border-box"},placeholder:s.search,value:search,onChange:e=>setSearch(e.target.value)})
+      )
+    ),
+    React.createElement("div",{style:{flex:1,overflowY:"auto"}},
+      filtered.length===0
+        ?React.createElement("div",{style:{textAlign:"center",padding:60,color:th.txm}},
+            React.createElement("div",{style:{fontSize:48,marginBottom:12}},"💬"),
+            React.createElement("p",{style:{fontSize:15,marginBottom:16}},s.noChats),
+            React.createElement("button",{onClick:onNew,style:{background:th.hdr,border:"none",borderRadius:12,padding:"12px 24px",color:"#fff",fontFamily:th.font,fontSize:14,fontWeight:700,cursor:"pointer"}},s.startChat)
+          )
+        :filtered.map((c,i)=>{
+            const lm=lastMsgs[c.uid];
+            const ur=unreadCounts[c.uid]||0;
+            return React.createElement("div",{key:c.uid,onClick:()=>onOpen(c),style:{display:"flex",alignItems:"center",gap:14,padding:"13px 20px",borderBottom:`1px solid ${th.bdr}`,cursor:"pointer",background:th.surf,transition:"background 0.15s",animation:`fadeUp 0.3s ease ${i*.04}s both`},onMouseEnter:e=>e.currentTarget.style.background=th.bg2,onMouseLeave:e=>e.currentTarget.style.background=th.surf},
+              React.createElement(Av,{u:c,th,size:48,dot:true}),
+              React.createElement("div",{style:{flex:1,minWidth:0}},
+                React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
+                  React.createElement("span",{style:{fontWeight:700,color:th.txt,fontSize:15}},c.name),
+                  lm&&React.createElement("span",{style:{fontSize:11,color:ur>0?th.pri:th.txm,fontWeight:ur>0?700:400}},fmtD(lm.time))
+                ),
+                React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:2}},
+                  React.createElement("span",{style:{fontSize:13,color:ur>0?th.txt2:th.txm,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:220,fontWeight:ur>0?600:400}},
+                    lm?(lm.deleted?"🚫 "+s.msgDeleted:lm.fromUid===me.uid?"Kamu: "+(lm.image?"📷 Foto":lm.text):(lm.image?"📷 Foto":lm.text)):(c.bio||c.phone||"")
+                  ),
+                  ur>0&&React.createElement("span",{style:{background:th.pri,color:"#fff",borderRadius:"50%",minWidth:20,height:20,display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:700,padding:"0 4px",flexShrink:0}},ur)
+                )
+              )
+            );
+          })
+    ),
+    React.createElement("p",{style:{textAlign:"center",padding:"10px 0 6px",color:th.txm,fontSize:10}},s.copyright)
+  );
+}
+
+// ── CHAT ROOM ────────────────────────────────────────────────
+function ChatRoom({th,s,me,contact,onBack,contacts,onForwardOpen}){
+  const [msgs,setMsgs]=useState([]);
+  const [text,setText]=useState("");
+  const [replyTo,setReplyTo]=useState(null);
+  const [isTyping,setTyping]=useState(false);
+  const [uploading,setUploading]=useState(false);
+  const [ctxMenu,setCtxMenu]=useState(null);
+  const [loading,setLoading]=useState(true);
+  const bottomRef=useRef();
+  const fileRef=useRef();
+  const typRef=useRef();
+  const cid=chatId(me.uid,contact.uid);
+
+  // Listen messages real-time
+  useEffect(()=>{
+    if(!window._fbOk)return;
+    const {collection,query,orderBy,onSnapshot}=window._fs;
+    const q=query(collection(window._db,"chats",cid,"messages"),orderBy("time","asc"));
+    let isFirst=true;
+    const unsub=onSnapshot(q,snap=>{
+      const ms=snap.docs.map(d=>({id:d.id,...d.data()}));
+      setMsgs(ms);setLoading(false);
+      // Notifikasi pesan baru
+      if(!isFirst){
+        const lastMsg=ms[ms.length-1];
+        if(lastMsg&&lastMsg.fromUid!==me.uid&&!lastMsg.deleted){
+          window.showNotif?.(`${contact.name}`, lastMsg.image?"📷 Foto":lastMsg.text, contact.avatarUrl);
+        }
+      }
+      isFirst=false;
+    });
+    return()=>unsub();
+  },[cid]);
+
+  useEffect(()=>{setTimeout(()=>bottomRef.current?.scrollIntoView({behavior:"smooth"}),100);},[msgs]);
+  useEffect(()=>{const ti=setTimeout(()=>setTyping(true),7000);return()=>clearTimeout(ti);},[]);
+
+  const send=async()=>{
+    if(!text.trim())return;
+    const msg={text:text.trim(),fromUid:me.uid,toUid:contact.uid,read:false,deleted:false,replyTo:replyTo?{id:replyTo.id,text:replyTo.text||"📷",fromUid:replyTo.fromUid}:null};
+    setText("");setReplyTo(null);
+    if(window._fbOk) await sendMessage(cid,msg);
+    clearTimeout(typRef.current);typRef.current=setTimeout(()=>setTyping(false),2000);
+  };
+
+  const sendImg=async e=>{
+    const f=e.target.files[0];if(!f)return;
+    setUploading(true);
+    const r=new FileReader();
+    r.onload=async ev=>{
+      let url=ev.target.result;
+      if(window._fbOk) url=await uploadChatImg(cid,url);
+      const msg={text:"",image:url,fromUid:me.uid,toUid:contact.uid,read:false,deleted:false,replyTo:null};
+      if(window._fbOk) await sendMessage(cid,msg);
+      setUploading(false);
+    };
+    r.readAsDataURL(f);e.target.value="";
+  };
+
+  const delMsg=async id=>{
+    const {doc,updateDoc}=window._fs;
+    await updateDoc(doc(window._db,"chats",cid,"messages",id),{deleted:true,text:"",image:null});
+  };
+
+  const handleKey=e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}};
+  const showCtx=(msg,e)=>{e.preventDefault();setCtxMenu({msg,pos:{x:e.touches?e.touches[0].clientX:e.clientX,y:e.touches?e.touches[0].clientY:e.clientY}});};
+
+  const lastSeen=contact.online?s.online:`${s.lastseen} ${fmtT(contact.lastSeen)}`;
+
+  return React.createElement("div",{style:{height:"100vh",height:"100dvh",display:"flex",flexDirection:"column",background:th.bg,fontFamily:th.font,maxWidth:480,margin:"0 auto"},onClick:()=>ctxMenu&&setCtxMenu(null)},
+    // Header
+    React.createElement("div",{style:{background:th.hdr,padding:"12px 16px",display:"flex",alignItems:"center",gap:12,boxShadow:`0 2px 12px ${th.shd}`,flexShrink:0}},
+      React.createElement("button",{onClick:onBack,style:{background:"rgba(255,255,255,0.2)",border:"none",borderRadius:"50%",width:36,height:36,cursor:"pointer",color:"#fff",fontSize:20,display:"flex",alignItems:"center",justifyContent:"center"}},"←"),
+      React.createElement(Av,{u:contact,th,size:40,dot:true}),
+      React.createElement("div",{style:{flex:1}},
+        React.createElement("p",{style:{margin:0,fontWeight:700,color:"#fff",fontSize:16}},contact.name),
+        React.createElement("p",{style:{margin:0,fontSize:12,color:"rgba(255,255,255,0.85)"}},isTyping?s.typing:lastSeen)
+      ),
+      React.createElement("button",{style:{background:"rgba(255,255,255,0.2)",border:"none",borderRadius:"50%",width:36,height:36,cursor:"pointer",color:"#fff",fontSize:15,display:"flex",alignItems:"center",justifyContent:"center"}},"📞"),
+      React.createElement("button",{style:{background:"rgba(255,255,255,0.2)",border:"none",borderRadius:"50%",width:36,height:36,cursor:"pointer",color:"#fff",fontSize:15,display:"flex",alignItems:"center",justifyContent:"center"}},"📹")
+    ),
+    // Messages
+    React.createElement("div",{style:{flex:1,overflowY:"auto",padding:"12px 14px",display:"flex",flexDirection:"column",gap:5}},
+      loading&&React.createElement("div",{style:{textAlign:"center",padding:40}},React.createElement(Spin,{th})),
+      msgs.map((msg,i)=>{
+        const isMe=msg.fromUid===me.uid;
+        const showDate=i===0||new Date(msgs[i-1].time?.toDate?.()).toDateString()!==new Date(msg.time?.toDate?.()).toDateString();
+        return React.createElement("div",{key:msg.id},
+          showDate&&React.createElement("div",{style:{textAlign:"center",margin:"8px 0"}},
+            React.createElement("span",{style:{background:th.bg2,color:th.txm,fontSize:10,padding:"3px 12px",borderRadius:20}},
+              new Date(msg.time?.toDate?.()).toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long"})
+            )
+          ),
+          React.createElement("div",{style:{display:"flex",justifyContent:isMe?"flex-end":"flex-start",animation:"fadeUp 0.2s ease both"}},
+            !isMe&&React.createElement("div",{style:{marginRight:6,alignSelf:"flex-end"}},React.createElement(Av,{u:contact,th,size:24})),
+            React.createElement("div",{
+              onContextMenu:e=>!msg.deleted&&showCtx(msg,e),
+              onTouchStart:e=>{if(msg.deleted)return;const ti=setTimeout(()=>showCtx(msg,e),500);e.currentTarget._lt=ti;},
+              onTouchEnd:e=>clearTimeout(e.currentTarget._lt),
+              style:{maxWidth:"73%",padding:msg.image&&!msg.deleted?"5px":"9px 13px",borderRadius:isMe?"18px 18px 4px 18px":"18px 18px 18px 4px",background:isMe?th.bubO:th.bub,color:isMe?th.bubOT:th.txt,boxShadow:`0 1px 6px ${th.shd}`,cursor:"context-menu"}
+            },
+              msg.replyTo&&!msg.deleted&&React.createElement("div",{style:{background:isMe?"rgba(0,0,0,0.15)":"rgba(0,0,0,0.06)",borderLeft:`3px solid ${isMe?"#fff":th.pri}`,borderRadius:7,padding:"5px 9px",marginBottom:5}},
+                React.createElement("p",{style:{margin:0,fontWeight:700,opacity:.8,fontSize:10}},msg.replyTo.fromUid===me.uid?me.name:contact.name),
+                React.createElement("p",{style:{margin:0,opacity:.7,fontSize:11,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:190}},msg.replyTo.text)
+              ),
+              msg.deleted
+                ?React.createElement("p",{style:{margin:0,fontSize:13,fontStyle:"italic",opacity:.55}},"🚫 "+s.msgDeleted)
+                :React.createElement(React.Fragment,null,
+                    msg.image&&React.createElement("img",{src:msg.image,style:{maxWidth:"100%",maxHeight:210,borderRadius:10,display:"block",objectFit:"cover"}}),
+                    msg.text&&React.createElement("p",{style:{margin:0,fontSize:15,lineHeight:1.5,wordBreak:"break-word"}},msg.text)
+                  ),
+              React.createElement("div",{style:{display:"flex",alignItems:"center",justifyContent:"flex-end",gap:3,marginTop:2}},
+                React.createElement("span",{style:{fontSize:10,opacity:.55}},fmtT(msg.time)),
+                isMe&&!msg.deleted&&React.createElement("span",{style:{fontSize:10,color:msg.read?"#60A5FA":"inherit",opacity:msg.read?1:.5}},msg.read?"✓✓":"✓")
+              )
+            )
+          )
+        );
+      }),
+      isTyping&&React.createElement("div",{style:{display:"flex",alignItems:"center",gap:7}},
+        React.createElement(Av,{u:contact,th,size:24}),
+        React.createElement("div",{style:{padding:"9px 13px",borderRadius:"18px 18px 18px 4px",background:th.bub,display:"flex",gap:4,alignItems:"center"}},
+          [0,1,2].map(i=>React.createElement("div",{key:i,style:{width:6,height:6,borderRadius:"50%",background:th.txm,animation:`bounce 1s ease ${i*.2}s infinite`}}))
+        )
+      ),
+      React.createElement("div",{ref:bottomRef})
+    ),
+    // Reply preview
+    replyTo&&React.createElement("div",{style:{padding:"7px 14px",background:th.surf,borderTop:`1px solid ${th.bdr}`,display:"flex",alignItems:"center",gap:10,flexShrink:0}},
+      React.createElement("div",{style:{flex:1,borderLeft:`3px solid ${th.pri}`,paddingLeft:9}},
+        React.createElement("p",{style:{margin:0,fontSize:11,color:th.pri,fontWeight:700}},replyTo.fromUid===me.uid?me.name:contact.name),
+        React.createElement("p",{style:{margin:0,fontSize:12,color:th.txm,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}},replyTo.image?"📷 Foto":replyTo.text)
+      ),
+      React.createElement("button",{onClick:()=>setReplyTo(null),style:{background:"none",border:"none",color:th.txm,cursor:"pointer",fontSize:18}},"✕")
+    ),
+    // Input
+    React.createElement("div",{style:{padding:"9px 13px",background:th.surf,borderTop:`1px solid ${th.bdr}`,display:"flex",alignItems:"flex-end",gap:7,flexShrink:0}},
+      React.createElement("input",{ref:fileRef,type:"file",accept:"image/*",style:{display:"none"},onChange:sendImg}),
+      React.createElement("button",{onClick:()=>fileRef.current.click(),disabled:uploading,style:{background:th.bg2,border:"none",borderRadius:"50%",width:42,height:42,cursor:"pointer",fontSize:18,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}},uploading?React.createElement(Spin,{th}):"📷"),
+      React.createElement("textarea",{value:text,onChange:e=>setText(e.target.value),onKeyDown:handleKey,placeholder:s.typeMsg,rows:1,style:{flex:1,padding:"10px 13px",borderRadius:22,border:`2px solid ${th.bdr}`,background:th.bg2,color:th.txt,fontFamily:th.font,fontSize:15,outline:"none",resize:"none",boxSizing:"border-box",maxHeight:100,lineHeight:1.5}}),
+      React.createElement("button",{onClick:send,disabled:!text.trim(),style:{background:text.trim()?th.hdr:th.bdr,border:"none",borderRadius:"50%",width:42,height:42,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",cursor:text.trim()?"pointer":"not-allowed",transition:"all 0.2s"}},
+        React.createElement("span",{style:{transform:"rotate(45deg)",display:"block",color:"#fff",fontSize:18}},"➤")
+      )
+    ),
+    // Context menu
+    ctxMenu&&React.createElement("div",{style:{position:"fixed",top:Math.min(ctxMenu.pos.y,window.innerHeight-220),left:Math.min(ctxMenu.pos.x,window.innerWidth-175),zIndex:1000,background:th.surf,borderRadius:14,boxShadow:`0 8px 32px ${th.shd}`,border:`1px solid ${th.bdr}`,overflow:"hidden",minWidth:155,animation:"fadeUp 0.15s ease"}},
+      [
+        {ic:"↩️",lb:s.reply,fn:()=>setReplyTo(ctxMenu.msg)},
+        {ic:"📋",lb:s.copy,fn:()=>navigator.clipboard?.writeText(ctxMenu.msg.text||"")},
+        {ic:"↗️",lb:s.forward,fn:()=>{onForwardOpen(ctxMenu.msg);setCtxMenu(null);}},
+        ...(ctxMenu.msg.fromUid===me.uid?[{ic:"🗑️",lb:s.del,danger:true,fn:()=>delMsg(ctxMenu.msg.id)}]:[])
+      ].map((item,i)=>React.createElement("button",{key:i,onClick:()=>{item.fn();setCtxMenu(null);},style:{display:"flex",alignItems:"center",gap:9,width:"100%",padding:"11px 15px",background:"none",border:"none",cursor:"pointer",color:item.danger?"#EF4444":th.txt,fontFamily:th.font,fontSize:14,textAlign:"left"},onMouseEnter:e=>e.currentTarget.style.background=th.bg2,onMouseLeave:e=>e.currentTarget.style.background="none"},
+        React.createElement("span",null,item.ic),React.createElement("span",null,item.lb)
+      ))
+    )
+  );
+}
+
+// ── SETTINGS ────────────────────────────────────────────────
+function Settings({th,s,me,curTh,lang,autoTh,onTh,onLang,onAuto,onLogout,onBack,onEdit}){
+  return React.createElement("div",{style:{minHeight:"100vh",background:th.bg,fontFamily:th.font,maxWidth:480,margin:"0 auto"}},
+    React.createElement("div",{style:{background:th.hdr,padding:"16px 20px",display:"flex",alignItems:"center",gap:12}},
+      React.createElement("button",{onClick:onBack,style:{background:"rgba(255,255,255,0.2)",border:"none",borderRadius:"50%",width:36,height:36,cursor:"pointer",color:"#fff",fontSize:20,display:"flex",alignItems:"center",justifyContent:"center"}},"←"),
+      React.createElement("h2",{style:{margin:0,color:"#fff",fontFamily:th.fontD,fontSize:20}},s.settings)
+    ),
+    // Profile card
+    React.createElement("div",{style:{margin:18,background:th.surf,borderRadius:18,padding:18,display:"flex",alignItems:"center",gap:14,boxShadow:`0 4px 20px ${th.shd}`,cursor:"pointer"},onClick:onEdit},
+      React.createElement(Av,{u:me,th,size:58}),
+      React.createElement("div",{style:{flex:1}},
+        React.createElement("p",{style:{margin:0,fontWeight:700,fontSize:17,color:th.txt}},me.name),
+        React.createElement("p",{style:{margin:0,fontSize:13,color:th.txm}},me.bio||me.phone),
+        React.createElement("p",{style:{margin:"3px 0 0",fontSize:12,color:th.pri,fontWeight:600}},s.editProfile+" →")
+      )
+    ),
+    // Theme
+    React.createElement("div",{style:{margin:"0 18px 14px",background:th.surf,borderRadius:18,padding:18,boxShadow:`0 4px 20px ${th.shd}`}},
+      React.createElement("h3",{style:{margin:"0 0 12px",color:th.txt,fontSize:14,fontWeight:700}},s.chooseTheme),
+      React.createElement("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12,padding:"9px 13px",background:th.bg2,borderRadius:11}},
+        React.createElement("span",{style:{fontSize:13,color:th.txt}},"🌙 "+s.autoTheme),
+        React.createElement("div",{onClick:onAuto,style:{width:44,height:24,borderRadius:12,background:autoTh?th.pri:th.bdr,cursor:"pointer",position:"relative",transition:"background 0.2s"}},
+          React.createElement("div",{style:{position:"absolute",top:2,left:autoTh?22:2,width:20,height:20,borderRadius:"50%",background:"#fff",transition:"left 0.2s",boxShadow:"0 1px 4px rgba(0,0,0,0.2)"}})
+        )
+      ),
+      React.createElement("div",{style:{display:"flex",gap:8}},
+        Object.entries(TH).map(([k,t])=>
+          React.createElement("button",{key:k,onClick:()=>onTh(k),style:{flex:1,padding:"11px 5px",borderRadius:11,cursor:"pointer",border:`2px solid ${curTh===k?t.pri:th.bdr}`,background:curTh===k?t.priL:th.bg2,fontFamily:th.font,fontSize:11,fontWeight:600,color:curTh===k?t.priD:th.txm,transition:"all 0.2s"}},
+            React.createElement("div",{style:{fontSize:18,marginBottom:3}},t.em),
+            lang==="id"?t.nameId:t.name
+          )
+        )
+      )
+    ),
+    // Language
+    React.createElement("div",{style:{margin:"0 18px 14px",background:th.surf,borderRadius:18,padding:18,boxShadow:`0 4px 20px ${th.shd}`}},
+      React.createElement("h3",{style:{margin:"0 0 12px",color:th.txt,fontSize:14,fontWeight:700}},s.language),
+      React.createElement("div",{style:{display:"flex",gap:10}},
+        ["id","en"].map(l=>React.createElement("button",{key:l,onClick:()=>onLang(l),style:{flex:1,padding:11,borderRadius:11,cursor:"pointer",border:`2px solid ${lang===l?th.pri:th.bdr}`,background:lang===l?th.priL:th.bg2,fontFamily:th.font,fontSize:13,fontWeight:600,color:lang===l?th.priD:th.txm}},
+          l==="id"?"🇮🇩 Indonesia":"🇬🇧 English"
+        ))
+      )
+    ),
+    React.createElement("div",{style:{margin:"0 18px"}},
+      React.createElement("button",{onClick:onLogout,style:{width:"100%",padding:13,borderRadius:13,background:"#FEE2E2",border:"2px solid #FECACA",color:"#DC2626",fontFamily:th.font,fontSize:14,fontWeight:700,cursor:"pointer"}},"🚪 "+s.logout)
+    ),
+    React.createElement("p",{style:{textAlign:"center",padding:"18px 0 10px",color:th.txm,fontSize:10}},s.copyright)
+  );
+}
+
+// ── MAIN APP ────────────────────────────────────────────────
+function App(){
+  const [screen,setScreen] = useState("splash");
+  const [thName,setThName] = useState(()=>localStorage.getItem("vt_th")||"soft");
+  const [lang,setLang]     = useState(()=>localStorage.getItem("vt_lang")||"id");
+  const [autoTh,setAutoTh] = useState(()=>localStorage.getItem("vt_auto")==="1");
+  const [me,setMe]         = useState(null);
+  const [contacts,setContacts] = useState([]);
+  const [lastMsgs,setLastMsgs] = useState({});
+  const [unread,setUnread]   = useState({});
+  const [active,setActive]   = useState(null);
+  const [fwdMsg,setFwdMsg]   = useState(null);
+  const [fbOk,setFbOk]       = useState(false);
+
+  const dark = window.matchMedia?.("(prefers-color-scheme: dark)").matches;
+  const th = (autoTh&&dark&&thName!=="elegant") ? {...TH[thName],bg:"#1A0A2E",bg2:"#250F3F",surf:"#1E0D35",surf2:"#2A1445",txt:"#F0E6FF",txm:"#9B7EC8",bdr:"#3D2060"} : TH[thName];
+  const s = S[lang];
+
+  // Init
+  useEffect(()=>{
+    const init=async()=>{
+      // Wait for Firebase
+      if(window._fbOk){setFbOk(true);}
+      else{
+        await new Promise(res=>{
+          window.addEventListener("fbOk",()=>{setFbOk(true);res();},{once:true});
+          setTimeout(res,5000); // fallback
+        });
+      }
+      // Check saved profile
+      const uid=localStorage.getItem("vt_uid");
+      const prof=localStorage.getItem("vt_prof");
+      if(uid&&prof){
+        try{
+          const p=JSON.parse(prof);
+          setMe(p);
+          // Try update from Firestore
+          if(window._fbOk){
+            const fresh=await getUser(uid);
+            if(fresh){setMe(fresh);localStorage.setItem("vt_prof",JSON.stringify(fresh));}
+            updateOnline(uid,true);
+          }
+          setScreen("chats");
+        }catch(e){setScreen("setup");}
+      } else {
+        setScreen("setup");
+      }
+    };
+    const ti=setTimeout(init,2000);
+    return()=>clearTimeout(ti);
+  },[]);
+
+  // Online status
+  useEffect(()=>{
+    if(!me||!fbOk)return;
+    updateOnline(me.uid,true);
+    const handler=()=>updateOnline(me.uid,false);
+    window.addEventListener("beforeunload",handler);
+    const interval=setInterval(()=>updateOnline(me.uid,true),60000);
+    return()=>{window.removeEventListener("beforeunload",handler);clearInterval(interval);};
+  },[me,fbOk]);
+
+  // Listen contacts & last messages
+  useEffect(()=>{
+    if(!me||!fbOk)return;
+    // Load saved contacts
+    const saved=localStorage.getItem("vt_contacts");
+    if(saved){try{setContacts(JSON.parse(saved));}catch(e){}}
+
+    // Listen last messages for each contact
+    const savedContacts=saved?JSON.parse(saved):[];
+    const unsubs=[];
+    savedContacts.forEach(c=>{
+      const cid=chatId(me.uid,c.uid);
+      const {collection,query,orderBy,onSnapshot}=window._fs;
+      const q=query(collection(window._db,"chats",cid,"messages"),orderBy("time","desc"));
+      const unsub=onSnapshot(q,snap=>{
+        if(!snap.empty){
+          const last=snap.docs[0].data();
+          setLastMsgs(prev=>({...prev,[c.uid]:last}));
+          // Count unread
+          const unreadCount=snap.docs.filter(d=>{const m=d.data();return m.toUid===me.uid&&!m.read&&!m.deleted;}).length;
+          setUnread(prev=>({...prev,[c.uid]:unreadCount}));
+        }
+      });
+      unsubs.push(unsub);
+    });
+    return()=>unsubs.forEach(u=>u());
+  },[me,fbOk]);
+
+  // Handle back button
+  useEffect(()=>{
+    const handler=e=>{
+      e.preventDefault();
+      if(screen==="chat"){setScreen("chats");return;}
+      if(screen==="newchat"||screen==="settings"||screen==="profile"){setScreen(screen==="profile"?"settings":"chats");return;}
+      // Prevent exit on chats screen
+    };
+    window.addEventListener("popstate",handler);
+    window.history.pushState(null,"",window.location.href);
+    return()=>window.removeEventListener("popstate",handler);
+  },[screen]);
+
+  const openChat=c=>{
+    // Mark messages as read
+    if(fbOk){
+      const {collection,query,where,getDocs,doc,updateDoc}=window._fs;
+      const q=query(collection(window._db,"chats",chatId(me.uid,c.uid),"messages"),where("toUid","==",me.uid),where("read","==",false));
+      getDocs(q).then(snap=>snap.docs.forEach(d=>updateDoc(doc(window._db,"chats",chatId(me.uid,c.uid),"messages",d.id),{read:true})));
+    }
+    setUnread(prev=>({...prev,[c.uid]:0}));
+    setActive(c);setScreen("chat");
+  };
+
+  const addContact=c=>{
+    const existing=contacts.find(x=>x.uid===c.uid);
+    if(!existing){
+      const updated=[...contacts,c];
+      setContacts(updated);
+      localStorage.setItem("vt_contacts",JSON.stringify(updated));
+    }
+    openChat(c);
+  };
+
+  const handleTheme=k=>{setThName(k);localStorage.setItem("vt_th",k);};
+  const handleLang=l=>{setLang(l);localStorage.setItem("vt_lang",l);};
+  const handleAuto=()=>setAutoTh(v=>{localStorage.setItem("vt_auto",v?"0":"1");return!v;});
+
+  const logout=()=>{
+    if(me&&fbOk)updateOnline(me.uid,false);
+    localStorage.removeItem("vt_uid");
+    localStorage.removeItem("vt_prof");
+    localStorage.removeItem("vt_contacts");
+    setMe(null);setContacts([]);setScreen("setup");
+  };
+
+  return React.createElement(React.Fragment,null,
+    screen==="splash"   && React.createElement(Splash,{th,s}),
+    screen==="setup"    && React.createElement(Setup,{th,s,initUser:me,onDone:p=>{setMe(p);setScreen("chats");}}),
+    screen==="chats"    && me && React.createElement(ChatList,{th,s,me,contacts,lastMsgs,unreadCounts:unread,onOpen:openChat,onNew:()=>setScreen("newchat"),onSettings:()=>setScreen("settings")}),
+    screen==="newchat"  && me && React.createElement(FindUser,{th,s,me,contacts,onSelect:addContact,onBack:()=>setScreen("chats")}),
+    screen==="chat"     && active && me && React.createElement(ChatRoom,{th,s,me,contact:active,onBack:()=>setScreen("chats"),contacts,onForwardOpen:msg=>{setFwdMsg(msg);}}),
+    screen==="settings" && me && React.createElement(Settings,{th,s,me,curTh:thName,lang,autoTh,onTh:handleTheme,onLang:handleLang,onAuto:handleAuto,onLogout:logout,onBack:()=>setScreen("chats"),onEdit:()=>setScreen("profile")}),
+    screen==="profile"  && me && React.createElement(Setup,{th,s,initUser:me,onDone:p=>{setMe(p);localStorage.setItem("vt_prof",JSON.stringify(p));setScreen("settings");}}),
+    // Forward modal
+    fwdMsg&&React.createElement("div",{style:{position:"fixed",inset:0,background:"rgba(0,0,0,0.5)",zIndex:200,display:"flex",alignItems:"flex-end",justifyContent:"center"},onClick:()=>setFwdMsg(null)},
+      React.createElement("div",{style:{background:th.surf,borderRadius:"24px 24px 0 0",padding:24,width:"100%",maxWidth:480,maxHeight:"60vh",overflowY:"auto"},onClick:e=>e.stopPropagation()},
+        React.createElement("h3",{style:{margin:"0 0 16px",color:th.txt,fontFamily:th.fontD}},s.forwardTo),
+        contacts.filter(c=>c.uid!==active?.uid).map(c=>
+          React.createElement("div",{key:c.uid,onClick:async()=>{
+            if(active&&me){
+              const msg={text:fwdMsg.text||"",image:fwdMsg.image||null,fromUid:me.uid,toUid:c.uid,read:false,deleted:false,replyTo:null};
+              await sendMessage(chatId(me.uid,c.uid),msg);
+            }
+            setFwdMsg(null);
+          },style:{display:"flex",alignItems:"center",gap:12,padding:"10px 0",cursor:"pointer",borderBottom:`1px solid ${th.bdr}`}},
+            React.createElement(Av,{u:c,th,size:40}),
+            React.createElement("p",{style:{margin:0,fontWeight:700,color:th.txt}},c.name)
+          )
+        )
+      )
+    )
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+</script>
+
+<!-- PWA ready - manifest.json di root repo -->
+
+<!-- Service Worker + Notifikasi -->
+<script>
+(async()=>{
+  if(!("serviceWorker" in navigator)) return;
+  try{
+    // Register SW dari file sw.js
+    const reg = await navigator.serviceWorker.register("/Talks/sw.js", {scope:"/Talks/"});
+    window._swReg = reg;
+    console.log("SW registered");
+    
+    // Minta izin notifikasi
+    if(Notification.permission === "default"){
+      const perm = await Notification.requestPermission();
+      console.log("Notif permission:", perm);
+    }
+    window._notifOk = Notification.permission === "granted";
+  }catch(e){
+    console.log("SW error:", e);
+    // Fallback: blob SW
+    try{
+      const sw=`
+        const C="vt-v4";
+        self.addEventListener("install",e=>{self.skipWaiting();});
+        self.addEventListener("activate",e=>{self.clients.claim();});
+        self.addEventListener("fetch",e=>{
+          if(e.request.method!=="GET"||e.request.url.includes("firebase"))return;
+          e.respondWith(caches.match(e.request).then(c=>c||fetch(e.request)));
+        });
+      `;
+      const blob=new Blob([sw],{type:"application/javascript"});
+      await navigator.serviceWorker.register(URL.createObjectURL(blob));
+    }catch(e2){}
+  }
+})();
+
+// Fungsi kirim notifikasi lokal
+window.showNotif = (title, body, icon) => {
+  if(!window._notifOk) return;
+  if(document.visibilityState === "visible") return; // Jangan notif kalau app sedang dibuka
+  try{
+    if(window._swReg){
+      window._swReg.showNotification(title, {
+        body, icon: icon || "/Talks/icon-192.png",
+        badge: "/Talks/icon-192.png",
+        vibrate: [200, 100, 200],
+        tag: "vena-msg",
+        renotify: true,
+      });
+    } else {
+      new Notification(title, {body, icon: icon || "/Talks/icon-192.png"});
+    }
+  }catch(e){}
+};
+</script>
+</body>
+</html>
