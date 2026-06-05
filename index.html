@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#0a2a1a"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Vena Talks"/>
+<link rel="manifest" id="mfst"/>
+<title>Vena Talks</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg1:#061a0e;
+  --bg2:#0a2a18;
+  --bg3:#0d3320;
+  --green:#1a6b3a;
+  --green2:#22a855;
+  --green3:#2dd670;
+  --sapphire:#1a3a8f;
+  --sapphire2:#2563eb;
+  --sapphire3:#60a5fa;
+  --glass:rgba(255,255,255,0.08);
+  --glass2:rgba(255,255,255,0.13);
+  --glass3:rgba(255,255,255,0.18);
+  --glassBorder:rgba(255,255,255,0.15);
+  --glassBorder2:rgba(255,255,255,0.25);
+  --blur:blur(24px);
+  --txt:#f0fff4;
+  --txt2:rgba(240,255,244,0.7);
+  --txt3:rgba(240,255,244,0.4);
+  --shadow:0 8px 32px rgba(0,0,0,0.4);
+  --glow:0 0 20px rgba(34,168,85,0.2);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;
+  background:linear-gradient(160deg,var(--bg1) 0%,var(--bg2) 40%,var(--bg3) 70%,#061620 100%)}
+body::before{
+  content:'';position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse at 20% 20%,rgba(26,107,58,0.15) 0%,transparent 50%),
+    radial-gradient(ellipse at 80% 80%,rgba(26,58,143,0.12) 0%,transparent 50%),
+    radial-gradient(ellipse at 50% 50%,rgba(13,51,32,0.3) 0%,transparent 70%);
+  pointer-events:none;z-index:0;
+}
+#app{position:fixed;inset:0;display:flex;flex-direction:column;max-width:480px;margin:0 auto;z-index:1;overflow:hidden}
+input,textarea,button,select{font-family:'Inter',sans-serif}
+input::placeholder,textarea::placeholder{color:var(--txt3)}
+::-webkit-scrollbar{width:2px}
+::-webkit-scrollbar-thumb{background:rgba(34,168,85,0.3);border-radius:2px}
+
+/* ── GLASS COMPONENTS ── */
+.glass{
+  background:var(--glass);
+  backdrop-filter:var(--blur);
+  -webkit-backdrop-filter:var(--blur);
+  border:1px solid var(--glassBorder);
+}
+.glass2{
+  background:var(--glass2);
+  backdrop-filter:var(--blur);
+  -webkit-backdrop-filter:var(--blur);
+  border:1px solid var(--glassBorder2);
+}
+.glass-dark{
+  background:rgba(6,26,14,0.6);
+  backdrop-filter:var(--blur);
+  -webkit-backdrop-filter:var(--blur);
+  border:1px solid var(--glassBorder);
+}
+
+/* ── LOGO ── */
+.logo{
+  width:56px;height:56px;border-radius:50%;
+  background:var(--glass2);
+  backdrop-filter:var(--blur);
+  border:1.5px solid var(--glassBorder2);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;flex-shrink:0;
+  box-shadow:0 0 20px rgba(34,168,85,0.15),inset 0 1px 0 rgba(255,255,255,0.1);
+}
+.logo::before{
+  content:'';position:absolute;inset:3px;border-radius:50%;
+  border:1px solid rgba(34,168,85,0.4);
+}
+.logo-v{
+  font-family:'Playfair Display',serif;
+  font-size:22px;font-weight:700;
+  background:linear-gradient(135deg,var(--green3),var(--sapphire3));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  position:relative;z-index:1;
+}
+.logo-sm{width:38px;height:38px}
+.logo-sm .logo-v{font-size:15px}
+.logo-xs{width:28px;height:28px}
+.logo-xs .logo-v{font-size:11px}
+
+/* ── BUTTONS ── */
+.btn-primary{
+  background:linear-gradient(135deg,rgba(26,107,58,0.8),rgba(26,58,143,0.8));
+  backdrop-filter:var(--blur);
+  border:1px solid var(--glassBorder2);
+  border-radius:50px;color:var(--txt);
+  font-weight:600;cursor:pointer;
+  box-shadow:0 4px 20px rgba(34,168,85,0.2),inset 0 1px 0 rgba(255,255,255,0.1);
+  transition:all 0.2s;position:relative;overflow:hidden;
+}
+.btn-primary::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:50%;
+  background:rgba(255,255,255,0.06);border-radius:50px 50px 0 0;pointer-events:none;
+}
+.btn-primary:active{transform:scale(0.97);opacity:0.85}
+.btn-primary:disabled{opacity:0.4;cursor:not-allowed}
+
+.btn-ghost{
+  background:var(--glass);
+  backdrop-filter:var(--blur);
+  border:1px solid var(--glassBorder);
+  border-radius:50px;color:var(--txt2);
+  cursor:pointer;transition:all 0.2s;
+}
+.btn-ghost:active{background:var(--glass2)}
+
+.btn-icon{
+  background:var(--glass);
+  backdrop-filter:var(--blur);
+  border:1px solid var(--glassBorder);
+  border-radius:50%;color:var(--txt2);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;flex-shrink:0;
+}
+.btn-icon:active{background:var(--glass2)}
+
+/* ── INPUT ── */
+.inp{
+  background:var(--glass);
+  backdrop-filter:var(--blur);
+  border:1px solid var(--glassBorder);
+  border-radius:14px;color:var(--txt);
+  width:100%;outline:none;
+  padding:12px 16px;font-size:15px;
+  transition:border-color 0.2s;
+}
+.inp:focus{border-color:rgba(34,168,85,0.5);box-shadow:0 0 0 3px rgba(34,168,85,0.08)}
+
+/* ── HEADER ── */
+.hdr{
+  background:rgba(6,26,14,0.7);
+  backdrop-filter:var(--blur);
+  -webkit-backdrop-filter:var(--blur);
+  border-bottom:1px solid var(--glassBorder);
+  padding:12px 16px;
+  display:flex;align-items:center;gap:11px;
+  flex-shrink:0;
+  box-shadow:0 2px 20px rgba(0,0,0,0.3);
+}
+
+/* ── AVATAR ── */
+.av{border-radius:50%;object-fit:cover;border:1.5px solid var(--glassBorder2);flex-shrink:0}
+.avp{
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-weight:700;color:#fff;flex-shrink:0;
+  border:1.5px solid var(--glassBorder2);
+  background:linear-gradient(135deg,var(--green),var(--sapphire));
+}
+.dot-on{position:absolute;bottom:0;right:0;width:10px;height:10px;border-radius:50%;background:var(--green3);border:2px solid var(--bg1)}
+.dot-off{position:absolute;bottom:0;right:0;width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.2);border:2px solid var(--bg1)}
+
+/* ── CHAT BUBBLES ── */
+.bub-me{
+  background:linear-gradient(135deg,rgba(26,107,58,0.75),rgba(26,58,143,0.65));
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(34,168,85,0.25);
+  border-radius:18px 18px 4px 18px;
+  box-shadow:0 2px 12px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.1);
+}
+.bub-other{
+  background:rgba(255,255,255,0.09);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:18px 18px 18px 4px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* ── MSG AREA ── */
+.mbg{
+  flex:1;overflow-y:auto;padding:12px 14px;
+  display:flex;flex-direction:column;gap:4px;
+}
+
+/* ── INPUT BAR ── */
+.ibar{
+  background:rgba(6,26,14,0.8);
+  backdrop-filter:var(--blur);
+  border-top:1px solid var(--glassBorder);
+  padding:10px 12px;display:flex;align-items:flex-end;gap:8px;flex-shrink:0;
+}
+
+/* ── OVERLAY / SHEET ── */
+.ovl{position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(8px);z-index:100;display:flex;align-items:flex-end;justify-content:center;animation:fi 0.2s ease}
+.sht{
+  width:100%;max-width:480px;border-radius:24px 24px 0 0;padding:22px;
+  background:rgba(8,24,14,0.95);
+  backdrop-filter:var(--blur);
+  border-top:1px solid var(--glassBorder2);
+  max-height:75vh;overflow-y:auto;
+  animation:si 0.3s ease;
+}
+
+/* ── CTX MENU ── */
+.ctx{
+  position:fixed;z-index:1000;border-radius:16px;overflow:hidden;
+  background:rgba(8,20,12,0.96);backdrop-filter:var(--blur);
+  border:1px solid var(--glassBorder2);
+  box-shadow:0 8px 32px rgba(0,0,0,0.5);
+  min-width:158px;animation:fu 0.15s ease;
+}
+.ctxb{display:flex;align-items:center;gap:10px;width:100%;padding:11px 15px;background:none;border:none;cursor:pointer;color:var(--txt);font-family:'Inter',sans-serif;font-size:14px;text-align:left;transition:background 0.1s}
+.ctxb:hover{background:var(--glass)}
+.ctxb.d{color:#f87171}
+
+/* ── BADGE ── */
+.bdg{
+  background:linear-gradient(135deg,var(--green),var(--sapphire2));
+  color:#fff;border-radius:50%;min-width:19px;height:19px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;padding:0 4px;flex-shrink:0;
+}
+
+/* ── SPINNER ── */
+.sp{width:20px;height:20px;border:2px solid rgba(34,168,85,0.2);border-top:2px solid var(--green3);border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0}
+
+/* ── ANIMATIONS ── */
+@keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+@keyframes si{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes glow{0%,100%{box-shadow:0 0 10px rgba(34,168,85,0.2)}50%{box-shadow:0 0 25px rgba(34,168,85,0.4)}}
+
+/* ── SEARCH INPUT SPECIAL ── */
+.search-wrap{position:relative}
+.search-wrap .search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--txt3);font-size:14px;pointer-events:none}
+.search-wrap .inp{padding-left:36px;border-radius:50px}
+
+/* ── CONTACT ROW ── */
+.contact-row{
+  display:flex;align-items:center;gap:12px;padding:12px 16px;
+  cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.04);
+  transition:background 0.15s;
+}
+.contact-row:hover,.contact-row:active{background:var(--glass)}
+
+/* ── SETTINGS ROW ── */
+.srow{
+  display:flex;align-items:center;gap:12px;padding:13px 16px;
+  border-radius:14px;cursor:pointer;transition:background 0.15s;
+}
+.srow:hover{background:var(--glass)}
+
+/* ── DATE PILL ── */
+.date-pill{
+  background:rgba(255,255,255,0.07);
+  backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:20px;font-size:10px;
+  padding:3px 12px;display:inline-block;
+  color:var(--txt3);
+}
+
+/* ── TOGGLE ── */
+.tgl{width:44px;height:24px;border-radius:12px;cursor:pointer;position:relative;transition:background 0.2s;flex-shrink:0}
+.tth{position:absolute;top:2px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.3)}
+</style>
+</head>
+<body>
+<div id="app">
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px">
+    <div class="logo" style="animation:glow 2s infinite"><span class="logo-v">V</span></div>
+    <div class="sp" style="width:28px;height:28px"></div>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged,updatePassword,reauthenticateWithCredential,EmailAuthProvider}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getFirestore,doc,setDoc,getDoc,collection,addDoc,query,orderBy,onSnapshot,updateDoc,getDocs,where,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import{getStorage,ref,uploadString,getDownloadURL}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+const app=initializeApp({apiKey:"AIzaSyCXD0MNvi7LCZbBnP-CdbVE3jsyUhxnhXE",authDomain:"appsvena-talks.firebaseapp.com",projectId:"appsvena-talks",storageBucket:"appsvena-talks.firebasestorage.app",messagingSenderId:"48785751855",appId:"1:48785751855:web:4d349b50005fc8d3256bda"});
+const auth=getAuth(app);
+const db=getFirestore(app);
+const st=getStorage(app);
+window._auth=auth;window._db=db;window._st=st;
+window._fs={doc,setDoc,getDoc,collection,addDoc,query,orderBy,onSnapshot,updateDoc,getDocs,where,serverTimestamp,ref,uploadString,getDownloadURL,signInWithEmailAndPassword,signOut,onAuthStateChanged,updatePassword,reauthenticateWithCredential,EmailAuthProvider};
+window._fbOk=true;
+window.dispatchEvent(new Event("fbOk"));
+</script>
+
+<!-- SW + Notif + Manifest -->
+<script>
+// Manifest inline
+(()=>{
+  const m={name:"Vena Talks",short_name:"Vena Talks",description:"Bicara lebih dekat",theme_color:"#0a2a1a",background_color:"#061a0e",display:"standalone",orientation:"portrait",start_url:"/Talks/",scope:"/Talks/",icons:[{src:"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='40' fill='%230a2a18'/><circle cx='96' cy='96' r='80' fill='none' stroke='%2322a855' stroke-width='4'/><text x='96' y='115' text-anchor='middle' font-size='80' font-family='serif' fill='url(%23g)'>V</text><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0%25' stop-color='%232dd670'/><stop offset='100%25' stop-color='%2360a5fa'/></linearGradient></defs></svg>",sizes:"192x192",type:"image/svg+xml",purpose:"any maskable"}]};
+  const b=new Blob([JSON.stringify(m)],{type:"application/manifest+json"});
+  document.getElementById("mfst").href=URL.createObjectURL(b);
+})();
+
+// SW
+if("serviceWorker"in navigator){
+  navigator.serviceWorker.register("sw.js",{scope:"/Talks/"})
+    .then(r=>{window._sw=r;})
+    .catch(()=>{});
+}
+
+// Notif + Sound
+window.playSound=()=>{
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    [[880,0],[1100,0.15]].forEach(([f,t])=>{
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);
+      o.frequency.value=f;o.type="sine";
+      const s=ctx.currentTime+t;
+      g.gain.setValueAtTime(0,s);
+      g.gain.linearRampToValueAtTime(0.25,s+0.01);
+      g.gain.exponentialRampToValueAtTime(0.001,s+0.28);
+      o.start(s);o.stop(s+0.28);
+    });
+  }catch(e){}
+};
+window.notif=(title,body)=>{
+  window.playSound();
+  if(Notification.permission!=="granted"||document.visibilityState==="visible")return;
+  try{
+    const o={body,badge:"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='30' fill='%230a2a18' stroke='%2322a855' stroke-width='3'/><text x='32' y='43' text-anchor='middle' font-size='32' font-family='serif' fill='%232dd670'>V</text></svg>",vibrate:[200,100,200],tag:"vt",renotify:true};
+    window._sw?window._sw.showNotification(title,o):new Notification(title,o);
+  }catch(e){}
+};
+document.addEventListener("click",()=>{if(Notification.permission==="default")Notification.requestPermission();},{once:true});
+</script>
+
+<!-- App -->
+<script>
+// ── HELPERS ─────────────────────────────────────────────────
+const h=(tag,props={},ch=[])=>{
+  const el=document.createElement(tag);
+  const{cls,style,on,...rest}=props;
+  if(cls)el.className=cls;
+  if(style)Object.assign(el.style,style);
+  if(on)Object.entries(on).forEach(([k,v])=>el.addEventListener(k,v));
+  Object.entries(rest).forEach(([k,v])=>{if(v!=null)el[k]=v;});
+  ch.forEach(c=>{if(c!=null)el.appendChild(typeof c==="string"?document.createTextNode(c):c);});
+  return el;
+};
+const fmtT=d=>{try{const dt=d?.toDate?d.toDate():new Date(d);if(isNaN(dt))return"";return dt.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});}catch{return"";}};
+const fmtD=d=>{try{const dt=d?.toDate?d.toDate():new Date(d);if(isNaN(dt))return"";const diff=new Date()-dt;if(diff<86400000)return fmtT(d);if(diff<172800000)return"Kemarin";return dt.toLocaleDateString("id-ID",{day:"2-digit",month:"short"});}catch{return"";}};
+const ini=n=>(n||"?").split(" ").map(x=>x[0]).join("").toUpperCase().slice(0,2);
+const AVBG=["linear-gradient(135deg,#1a6b3a,#1a3a8f)","linear-gradient(135deg,#1a5a6b,#3a1a8f)","linear-gradient(135deg,#3a6b1a,#1a6b5a)","linear-gradient(135deg,#6b3a1a,#1a3a6b)","linear-gradient(135deg,#1a3a6b,#6b1a5a)"];
+const avBg=n=>AVBG[(n||"A").charCodeAt(0)%AVBG.length];
+
+// ── PHONE → EMAIL ────────────────────────────────────────────
+const toEmail=p=>{
+  let n=p.replace(/[\s\-().+]/g,"").trim();
+  if(n.startsWith("62"))n=n;
+  else if(n.startsWith("08"))n="62"+n.slice(1);
+  else if(n.startsWith("8")&&n.length>=9)n="62"+n;
+  else if(n.startsWith("0"))n="62"+n.slice(1);
+  return n+"@vena.app";
+};
+
+// ── CHAT ID ──────────────────────────────────────────────────
+// Gunakan Firebase UID yang sudah pasti unik
+const mkChatId=(a,b)=>[a,b].sort().join("_");
+
+// ── COMPRESS IMAGE ───────────────────────────────────────────
+const compress=(dataUrl,max=800)=>new Promise(res=>{
+  const img=new Image();
+  img.onload=()=>{
+    const c=document.createElement("canvas");
+    let w=img.width,h=img.height;
+    if(w>max||h>max){if(w>h){h=Math.round(h*max/w);w=max;}else{w=Math.round(w*max/h);h=max;}}
+    c.width=w;c.height=h;
+    c.getContext("2d").drawImage(img,0,0,w,h);
+    res(c.toDataURL("image/jpeg",0.75));
+  };
+  img.onerror=()=>res(dataUrl);
+  img.src=dataUrl;
+});
+
+// ── FB OPS ───────────────────────────────────────────────────
+const fbSet=async(col,id,data)=>{const{doc,setDoc}=window._fs;await setDoc(doc(window._db,col,id),data,{merge:true});};
+const fbGet=async(col,id)=>{const{doc,getDoc}=window._fs;const s=await getDoc(doc(window._db,col,id));return s.exists()?{id:s.id,...s.data()}:null;};
+const fbFind=async phone=>{
+  const{collection,query,where,getDocs}=window._fs;
+  const fmts=[phone];
+  let n=phone.replace(/[\s\-().+]/g,"").trim();
+  if(n.startsWith("62")){fmts.push("0"+n.slice(2),n,"+"+n);}
+  else if(n.startsWith("08")){fmts.push("62"+n.slice(1),n);}
+  for(const f of fmts){
+    const q=query(collection(window._db,"users"),where("phone","==",f));
+    const s=await getDocs(q);
+    if(!s.empty){const d=s.docs[0];return{uid:d.id,...d.data()};}
+  }
+  return null;
+};
+const fbOnline=async(uid,on)=>{try{const{doc,updateDoc,serverTimestamp}=window._fs;await updateDoc(doc(window._db,"users",uid),{online:on,lastSeen:serverTimestamp()});}catch(e){}};
+const uploadImg=async(path,data)=>{
+  if(!data?.startsWith("data:"))return data;
+  const{ref,uploadString,getDownloadURL}=window._fs;
+  const r=ref(window._st,path);
+  await uploadString(r,data,"data_url");
+  return getDownloadURL(r);
+};
+
+// ── AVATAR ───────────────────────────────────────────────────
+function mkAv(u,size=44,dot=false){
+  const wrap=h("div",{style:{position:"relative",flexShrink:"0",display:"inline-flex"}});
+  if(u?.avatarUrl){
+    wrap.appendChild(h("img",{cls:"av",src:u.avatarUrl,style:{width:size+"px",height:size+"px"}}));
+  }else{
+    wrap.appendChild(h("div",{cls:"avp",style:{width:size+"px",height:size+"px",background:avBg(u?.name),fontSize:Math.round(size*.33)+"px"}},[ini(u?.name)]));
+  }
+  if(dot)wrap.appendChild(h("div",{cls:u?.online?"dot-on":"dot-off"}));
+  return wrap;
+}
+function mkLogo(size="sm"){
+  const d=h("div",{cls:`logo logo-${size}`});
+  d.appendChild(h("span",{cls:"logo-v"},["V"]));
+  return d;
+}
+function mkSpin(){return h("div",{cls:"sp"});}
+function mkBtn(lbl,cls,style={},fn){return h("button",{cls,style,on:{click:fn}},[lbl]);}
+function mkInp(type,ph,val=""){return h("input",{cls:"inp",type,placeholder:ph,value:val});}
+
+// ── STATE ────────────────────────────────────────────────────
+const ST={
+  screen:"splash",
+  lang:localStorage.getItem("vt_lang")||"id",
+  me:null,
+  contacts:[],
+  lastMsgs:{},
+  unread:{},
+  active:null,
+  fwdMsg:null,
+  unsubs:[],
+  contactUnsubs:[],
+};
+
+// ── STRINGS ─────────────────────────────────────────────────
+const S={
+  id:{
+    tagline:"Bicara lebih dekat",
+    login:"Masuk",phoneL:"Nomor HP",phonePH:"085xxx...",
+    passL:"Password",passPH:"Password dari admin",
+    loggingIn:"Memverifikasi...",wrongCred:"Nomor HP atau password salah.",
+    noAccess:"Akun tidak ditemukan. Hubungi admin.",
+    setup:"Lengkapi Profil",nameL:"Nama Tampilan",namePH:"Nama kamu...",
+    bioL:"Bio",bioPH:"Ceritakan dirimu...",
+    uploadPhoto:"📷 Ganti Foto",save:"Simpan",saving:"Menyimpan...",
+    chats:"Percakapan",newChat:"Chat Baru",search:"Cari...",
+    searchPH:"Cari nomor HP teman...",searchBtn:"Cari",
+    notFound:"User tidak ditemukan",startChat:"Mulai Chat",
+    typeMsg:"Pesan...",online:"Online",lastseen:"Terakhir dilihat",
+    typing:"sedang mengetik...",noChats:"Belum ada percakapan",
+    startFirst:"Mulai chat pertama",settings:"Pengaturan",
+    editProfile:"Edit Profil",language:"Bahasa",logout:"Keluar",
+    changePass:"Ganti Password",oldPass:"Password Lama",
+    newPass:"Password Baru",confPass:"Konfirmasi Password Baru",
+    passChanged:"Password berhasil diubah ✅",
+    passNoMatch:"Password tidak sama",passTooShort:"Min. 6 karakter",
+    wrongOldPass:"Password lama salah",
+    reply:"Balas",fwd:"Teruskan",del:"Hapus",copy:"Salin",
+    msgDel:"Pesan dihapus",fwdTo:"Teruskan ke...",
+    renameC:"Ganti Nama",newName:"Nama baru...",rename:"Ganti",
+    copyright:"© 2026 SRISP | Vena Talks v7.0",
+    adminInfo:"Belum punya akun? Hubungi admin.",
+    profil:"Profil",
+  },
+  en:{
+    tagline:"Talk closer",
+    login:"Sign In",phoneL:"Phone Number",phonePH:"085xxx...",
+    passL:"Password",passPH:"Password from admin",
+    loggingIn:"Verifying...",wrongCred:"Wrong phone or password.",
+    noAccess:"Account not found. Contact admin.",
+    setup:"Complete Profile",nameL:"Display Name",namePH:"Your name...",
+    bioL:"Bio",bioPH:"Tell about yourself...",
+    uploadPhoto:"📷 Change Photo",save:"Save",saving:"Saving...",
+    chats:"Chats",newChat:"New Chat",search:"Search...",
+    searchPH:"Search friend's phone...",searchBtn:"Search",
+    notFound:"User not found",startChat:"Start Chat",
+    typeMsg:"Message...",online:"Online",lastseen:"Last seen",
+    typing:"is typing...",noChats:"No conversations yet",
+    startFirst:"Start your first chat",settings:"Settings",
+    editProfile:"Edit Profile",language:"Language",logout:"Sign Out",
+    changePass:"Change Password",oldPass:"Old Password",
+    newPass:"New Password",confPass:"Confirm New Password",
+    passChanged:"Password changed ✅",
+    passNoMatch:"Passwords don't match",passTooShort:"Min. 6 characters",
+    wrongOldPass:"Wrong old password",
+    reply:"Reply",fwd:"Forward",del:"Delete",copy:"Copy",
+    msgDel:"Message deleted",fwdTo:"Forward to...",
+    renameC:"Rename",newName:"New name...",rename:"Rename",
+    copyright:"© 2026 SRISP | Vena Talks v7.0",
+    adminInfo:"No account? Contact admin.",
+    profil:"Profile",
+  },
+};
+
+const app=document.getElementById("app");
+const render=el=>{app.innerHTML="";app.appendChild(el);};
+
+// ── SCREENS ──────────────────────────────────────────────────
+
+// SPLASH
+function showSplash(){
+  const w=h("div",{style:{flex:"1",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:"20px"}});
+  const logo=h("div",{cls:"logo",style:{width:"80px",height:"80px",animation:"glow 2s infinite"}});
+  logo.appendChild(h("span",{cls:"logo-v",style:{fontSize:"32px"}},["V"]));
+  w.appendChild(logo);
+  w.appendChild(h("div",null,[h("h1",{style:{fontFamily:"'Playfair Display',serif",fontSize:"28px",fontWeight:"700",background:"linear-gradient(135deg,var(--green3),var(--sapphire3))",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",textAlign:"center",marginBottom:"4px"}},["Vena Talks"]),h("p",{style:{color:"var(--txt3)",fontSize:"14px",textAlign:"center"}},[S[ST.lang].tagline])]));
+  const dots=h("div",{style:{display:"flex",gap:"6px"}});
+  [0,1,2].forEach(i=>dots.appendChild(h("div",{style:{width:"6px",height:"6px",borderRadius:"50%",background:"var(--green3)",opacity:.3+i*.35,animation:`pulse 1s ease ${i*.2}s infinite`}})));
+  w.appendChild(dots);
+  w.appendChild(h("p",{style:{position:"absolute",bottom:"20px",color:"var(--txt3)",fontSize:"10px"}},[S[ST.lang].copyright]));
+  render(w);
+}
+
+// LOGIN
+function showLogin(){
+  const s=S[ST.lang];
+  const w=h("div",{style:{flex:"1",display:"flex",flexDirection:"column",overflow:"auto"}});
+
+  // Top
+  const top=h("div",{style:{padding:"48px 24px 24px",textAlign:"center"}});
+  const logo=h("div",{cls:"logo",style:{width:"72px",height:"72px",margin:"0 auto 16px",animation:"glow 2s infinite"}});
+  logo.appendChild(h("span",{cls:"logo-v",style:{fontSize:"28px"}},["V"]));
+  top.appendChild(logo);
+  top.appendChild(h("h2",{style:{fontFamily:"'Playfair Display',serif",fontSize:"26px",fontWeight:"700",background:"linear-gradient(135deg,var(--green3),var(--sapphire3))",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",marginBottom:"4px"}},["Vena Talks"]));
+  top.appendChild(h("p",{style:{color:"var(--txt3)",fontSize:"13px"}},[s.tagline]));
+  w.appendChild(top);
+
+  // Card
+  const card=h("div",{cls:"glass2",style:{margin:"0 18px 24px",borderRadius:"20px",padding:"22px"}});
+
+  const phoneInp=mkInp("tel",s.phonePH);
+  const passWrap=h("div",{style:{position:"relative"}});
+  const passInp=mkInp("password",s.passPH);
+  let showPass=false;
+  const eyeBtn=h("button",{style:{position:"absolute",right:"12px",top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",color:"var(--txt3)",fontSize:"16px"},on:{click:()=>{showPass=!showPass;passInp.type=showPass?"text":"password";eyeBtn.textContent=showPass?"🙈":"👁️"}}},["👁️"]);
+  passWrap.appendChild(passInp);passWrap.appendChild(eyeBtn);
+
+  [[s.phoneL,phoneInp],[s.passL,passWrap]].forEach(([lbl,inp])=>{
+    card.appendChild(h("div",{style:{marginBottom:"14px"}},[
+      h("label",{style:{display:"block",color:"var(--txt3)",fontSize:"11px",fontWeight:"600",marginBottom:"6px",textTransform:"uppercase",letterSpacing:".5px"}},[lbl]),
+      inp
+    ]));
+  });
+
+  const errEl=h("p",{style:{color:"#f87171",fontSize:"13px",marginBottom:"12px",display:"none",textAlign:"center"}});
+  card.appendChild(errEl);
+
+  card.appendChild(h("p",{style:{color:"var(--txt3)",fontSize:"12px",marginBottom:"16px",textAlign:"center"}},[s.adminInfo]));
+
+  const btnTxt=h("span",[],[s.login]);
+  const btn=h("button",{cls:"btn-primary",style:{width:"100%",padding:"13px",fontSize:"15px",display:"flex",alignItems:"center",justifyContent:"center",gap:"8px"},on:{click:doLogin}},[btnTxt]);
+  card.appendChild(btn);
+  w.appendChild(card);
+  w.appendChild(h("p",{style:{textAlign:"center",color:"var(--txt3)",fontSize:"10px",paddingBottom:"16px"}},[s.copyright]));
+
+  async function doLogin(){
+    const phone=phoneInp.value.trim();
+    const pass=passInp.value;
+    if(!phone||!pass){errEl.textContent="Isi nomor HP dan password";errEl.style.display="block";return;}
+    btn.disabled=true;const spin=mkSpin();btn.insertBefore(spin,btnTxt);btnTxt.textContent=s.loggingIn;errEl.style.display="none";
+    try{
+      const email=toEmail(phone);
+      const{signInWithEmailAndPassword}=window._fs;
+      const cred=await signInWithEmailAndPassword(window._auth,email,pass);
+      const uid=cred.user.uid;
+      // Load profile
+      let prof=await fbGet("users",uid);
+      if(!prof){
+        // First time - create profile
+        prof={uid,name:"",phone,bio:"",avatarUrl:null,online:true};
+        await fbSet("users",uid,prof);
+        localStorage.setItem("vt_uid",uid);
+        localStorage.setItem("vt",JSON.stringify(prof));
+        ST.me=prof;
+        goTo("setup");
+      }else{
+        prof.uid=uid;
+        localStorage.setItem("vt_uid",uid);
+        localStorage.setItem("vt",JSON.stringify(prof));
+        ST.me=prof;
+        loadContacts();
+        goTo("chats");
+      }
+    }catch(e){
+      console.error(e.code);
+      if(e.code==="auth/wrong-password"||e.code==="auth/invalid-credential")errEl.textContent=s.wrongCred;
+      else if(e.code==="auth/user-not-found")errEl.textContent=s.noAccess;
+      else errEl.textContent=s.wrongCred;
+      errEl.style.display="block";
+    }
+    btn.disabled=false;spin.remove();btnTxt.textContent=s.login;
+  }
+
+  [phoneInp,passInp].forEach(i=>i.addEventListener("keydown",e=>{if(e.key==="Enter")doLogin();}));
+  render(w);
+}
+
+// SETUP PROFILE
+function showSetup(isEdit=false){
+  const s=S[ST.lang];
+  const w=h("div",{style:{flex:"1",overflow:"auto",display:"flex",flexDirection:"column"}});
+
+  if(isEdit){
+    const hdr=h("div",{cls:"hdr"});
+    hdr.appendChild(h("button",{cls:"btn-icon",style:{width:"36px",height:"36px",fontSize:"18px"},on:{click:()=>goTo("settings")}},["←"]));
+    hdr.appendChild(h("h2",{style:{flex:"1",fontSize:"17px",fontWeight:"600",color:"var(--txt)"}},[s.editProfile]));
+    w.appendChild(hdr);
+  }
+
+  const body=h("div",{style:{padding:"20px 18px 40px",flex:"1"}});
+
+  if(!isEdit){
+    body.appendChild(h("div",{style:{textAlign:"center",marginBottom:"20px",paddingTop:"12px"}},[
+      (()=>{const l=mkLogo("lg");l.style.cssText="width:64px;height:64px;margin:0 auto 12px";return l;})(),
+      h("h2",{style:{fontFamily:"'Playfair Display',serif",fontSize:"22px",background:"linear-gradient(135deg,var(--green3),var(--sapphire3))",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}},[s.setup])
+    ]));
+  }
+
+  let avData=ST.me?.avatarUrl||null;
+  const fRef=h("input",{type:"file",accept:"image/*",style:{display:"none"}});
+  const avEl=h("div",{style:{width:"84px",height:"84px",borderRadius:"50%",margin:"0 auto 10px",cursor:"pointer",overflow:"hidden",border:"2px solid rgba(34,168,85,0.4)",display:"flex",alignItems:"center",justifyContent:"center",background:"var(--glass)"},on:{click:()=>fRef.click()}});
+  const updateAv=()=>{avEl.innerHTML="";avEl.appendChild(avData?h("img",{src:avData,style:{width:"100%",height:"100%",objectFit:"cover"}}):h("span",{style:{fontSize:"28px",color:"var(--txt3)"}},["📷"]));};
+  updateAv();
+  fRef.addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{avData=ev.target.result;updateAv();};r.readAsDataURL(f);});
+
+  const avWrap=h("div",{style:{textAlign:"center",marginBottom:"16px"}});
+  avWrap.appendChild(fRef);avWrap.appendChild(avEl);
+  avWrap.appendChild(h("button",{cls:"btn-ghost",style:{fontSize:"12px",padding:"4px 14px"},on:{click:()=>fRef.click()}},[s.uploadPhoto]));
+  body.appendChild(avWrap);
+
+  const nameInp=mkInp("text",s.namePH,ST.me?.name||"");
+  const bioInp=mkInp("text",s.bioPH,ST.me?.bio||"");
+  [[s.nameL,nameInp],[s.bioL,bioInp]].forEach(([lbl,inp])=>{
+    body.appendChild(h("div",{style:{marginBottom:"13px"}},[
+      h("label",{style:{display:"block",color:"var(--txt3)",fontSize:"11px",fontWeight:"600",marginBottom:"5px",textTransform:"uppercase",letterSpacing:".5px"}},[lbl]),inp
+    ]));
+  });
+
+  const errEl=h("p",{style:{color:"#f87171",fontSize:"13px",marginBottom:"10px",display:"none"}});
+  body.appendChild(errEl);
+
+  const btnTxt=h("span",[],[s.save]);
+  const btn=h("button",{cls:"btn-primary",style:{width:"100%",padding:"13px",fontSize:"15px",display:"flex",alignItems:"center",justifyContent:"center",gap:"8px"},on:{click:doSave}},[btnTxt]);
+  body.appendChild(btn);
+  w.appendChild(body);
+
+  async function doSave(){
+    const name=nameInp.value.trim();
+    if(!name){errEl.textContent=s.nameL+" wajib diisi";errEl.style.display="block";return;}
+    btn.disabled=true;const spin=mkSpin();btn.insertBefore(spin,btnTxt);btnTxt.textContent=s.saving;
+    try{
+      const uid=ST.me.uid;
+      const prof={...ST.me,name,bio:bioInp.value.trim(),avatarUrl:ST.me.avatarUrl||null,online:true};
+      // Save first, upload photo in background
+      await fbSet("users",uid,prof);
+      localStorage.setItem("vt",JSON.stringify(prof));
+      ST.me=prof;
+      goTo(isEdit?"settings":"chats");
+      // Upload photo in background
+      if(avData?.startsWith("data:")){
+        compress(avData,400).then(c=>uploadImg(`avatars/${uid}.jpg`,c)).then(url=>{
+          ST.me={...ST.me,avatarUrl:url};
+          localStorage.setItem("vt",JSON.stringify(ST.me));
+          fbSet("users",uid,{avatarUrl:url});
+        }).catch(()=>{});
+      }
+    }catch(e){errEl.textContent=e.message||"Error";errEl.style.display="block";}
+    btn.disabled=false;spin.remove();btnTxt.textContent=s.save;
+  }
+
+  render(w);
+}
+
+// CHAT LIST
+function showChatList(){
+  const s=S[ST.lang];
+  const w=h("div",{style:{display:"flex",flexDirection:"column",flex:"1",overflow:"hidden"}});
+
+  // Header
+  const hdr=h("div",{cls:"hdr"});
+  const avBtn=h("div",{style:{cursor:"pointer"},on:{click:()=>goTo("settings")}});
+  avBtn.appendChild(mkAv(ST.me,34,false));
+  hdr.appendChild(avBtn);
+  const title=h("div",{style:{flex:"1",cursor:"pointer"},on:{click:()=>goTo("settings")}});
+  title.appendChild(h("h2",{style:{margin:"0",fontSize:"16px",fontWeight:"700",fontFamily:"'Playfair Display',serif",background:"linear-gradient(135deg,var(--green3),var(--sapphire3))",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}},["Vena Talks"]));
+  title.appendChild(h("p",{style:{margin:"0",fontSize:"11px",color:"var(--txt3)"}},[ST.me?.name||""]));
+  hdr.appendChild(title);
+  hdr.appendChild(h("button",{cls:"btn-icon",style:{width:"36px",height:"36px",fontSize:"16px"},on:{click:()=>goTo("newchat")}},["✏️"]));
+  hdr.appendChild(h("button",{cls:"btn-icon",style:{width:"36px",height:"36px",fontSize:"16px"},on:{click:()=>goTo("settings")}},["⚙️"]));
+  w.appendChild(hdr);
+
+  // Search
+  const sw=h("div",{style:{padding:"10px 14px",background:"rgba(6,26,14,0.5)",borderBottom:"1px solid rgba(255,255,255,0.04)"}});
+  const searchWrap=h("div",{cls:"search-wrap"});
+  searchWrap.appendChild(h("span",{cls:"search-icon"},["🔍"]));
+  const sInp=h("input",{cls:"inp",type:"text",placeholder:s.search,style:{padding:"9px 14px 9px 36px",borderRadius:"50px",fontSize:"14px"}});
+  searchWrap.appendChild(sInp);
+  sw.appendChild(searchWrap);
+  w.appendChild(sw);
+
+  // List
+  const list=h("div",{style:{flex:"1",overflowY:"auto"}});
+
+  function renderList(filter=""){
+    list.innerHTML="";
+    const f=ST.contacts.filter(c=>(c.displayName||c.name||"").toLowerCase().includes(filter.toLowerCase())||c.phone?.includes(filter));
+    if(f.length===0){
+      list.appendChild(h("div",{style:{textAlign:"center",padding:"60px 20px",color:"var(--txt3)"}},[
+        h("div",{style:{fontSize:"44px",marginBottom:"12px",opacity:".4"}},["💬"]),
+        h("p",{style:{fontSize:"14px",marginBottom:"16px"}},[s.noChats]),
+        mkBtn(s.startFirst,"btn-primary",{padding:"11px 22px",fontSize:"13px"},()=>goTo("newchat"))
+      ]));
+      return;
+    }
+    f.forEach((c,i)=>{
+      const lm=ST.lastMsgs[c.uid];
+      const ur=ST.unread[c.uid]||0;
+      const dn=c.displayName||c.name||"";
+      const row=h("div",{cls:"contact-row",style:{animation:`fu 0.3s ease ${i*.03}s both`}});
+      const avC=h("div",{style:{cursor:"pointer"},on:{click:e=>{e.stopPropagation();showProfile(c);}}});
+      avC.appendChild(mkAv(c,48,true));
+      row.appendChild(avC);
+      const info=h("div",{style:{flex:"1",minWidth:"0"},on:{click:()=>openChat(c)}});
+      const top=h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"2px"}});
+      top.appendChild(h("span",{style:{fontWeight:"600",fontSize:"15px",color:"var(--txt)"}},[dn]));
+      if(lm)top.appendChild(h("span",{style:{fontSize:"11px",color:ur>0?"var(--green3)":"var(--txt3)",fontWeight:ur>0?"600":"400"}},[fmtD(lm.time)]));
+      const bot=h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}});
+      const prev=lm?(lm.deleted?"🚫 "+s.msgDel:lm.fromUid===ST.me?.uid?"Kamu: "+(lm.image?"📷":lm.text):(lm.image?"📷":lm.text)):(c.bio||c.phone||"");
+      bot.appendChild(h("span",{style:{fontSize:"13px",color:ur>0?"var(--txt2)":"var(--txt3)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"210px",fontWeight:ur>0?"500":"400"}},[prev]));
+      if(ur>0)bot.appendChild(h("div",{cls:"bdg"},[ur.toString()]));
+      [top,bot].forEach(c=>info.appendChild(c));
+      row.appendChild(info);
+      list.appendChild(row);
+    });
+  }
+
+  sInp.addEventListener("input",e=>renderList(e.target.value));
+  renderList();
+  w.appendChild(list);
+  w.appendChild(h("p",{style:{textAlign:"center",padding:"7px 0",color:"var(--txt3)",fontSize:"10px",background:"rgba(6,26,14,0.4)",borderTop:"1px solid rgba(255,255,255,0.03)"}},[s.copyright]));
+  render(w);
+}
+
+// FIND USER
+function showFindUser(){
+  const s=S[ST.lang];
+  const w=h("div",{style:{display:"flex",flexDirection:"column",flex:"1",overflow:"hidden"}});
+  const hdr=h("div",{cls:"hdr"});
+  hdr.appendChild(h("button",{cls:"btn-icon",style:{width:"36px",height:"36px",fontSize:"18px"},on:{click:()=>goTo("chats")}},["←"]));
+  hdr.appendChild(h("h2",{style:{flex:"1",fontSize:"17px",fontWeight:"600",color:"var(--txt)"}},[s.newChat]));
+  w.appendChild(hdr);
+
+  const body=h("div",{style:{flex:"1",overflowY:"auto",padding:"14px"}});
+  const row=h("div",{style:{display:"flex",gap:"8px",marginBottom:"14px"}});
+  const inp=mkInp("tel",s.searchPH);inp.style.borderRadius="50px";
+  const btnTxt=h("span",[],[s.searchBtn]);
+  const btn=h("button",{cls:"btn-primary",style:{padding:"11px 18px",fontSize:"14px",flexShrink:"0",display:"flex",alignItems:"center",gap:"6px"},on:{click:doSearch}},[btnTxt]);
+  row.appendChild(inp);row.appendChild(btn);
+  body.appendChild(row);
+
+  const resultEl=h("div");
+  const notFoundEl=h("p",{style:{textAlign:"center",color:"var(--txt3)",fontSize:"14px",display:"none",marginTop:"20px"}},[s.notFound]);
+  body.appendChild(resultEl);body.appendChild(notFoundEl);
+
+  if(ST.contacts.length>0){
+    body.appendChild(h("p",{style:{color:"var(--txt3)",fontSize:"11px",fontWeight:"600",letterSpacing:".5px",marginBottom:"8px",textTransform:"uppercase"}},["Kontak"]));
+    ST.contacts.forEach(c=>{
+      const row2=h("div",{cls:"contact-row glass",style:{borderRadius:"14px",marginBottom:"7px"}});
+      row2.appendChild(mkAv(c,44,true));
+      const info=h("div",{on:{click:()=>{addContact(c);goTo("chats");}}});
+      info.appendChild(h("p",{style:{margin:"0",fontWeight:"600",color:"var(--txt)"}},[c.displayName||c.name]));
+      info.appendChild(h("p",{style:{margin:"0",fontSize:"12px",color:"var(--txt3)"}},[c.phone]));
+      row2.appendChild(info);
+      body.appendChild(row2);
+    });
+  }
+
+  async function doSearch(){
+    const q=inp.value.trim();if(!q)return;
+    btn.disabled=true;const spin=mkSpin();btn.insertBefore(spin,btnTxt);
+    resultEl.innerHTML="";notFoundEl.style.display="none";
+    try{
+      const u=await fbFind(q);
+      if(u&&u.uid!==ST.me?.uid){
+        const card=h("div",{cls:"glass2",style:{borderRadius:"16px",padding:"14px",display:"flex",alignItems:"center",gap:"13px",animation:"fu 0.3s ease"}});
+        card.appendChild(mkAv(u,52,true));
+        const info=h("div",{style:{flex:"1"}});
+        info.appendChild(h("p",{style:{margin:"0",fontWeight:"600",fontSize:"16px",color:"var(--txt)"}},[u.name||u.phone]));
+        info.appendChild(h("p",{style:{margin:"0",fontSize:"13px",color:"var(--txt3)"}},[u.phone]));
+        if(u.bio)info.appendChild(h("p",{style:{margin:"2px 0 0",fontSize:"12px",color:"var(--txt3)"}},[u.bio]));
+        card.appendChild(info);
+        card.appendChild(mkBtn(s.startChat,"btn-primary",{padding:"9px 16px",fontSize:"13px",flexShrink:"0"},()=>{addContact(u);goTo("chats");}));
+        resultEl.appendChild(card);
+      }else{notFoundEl.style.display="block";}
+    }catch(e){notFoundEl.style.display="block";}
+    btn.disabled=false;spin.remove();
+  }
+  inp.addEventListener("keydown",e=>{if(e.key==="Enter")doSearch();});
+  w.appendChild(body);
+  render(w);
+}
+
+// CHAT ROOM
+function showChatRoom(){
+  const s=S[ST.lang];
+  const contact=ST.active;
+  if(!contact||!ST.me)return;
+  const dn=contact.displayName||contact.name||"";
+
+  // Chat ID: sort Firebase UIDs
+  const CHATID=mkChatId(ST.me.uid,contact.uid);
+  console.log("CHATID:",CHATID,"me:",ST.me.uid,"contact:",contact.uid);
+
+  const w=h("div",{style:{display:"flex",flexDirection:"column",height:"100%",overflow:"hidden"}});
+
+  // Header
+  const hdr=h("div",{cls:"hdr"});
+  hdr.appendChild(h("button",{cls:"btn-icon",style:{width:"36px",height:"36px",fontSize:"18px"},on:{click:()=>goTo("chats")}},["←"]));
+  const avBtn=h("div",{style:{cursor:"pointer"},on:{click:()=>showProfile(contact)}});
+  avBtn.appendChild(mkAv(contact,38,true));
+  hdr.appendChild(avBtn);
+  const info=h("div",{style:{flex:"1",cursor:"pointer"},on:{click:()=>showProfile(contact)}});
+  info.appendChild(h("p",{style:{margin:"0",fontWeight:"600",color:"var(--txt)",fontSize:"16px"}},[dn]));
+  const statusEl=h("p",{id:"chatStatus",style:{margin:"0",fontSize:"11px",color:"var(--txt3)"}},[contact.online?s.online:`${s.lastseen} ${fmtT(contact.lastSeen)}`]);
+  info.appendChild(statusEl);
+  hdr.appendChild(info);
+  w.appendChild(hdr);
+
+  // Messages
+  const msgArea=h("div",{cls:"mbg"});
+  w.appendChild(msgArea);
+
+  // Reply bar
+  let replyTo=null;
+  const replyBar=h("div",{style:{display:"none",padding:"7px 13px",background:"rgba(6,26,14,0.7)",borderTop:"1px solid rgba(255,255,255,0.06)",flexShrink:"0",alignItems:"center",gap:"10px",backdropFilter:"blur(20px)"}});
+  const rInfo=h("div",{style:{flex:"1",borderLeft:"2px solid var(--green3)",paddingLeft:"9px"}});
+  const rName=h("p",{style:{margin:"0",fontSize:"11px",color:"var(--green3)",fontWeight:"600"}});
+  const rText=h("p",{style:{margin:"0",fontSize:"12px",color:"var(--txt3)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}});
+  rInfo.appendChild(rName);rInfo.appendChild(rText);
+  replyBar.appendChild(rInfo);
+  replyBar.appendChild(h("button",{style:{background:"none",border:"none",color:"var(--txt3)",cursor:"pointer",fontSize:"18px",padding:"0 4px"},on:{click:()=>{replyTo=null;replyBar.style.display="none";}}},["✕"]));
+  w.appendChild(replyBar);
+
+  // Input bar
+  const ibar=h("div",{cls:"ibar"});
+  const fInp=h("input",{type:"file",accept:"image/*",style:{display:"none"}});
+  const imgBtn=h("button",{cls:"btn-icon",style:{width:"42px",height:"42px",fontSize:"18px"},on:{click:()=>fInp.click()}},["📷"]);
+  const tInp=h("textarea",{placeholder:s.typeMsg,rows:1,style:{flex:"1",padding:"10px 14px",borderRadius:"22px",border:"1px solid var(--glassBorder)",background:"var(--glass)",color:"var(--txt)",fontFamily:"Inter,sans-serif",fontSize:"15px",outline:"none",resize:"none",maxHeight:"100px",lineHeight:"1.5",backdropFilter:"blur(20px)"}});
+  const sBtn=h("button",{cls:"btn-primary",style:{width:"42px",height:"42px",padding:"0",borderRadius:"50%",fontSize:"16px",display:"flex",alignItems:"center",justifyContent:"center"},on:{click:doSend}},["➤"]);
+
+  fInp.addEventListener("change",async e=>{
+    const f=e.target.files[0];if(!f)return;
+    imgBtn.disabled=true;imgBtn.textContent="⏳";
+    try{
+      const r=new FileReader();
+      r.onload=async ev=>{
+        try{
+          const c=await compress(ev.target.result,800);
+          const url=await uploadImg(`chats/${CHATID}/${Date.now()}.jpg`,c);
+          const{collection,addDoc,serverTimestamp}=window._fs;
+          await addDoc(collection(window._db,"chats",CHATID,"messages"),{
+            text:"",image:url,fromUid:ST.me.uid,toUid:contact.uid,
+            fromName:ST.me.name,read:false,deleted:false,replyTo:null,
+            time:serverTimestamp()
+          });
+        }catch(err){console.error(err);alert("Gagal kirim foto");}
+        imgBtn.disabled=false;imgBtn.textContent="📷";
+      };
+      r.readAsDataURL(f);
+    }catch(err){imgBtn.disabled=false;imgBtn.textContent="📷";}
+    e.target.value="";
+  });
+
+  async function doSend(){
+    const txt=tInp.value.trim();if(!txt)return;
+    tInp.value="";
+    const{collection,addDoc,serverTimestamp}=window._fs;
+    try{
+      await addDoc(collection(window._db,"chats",CHATID,"messages"),{
+        text:txt,image:null,
+        fromUid:ST.me.uid,toUid:contact.uid,
+        fromName:ST.me.name,
+        read:false,deleted:false,
+        replyTo:replyTo?{id:replyTo.id,text:replyTo.image?"📷":replyTo.text,fromUid:replyTo.fromUid}:null,
+        time:serverTimestamp()
+      });
+      replyTo=null;replyBar.style.display="none";
+    }catch(e){console.error("Send error:",e);}
+  }
+
+  tInp.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();doSend();}});
+  [fInp,imgBtn,tInp,sBtn].forEach(c=>ibar.appendChild(c));
+  w.appendChild(ibar);
+
+  // Render messages
+  let msgs=[];
+  function renderMsgs(){
+    msgArea.innerHTML="";
+    msgs.forEach((msg,i)=>{
+      const isMe=msg.fromUid===ST.me.uid;
+      // Date sep
+      let showDate=i===0;
+      if(!showDate)try{showDate=msg.time?.toDate?.()?.toDateString()!==msgs[i-1].time?.toDate?.()?.toDateString();}catch(e){}
+      if(showDate){
+        const sep=h("div",{style:{textAlign:"center",margin:"8px 0"}});
+        const lbl=h("span",{cls:"date-pill"});
+        try{lbl.textContent=msg.time?.toDate?.()?.toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long"})||"";}catch(e){}
+        sep.appendChild(lbl);msgArea.appendChild(sep);
+      }
+
+      const row=h("div",{style:{display:"flex",justifyContent:isMe?"flex-end":"flex-start",marginBottom:"2px"}});
+      if(!isMe){
+        const av2=h("div",{style:{marginRight:"5px",alignSelf:"flex-end",cursor:"pointer"},on:{click:()=>showProfile(contact)}});
+        av2.appendChild(mkAv(contact,24));row.appendChild(av2);
+      }
+
+      const bub=h("div",{cls:isMe?"bub-me":"bub-other",style:{maxWidth:"72%",padding:msg.image&&!msg.deleted?"5px":"9px 12px"}});
+
+      // Long press
+      let lt;
+      bub.addEventListener("touchstart",e=>{if(msg.deleted)return;lt=setTimeout(()=>openCtx(msg,e.touches[0].clientX,e.touches[0].clientY),500);},{passive:true});
+      bub.addEventListener("touchend",()=>clearTimeout(lt));
+      bub.addEventListener("contextmenu",e=>{e.preventDefault();if(!msg.deleted)openCtx(msg,e.clientX,e.clientY);});
+
+      if(msg.replyTo&&!msg.deleted){
+        const rp=h("div",{style:{background:"rgba(0,0,0,0.2)",borderLeft:`2px solid ${isMe?"rgba(255,255,255,0.4)":"var(--green3)"}`,borderRadius:"8px",padding:"5px 9px",marginBottom:"5px"}});
+        rp.appendChild(h("p",{style:{margin:"0",fontWeight:"600",fontSize:"10px",color:isMe?"rgba(255,255,255,0.6)":"var(--green3)"}},[msg.replyTo.fromUid===ST.me.uid?ST.me.name:dn]));
+        rp.appendChild(h("p",{style:{margin:"0",fontSize:"11px",color:"rgba(255,255,255,0.45)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"170px"}},[msg.replyTo.text]));
+        bub.appendChild(rp);
+      }
+
+      if(msg.deleted){
+        bub.appendChild(h("p",{style:{margin:"0",fontSize:"13px",fontStyle:"italic",color:"rgba(255,255,255,0.35)"}},["🚫 "+s.msgDel]));
+      }else{
+        if(msg.image)bub.appendChild(h("img",{src:msg.image,style:{maxWidth:"100%",maxHeight:"200px",borderRadius:"10px",display:"block",objectFit:"cover"}}));
+        if(msg.text)bub.appendChild(h("p",{style:{margin:"0",fontSize:"15px",lineHeight:"1.5",wordBreak:"break-word",color:"var(--txt)"}},[msg.text]));
+      }
+
+      const tr=h("div",{style:{display:"flex",alignItems:"center",justifyContent:"flex-end",gap:"3px",marginTop:"3px"}});
+      tr.appendChild(h("span",{style:{fontSize:"10px",color:"rgba(255,255,255,0.35)"}},[fmtT(msg.time)]));
+      if(isMe&&!msg.deleted)tr.appendChild(h("span",{style:{fontSize:"10px",color:msg.read?"var(--sapphire3)":"rgba(255,255,255,0.3)"}},[msg.read?"✓✓":"✓"]));
+      bub.appendChild(tr);
+      row.appendChild(bub);
+      msgArea.appendChild(row);
+    });
+    const b=h("div",{id:"msgBot"});msgArea.appendChild(b);
+    setTimeout(()=>document.getElementById("msgBot")?.scrollIntoView({behavior:"smooth"}),60);
+  }
+
+  // Context menu
+  function openCtx(msg,x,y){
+    document.querySelectorAll(".ctx").forEach(c=>c.remove());
+    const menu=h("div",{cls:"ctx",style:{top:Math.min(y,window.innerHeight-200)+"px",left:Math.min(x,window.innerWidth-170)+"px"}});
+    const items=[
+      {ic:"↩️",lb:s.reply,fn:()=>{replyTo=msg;rName.textContent=msg.fromUid===ST.me.uid?ST.me.name:dn;rText.textContent=msg.image?"📷":msg.text;replyBar.style.display="flex";}},
+      {ic:"📋",lb:s.copy,fn:()=>navigator.clipboard?.writeText(msg.text||"")},
+      {ic:"↗️",lb:s.fwd,fn:()=>{ST.fwdMsg=msg;showFwdSheet();}},
+      ...(msg.fromUid===ST.me.uid?[{ic:"🗑️",lb:s.del,danger:true,fn:async()=>{const{doc,updateDoc}=window._fs;await updateDoc(doc(window._db,"chats",CHATID,"messages",msg.id),{deleted:true,text:"",image:null});}}]:[])
+    ];
+    items.forEach(item=>{
+      const b=h("button",{cls:"ctxb"+(item.danger?" d":""),on:{click:()=>{item.fn();menu.remove();}}});
+      b.appendChild(h("span",[],[item.ic+" "+item.lb]));
+      menu.appendChild(b);
+    });
+    document.body.appendChild(menu);
+    setTimeout(()=>document.addEventListener("click",()=>menu.remove(),{once:true}),100);
+  }
+
+  // Firebase listener
+  const{collection,query,orderBy,onSnapshot,doc,updateDoc}=window._fs;
+  const q=query(collection(window._db,"chats",CHATID,"messages"),orderBy("time","asc"));
+  let first=true;
+  const unsub=onSnapshot(q,snap=>{
+    msgs=snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderMsgs();
+    if(!first){
+      const last=msgs[msgs.length-1];
+      if(last?.fromUid!==ST.me.uid&&!last?.deleted)window.notif(dn,last.image?"📷 Foto":last.text);
+    }
+    first=false;
+    snap.docs.forEach(d=>{
+      const m=d.data();
+      if(m.toUid===ST.me.uid&&!m.read&&!m.deleted){
+        updateDoc(doc(window._db,"chats",CHATID,"messages",d.id),{read:true}).catch(()=>{});
+      }
+    });
+  },err=>console.error("Listener error:",err));
+  ST.unsubs.push(unsub);
+
+  render(w);
+}
+
+// SETTINGS
+function showSettings(){
+  const s=S[ST.lang];
+  const w=h("div",{style:{display:"flex",flexDirection:"column",flex:"1",overflow:"hidden"}});
+  const hdr=h("div",{cls:"hdr"});
+  hdr.appendChild(h("button",{cls:"btn-icon",style:{width:"36px",height:"36px",fontSize:"18px"},on:{click:()=>goTo("chats")}},["←"]));
+  hdr.appendChild(h("h2",{style:{flex:"1",fontSize:"17px",fontWeight:"600",color:"var(--txt)"}},[s.settings]));
+  w.appendChild(hdr);
+
+  const body=h("div",{style:{flex:"1",overflowY:"auto",padding:"14px 15px 40px"}});
+
+  // Profile card
+  const pc=h("div",{cls:"glass2",style:{borderRadius:"18px",padding:"16px",display:"flex",alignItems:"center",gap:"13px",marginBottom:"12px",cursor:"pointer"},on:{click:()=>goTo("profile")}});
+  pc.appendChild(mkAv(ST.me,56,false));
+  const pi=h("div",{style:{flex:"1"}});
+  pi.appendChild(h("p",{style:{margin:"0",fontWeight:"700",fontSize:"17px",color:"var(--txt)"}},[ST.me?.name||""]));
+  pi.appendChild(h("p",{style:{margin:"0",fontSize:"13px",color:"var(--txt3)"}},[ST.me?.bio||ST.me?.phone||""]));
+  pi.appendChild(h("p",{style:{margin:"3px 0 0",fontSize:"12px",color:"var(--green3)",fontWeight:"500"}},[s.editProfile+" →"]));
+  pc.appendChild(pi);
+  body.appendChild(pc);
+
+  // Change password
+  const cpWrap=h("div",{cls:"glass",style:{borderRadius:"16px",padding:"16px",marginBottom:"10px"}});
+  cpWrap.appendChild(h("p",{style:{color:"var(--txt3)",fontSize:"11px",fontWeight:"600",letterSpacing:".5px",marginBottom:"12px",textTransform:"uppercase"}},[s.changePass]));
+  const oldP=mkInp("password",s.oldPass);oldP.style.marginBottom="10px";
+  const newP=mkInp("password",s.newPass);newP.style.marginBottom="10px";
+  const conP=mkInp("password",s.confPass);conP.style.marginBottom="10px";
+  const cpErr=h("p",{style:{color:"#f87171",fontSize:"12px",display:"none",marginBottom:"8px"}});
+  const cpOk=h("p",{style:{color:"var(--green3)",fontSize:"12px",display:"none",marginBottom:"8px"}});
+  [oldP,newP,conP,cpErr,cpOk].forEach(c=>cpWrap.appendChild(c));
+  cpWrap.appendChild(mkBtn(s.changePass,"btn-primary",{width:"100%",padding:"11px",fontSize:"14px"},async()=>{
+    cpErr.style.display="none";cpOk.style.display="none";
+    if(newP.value.length<6){cpErr.textContent=s.passTooShort;cpErr.style.display="block";return;}
+    if(newP.value!==conP.value){cpErr.textContent=s.passNoMatch;cpErr.style.display="block";return;}
+    try{
+      const{reauthenticateWithCredential,EmailAuthProvider,updatePassword}=window._fs;
+      const email=toEmail(ST.me.phone);
+      const cred=EmailAuthProvider.credential(email,oldP.value);
+      await reauthenticateWithCredential(window._auth.currentUser,cred);
+      await updatePassword(window._auth.currentUser,newP.value);
+      cpOk.textContent=s.passChanged;cpOk.style.display="block";
+      oldP.value="";newP.value="";conP.value="";
+    }catch(e){
+      if(e.code==="auth/wrong-password"||e.code==="auth/invalid-credential")cpErr.textContent=s.wrongOldPass;
+      else cpErr.textContent=e.message;
+      cpErr.style.display="block";
+    }
+  }));
+  body.appendChild(cpWrap);
+
+  // Language
+  const lw=h("div",{cls:"glass",style:{borderRadius:"16px",padding:"16px",marginBottom:"10px"}});
+  lw.appendChild(h("p",{style:{color:"var(--txt3)",fontSize:"11px",fontWeight:"600",letterSpacing:".5px",marginBottom:"10px",textTransform:"uppercase"}},[s.language]));
+  const lr=h("div",{style:{display:"flex",gap:"8px"}});
+  ["id","en"].forEach(l=>{
+    const active=ST.lang===l;
+    lr.appendChild(h("button",{style:{flex:"1",padding:"10px",borderRadius:"12px",cursor:"pointer",border:`1px solid ${active?"rgba(34,168,85,0.5)":"var(--glassBorder)"}`,background:active?"rgba(34,168,85,0.1)":"var(--glass)",color:active?"var(--green3)":"var(--txt3)",fontFamily:"Inter,sans-serif",fontSize:"13px",fontWeight:"600",transition:"all 0.2s"},on:{click:()=>{ST.lang=l;localStorage.setItem("vt_lang",l);showSettings();}}},
+      [l==="id"?"🇮🇩 Indonesia":"🇬🇧 English"]));
+  });
+  lw.appendChild(lr);body.appendChild(lw);
+
+  // Logout
+  body.appendChild(mkBtn("🚪 "+s.logout,"btn-ghost",{width:"100%",padding:"13px",fontSize:"14px",color:"#f87171",border:"1px solid rgba(248,113,113,0.2)",borderRadius:"14px",marginTop:"4px"},async()=>{
+    if(ST.me&&window._fbOk)await fbOnline(ST.me.uid,false);
+    ST.unsubs.forEach(u=>u());ST.unsubs=[];
+    ST.contactUnsubs.forEach(u=>u());ST.contactUnsubs=[];
+    try{const{signOut}=window._fs;await signOut(window._auth);}catch(e){}
+    ["vt_uid","vt","vt_c"].forEach(k=>localStorage.removeItem(k));
+    ST.me=null;ST.contacts=[];
+    goTo("login");
+  }));
+  body.appendChild(h("p",{style:{textAlign:"center",marginTop:"18px",color:"var(--txt3)",fontSize:"10px"}},[s.copyright]));
+  w.appendChild(body);render(w);
+}
+
+// PROFILE VIEW OVERLAY
+function showProfile(u){
+  const s=S[ST.lang];
+  const existing=ST.contacts.find(c=>c.uid===u.uid);
+  const dn=existing?.displayName||u.name||"";
+
+  const ovl=h("div",{cls:"ovl",on:{click:()=>ovl.remove()}});
+  const sht=h("div",{cls:"sht",on:{click:e=>e.stopPropagation()}});
+  sht.appendChild(h("div",{style:{width:"36px",height:"4px",borderRadius:"2px",background:"rgba(255,255,255,0.15)",margin:"0 auto 18px"}}));
+
+  const top=h("div",{style:{textAlign:"center",marginBottom:"16px"}});
+  const avBig=mkAv({...u,displayName:dn},80,true);avBig.style.display="inline-block";
+  top.appendChild(avBig);
+  top.appendChild(h("h2",{style:{color:"var(--txt)",fontSize:"20px",fontWeight:"700",margin:"10px 0 3px"}},[dn]));
+  top.appendChild(h("p",{style:{color:"var(--txt3)",fontSize:"13px"}},[u.phone]));
+  sht.appendChild(top);
+
+  if(u.bio){
+    const bc=h("div",{cls:"glass",style:{borderRadius:"13px",padding:"11px 14px",marginBottom:"11px"}});
+    bc.appendChild(h("p",{style:{color:"var(--txt3)",fontSize:"10px",fontWeight:"600",letterSpacing:".5px",marginBottom:"4px",textTransform:"uppercase"}},["Bio"]));
+    bc.appendChild(h("p",{style:{color:"var(--txt)",fontSize:"14px",lineHeight:"1.6"}},[u.bio]));
+    sht.appendChild(bc);
+  }
+
+  const rnC=h("div",{cls:"glass",style:{borderRadius:"13px",padding:"12px 14px",marginBottom:"10px"}});
+  rnC.appendChild(h("p",{style:{color:"var(--txt3)",fontSize:"10px",fontWeight:"600",letterSpacing:".5px",marginBottom:"8px",textTransform:"uppercase"}},[s.renameC]));
+  const rnRow=h("div",{style:{display:"flex",gap:"7px"}});
+  const rnInp=mkInp("text",s.newName,existing?.displayName||u.name||"");
+  rnInp.style.padding="9px 12px";rnInp.style.fontSize="14px";
+  rnRow.appendChild(rnInp);
+  rnRow.appendChild(mkBtn(s.rename,"btn-primary",{padding:"9px 14px",fontSize:"13px",flexShrink:"0"},()=>{
+    const n=rnInp.value.trim();if(!n)return;
+    renameContact(u.uid,n);ovl.remove();
+    if(ST.screen==="chats")showChatList();
+    else if(ST.screen==="chat")showChatRoom();
+  }));
+  rnC.appendChild(rnRow);sht.appendChild(rnC);
+
+  sht.appendChild(mkBtn("💬 "+s.startChat,"btn-primary",{width:"100%",padding:"12px",fontSize:"14px"},()=>{
+    addContact(u);openChat(u);ovl.remove();
+  }));
+  ovl.appendChild(sht);document.body.appendChild(ovl);
+}
+
+// FORWARD SHEET
+function showFwdSheet(){
+  const s=S[ST.lang];
+  const msg=ST.fwdMsg;
+  const others=ST.contacts.filter(c=>c.uid!==ST.active?.uid);
+  const ovl=h("div",{cls:"ovl",on:{click:()=>{ovl.remove();ST.fwdMsg=null;}}});
+  const sht=h("div",{cls:"sht",on:{click:e=>e.stopPropagation()}});
+  sht.appendChild(h("div",{style:{width:"36px",height:"4px",borderRadius:"2px",background:"rgba(255,255,255,0.15)",margin:"0 auto 14px"}}));
+  sht.appendChild(h("h3",{style:{color:"var(--txt)",fontSize:"15px",fontWeight:"600",marginBottom:"14px"}},[s.fwdTo]));
+  others.forEach(c=>{
+    const row=h("div",{style:{display:"flex",alignItems:"center",gap:"11px",padding:"10px 0",cursor:"pointer",borderBottom:"1px solid rgba(255,255,255,0.06)"},on:{click:async()=>{
+      const cid2=mkChatId(ST.me.uid,c.uid);
+      const{collection,addDoc,serverTimestamp}=window._fs;
+      await addDoc(collection(window._db,"chats",cid2,"messages"),{
+        text:msg.text||"",image:msg.image||null,
+        fromUid:ST.me.uid,toUid:c.uid,fromName:ST.me.name,
+        read:false,deleted:false,replyTo:null,time:serverTimestamp()
+      });
+      if(!ST.contacts.find(x=>x.uid===c.uid))addContact(c);
+      ovl.remove();ST.fwdMsg=null;
+    }}});
+    row.appendChild(mkAv(c,40));
+    row.appendChild(h("p",{style:{margin:"0",fontWeight:"600",color:"var(--txt)"}},[c.displayName||c.name]));
+    sht.appendChild(row);
+  });
+  ovl.appendChild(sht);document.body.appendChild(ovl);
+}
+
+// ── NAVIGATION ───────────────────────────────────────────────
+function goTo(screen){
+  // Unsubscribe chat listeners when leaving chat
+  if(ST.screen==="chat"&&screen!=="chat"){
+    ST.unsubs.forEach(u=>u());ST.unsubs=[];
+  }
+  ST.screen=screen;
+  window.history.pushState({screen},"",location.href);
+  switch(screen){
+    case"login":showLogin();break;
+    case"setup":showSetup(false);break;
+    case"profile":showSetup(true);break;
+    case"chats":showChatList();subscribeLastMsgs();subscribeStatus();break;
+    case"newchat":showFindUser();break;
+    case"chat":showChatRoom();subscribeStatus();break;
+    case"settings":showSettings();break;
+  }
+}
+
+window.addEventListener("popstate",()=>{
+  if(ST.screen==="chat")goTo("chats");
+  else if(["newchat","settings","profile"].includes(ST.screen))goTo(ST.screen==="profile"?"settings":"chats");
+  else window.history.pushState({},"",location.href);
+});
+
+// ── SUBSCRIPTIONS ────────────────────────────────────────────
+let lmUnsubs=[];
+function subscribeLastMsgs(){
+  lmUnsubs.forEach(u=>u());lmUnsubs=[];
+  if(!window._fbOk||ST.contacts.length===0)return;
+  const{collection,query,orderBy,onSnapshot}=window._fs;
+  ST.contacts.forEach(c=>{
+    const cid2=mkChatId(ST.me.uid,c.uid);
+    const q=query(collection(window._db,"chats",cid2,"messages"),orderBy("time","desc"));
+    let first=true;
+    const unsub=onSnapshot(q,snap=>{
+      if(!snap.empty){
+        const last=snap.docs[0].data();
+        const prev=ST.lastMsgs[c.uid];
+        if(!first&&last.fromUid!==ST.me.uid&&!last.deleted){
+          const lt=last.time?.toMillis?.()||0;
+          const pt=prev?.time?.toMillis?.()||0;
+          if(lt>pt)window.notif(c.displayName||c.name,last.image?"📷 Foto":last.text);
+        }
+        first=false;
+        ST.lastMsgs[c.uid]=last;
+        const ur=snap.docs.filter(d=>{const m=d.data();return m.toUid===ST.me.uid&&!m.read&&!m.deleted;}).length;
+        ST.unread[c.uid]=ur;
+        if(ST.screen==="chats")showChatList();
+      }
+    },()=>{});
+    lmUnsubs.push(unsub);
+  });
+}
+
+function subscribeStatus(){
+  ST.contactUnsubs.forEach(u=>u());ST.contactUnsubs=[];
+  if(!window._fbOk)return;
+  const{doc,onSnapshot}=window._fs;
+  ST.contacts.forEach(c=>{
+    const unsub=onSnapshot(doc(window._db,"users",c.uid),snap=>{
+      if(!snap.exists())return;
+      const d=snap.data();
+      ST.contacts=ST.contacts.map(x=>x.uid===c.uid?{...x,online:d.online||false,lastSeen:d.lastSeen}:x);
+      if(ST.active?.uid===c.uid){
+        ST.active={...ST.active,online:d.online||false,lastSeen:d.lastSeen};
+        const sel=document.getElementById("chatStatus");
+        if(sel){const s=S[ST.lang];sel.textContent=d.online?s.online:`${s.lastseen} ${fmtT(d.lastSeen)}`;}
+      }
+      if(ST.screen==="chats")showChatList();
+    },()=>{});
+    ST.contactUnsubs.push(unsub);
+  });
+}
+
+// ── HELPERS ──────────────────────────────────────────────────
+function addContact(c){
+  if(!ST.contacts.find(x=>x.uid===c.uid)){
+    ST.contacts=[...ST.contacts,c];
+    localStorage.setItem("vt_c",JSON.stringify(ST.contacts));
+    if(window._fbOk&&ST.me?.uid){
+      fbSet("contacts",ST.me.uid,{
+        list:ST.contacts.map(x=>({uid:x.uid,displayName:x.displayName||null})),
+        updatedAt:new Date().toISOString()
+      }).catch(()=>{});
+    }
+  }
+}
+
+function openChat(c){
+  ST.active=c;
+  ST.unread[c.uid]=0;
+  goTo("chat");
+}
+
+function renameContact(uid,name){
+  ST.contacts=ST.contacts.map(c=>c.uid===uid?{...c,displayName:name}:c);
+  localStorage.setItem("vt_c",JSON.stringify(ST.contacts));
+  if(ST.active?.uid===uid)ST.active={...ST.active,displayName:name};
+  if(window._fbOk&&ST.me?.uid){
+    fbSet("contacts",ST.me.uid,{
+      list:ST.contacts.map(x=>({uid:x.uid,displayName:x.displayName||null})),
+      updatedAt:new Date().toISOString()
+    }).catch(()=>{});
+  }
+}
+
+function loadContacts(){
+  const saved=localStorage.getItem("vt_c");
+  if(saved)try{ST.contacts=JSON.parse(saved);}catch(e){}
+  // Load from Firestore in background
+  if(window._fbOk&&ST.me?.uid){
+    fbGet("contacts",ST.me.uid).then(async data=>{
+      if(data?.list?.length>0){
+        const fresh=[];
+        for(const item of data.list){
+          const u=await fbGet("users",item.uid).catch(()=>null);
+          if(u)fresh.push({...u,displayName:item.displayName||null});
+        }
+        if(fresh.length>0){
+          ST.contacts=fresh;
+          localStorage.setItem("vt_c",JSON.stringify(fresh));
+          if(ST.screen==="chats"){showChatList();subscribeLastMsgs();subscribeStatus();}
+        }
+      }
+    }).catch(()=>{});
+  }
+}
+
+// ── INIT ─────────────────────────────────────────────────────
+async function init(){
+  showSplash();
+  await new Promise(r=>setTimeout(r,1500));
+
+  // Check Firebase Auth state
+  if(window._fbOk){
+    const{onAuthStateChanged}=window._fs;
+    onAuthStateChanged(window._auth,async user=>{
+      if(user){
+        // Already logged in
+        let prof=await fbGet("users",user.uid).catch(()=>null);
+        if(!prof){
+          prof={uid:user.uid,name:"",phone:"",bio:"",avatarUrl:null,online:true};
+        }
+        prof.uid=user.uid;
+        ST.me=prof;
+        localStorage.setItem("vt_uid",user.uid);
+        localStorage.setItem("vt",JSON.stringify(prof));
+        fbOnline(user.uid,true).catch(()=>{});
+        loadContacts();
+        if(!prof.name)goTo("setup");
+        else goTo("chats");
+      }else{
+        // Not logged in
+        localStorage.removeItem("vt_uid");
+        localStorage.removeItem("vt");
+        goTo("login");
+      }
+    });
+  }else{
+    goTo("login");
+  }
+
+  // Online keepalive
+  setInterval(()=>{if(ST.me&&window._fbOk)fbOnline(ST.me.uid,true).catch(()=>{});},45000);
+  window.addEventListener("beforeunload",()=>{if(ST.me&&window._fbOk)fbOnline(ST.me.uid,false);});
+  document.addEventListener("visibilitychange",()=>{
+    if(!ST.me||!window._fbOk)return;
+    fbOnline(ST.me.uid,document.visibilityState!=="hidden").catch(()=>{});
+  });
+}
+
+init();
+</script>
+</body>
+</html>
