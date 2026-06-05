@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="theme-color" content="#C084FC"/>
+  <meta name="description" content="Vena Talks - Bicara lebih dekat"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <meta name="apple-mobile-web-app-title" content="Vena Talks"/>
+  <title>Vena Talks</title>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:wght@600;700&family=Cormorant+Garamond:wght@400;600;700&family=Cinzel:wght@600;700&family=Outfit:wght@400;600;700;800&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{overflow-x:hidden;font-family:'Nunito',sans-serif;}
+    #root{min-height:100vh;}
+    input::placeholder,textarea::placeholder{color:rgba(128,128,128,0.55);}
+    ::-webkit-scrollbar{width:4px;}
+    ::-webkit-scrollbar-thumb{background:rgba(128,128,128,0.3);border-radius:2px;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+    @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-7px)}}
+    @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+  <div id="root"><div style="height:100vh;display:flex;align-items:center;justify-content:center;font-size:32px;">🌸</div></div>
+
+  <!-- React & Babel -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, collection, addDoc, query, orderBy, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCXD0MNvi7LCZbBnP-CdbVE3jsyUhxnhXE",
+      authDomain: "appsvena-talks.firebaseapp.com",
+      projectId: "appsvena-talks",
+      storageBucket: "appsvena-talks.firebasestorage.app",
+      messagingSenderId: "48785751855",
+      appId: "1:48785751855:web:4d349b50005fc8d3256bda"
+    };
+
+    const app  = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+    const stor = getStorage(app);
+
+    // Expose to window so React app can use
+    window._fb = {
+      auth, db, stor,
+      RecaptchaVerifier, signInWithPhoneNumber,
+      doc, setDoc, collection, addDoc, query, orderBy, onSnapshot, updateDoc,
+      ref, uploadString, getDownloadURL,
+    };
+    window._fbReady = true;
+    window.dispatchEvent(new Event("fbReady"));
+  </script>
+
+  <script type="text/babel" data-presets="react">
+    const { useState, useEffect, useRef, useCallback } = React;
+
+    // ── THEMES ──────────────────────────────────────────────
+    const THEMES = {
+      soft:{
+        name:"Soft",nameId:"Lembut",
+        bg:"#FDF6FF",bgSecondary:"#F3E8FF",surface:"#FFFFFF",surfaceSecondary:"#FAF0FF",
+        primary:"#C084FC",primaryDark:"#A855F7",primaryLight:"#E9D5FF",
+        accent:"#F9A8D4",accentDark:"#EC4899",
+        text:"#4B2067",textSecondary:"#7C3AED",textMuted:"#A78BCA",
+        bubble:"#F3E8FF",bubbleOwn:"#C084FC",bubbleOwnText:"#FFFFFF",
+        border:"#E9D5FF",shadow:"rgba(192,132,252,0.18)",
+        gradient:"linear-gradient(135deg,#FDF6FF,#F3E8FF,#EDD9FF)",
+        headerGrad:"linear-gradient(135deg,#C084FC,#F9A8D4)",
+        font:"'Nunito',sans-serif",fontDisplay:"'Playfair Display',serif",emoji:"🌸",dark:false,
+      },
+      elegant:{
+        name:"Elegant",nameId:"Elegan",
+        bg:"#0D0D14",bgSecondary:"#13131F",surface:"#16162A",surfaceSecondary:"#1E1E35",
+        primary:"#C9A84C",primaryDark:"#A8882E",primaryLight:"#2A2010",
+        accent:"#8B6FD4",accentDark:"#6B4FBF",
+        text:"#F5EDD0",textSecondary:"#C9A84C",textMuted:"#7A7A9A",
+        bubble:"#1E1E35",bubbleOwn:"#C9A84C",bubbleOwnText:"#0D0D14",
+        border:"#2A2A45",shadow:"rgba(201,168,76,0.12)",
+        gradient:"linear-gradient(135deg,#0D0D14,#13131F,#1A1A2E)",
+        headerGrad:"linear-gradient(135deg,#C9A84C,#8B6FD4)",
+        font:"'Cormorant Garamond',serif",fontDisplay:"'Cinzel',serif",emoji:"✨",dark:true,
+      },
+      sporty:{
+        name:"Sporty",nameId:"Sporty",
+        bg:"#F0F4FF",bgSecondary:"#E0EAFF",surface:"#FFFFFF",surfaceSecondary:"#F5F8FF",
+        primary:"#2563EB",primaryDark:"#1D4ED8",primaryLight:"#BFDBFE",
+        accent:"#F97316",accentDark:"#EA580C",
+        text:"#0F172A",textSecondary:"#1D4ED8",textMuted:"#64748B",
+        bubble:"#EFF6FF",bubbleOwn:"#2563EB",bubbleOwnText:"#FFFFFF",
+        border:"#BFDBFE",shadow:"rgba(37,99,235,0.12)",
+        gradient:"linear-gradient(135deg,#F0F4FF,#E0EAFF,#C7D9FF)",
+        headerGrad:"linear-gradient(135deg,#2563EB,#F97316)",
+        font:"'Outfit',sans-serif",fontDisplay:"'Barlow Condensed',sans-serif",emoji:"⚡",dark:false,
+      },
+    };
+    const THEMES_DARK = {
+      soft:{...THEMES.soft,bg:"#1A0A2E",bgSecondary:"#250F3F",surface:"#1E0D35",surfaceSecondary:"#2A1445",text:"#F0E6FF",textMuted:"#9B7EC8",border:"#3D2060"},
+      sporty:{...THEMES.sporty,bg:"#0A0F1E",bgSecondary:"#0D1528",surface:"#0F1A30",surfaceSecondary:"#121F38",text:"#E8F0FF",textMuted:"#4A6A9A",border:"#1E3060"},
+    };
+
+    // ── TRANSLATIONS ─────────────────────────────────────────
+    const T = {
+      id:{
+        appName:"Vena Talks",tagline:"Bicara lebih dekat",
+        login:"Masuk",phoneNumber:"Nomor HP",phonePlaceholder:"+62 8xx xxxx xxxx",
+        sendOtp:"Kirim Kode OTP",otpSent:"Kode dikirim ke",
+        verify:"Verifikasi",resend:"Kirim Ulang",
+        setupProfile:"Atur Profil",username:"Nama Tampilan",bio:"Bio",
+        bioPlaceholder:"Tulis sesuatu tentang kamu...",
+        usernamePlaceholder:"Nama panggilanmu",uploadPhoto:"Upload Foto",save:"Simpan",
+        chats:"Percakapan",newChat:"Chat Baru",search:"Cari...",
+        typeMessage:"Ketik pesan...",send:"Kirim",
+        settings:"Pengaturan",language:"Bahasa",logout:"Keluar",
+        online:"Online",offline:"Offline",typing:"sedang mengetik...",
+        noChats:"Belum ada percakapan",startChat:"Mulai chat baru",
+        copyright:"© 2026 SRISP v1.0",back:"Kembali",chooseTheme:"Pilih Tema",
+        fbOk:"✅ Firebase terhubung",fbNo:"⚠️ Menghubungkan Firebase...",
+        otpError:"Gagal kirim OTP. Pastikan nomor benar.",
+        verifyError:"Kode salah atau kedaluwarsa.",noName:"Nama wajib diisi",
+        reply:"Balas",forward:"Teruskan",delete:"Hapus pesan",copy:"Salin",
+        status:"Status",addStatus:"Tambah Status",
+        statusPlaceholder:"Apa yang sedang kamu lakukan?",
+        myStatus:"Status Saya",recentStatus:"Status Terbaru",
+        lastseenat:"Terakhir dilihat pukul",
+        autoTheme:"Tema Otomatis (ikuti sistem)",
+        editProfile:"Edit Profil",deleteMsg:"Pesan dihapus",forwardTo:"Teruskan ke...",
+      },
+      en:{
+        appName:"Vena Talks",tagline:"Talk closer",
+        login:"Sign In",phoneNumber:"Phone Number",phonePlaceholder:"+1 xxx xxx xxxx",
+        sendOtp:"Send OTP Code",otpSent:"Code sent to",
+        verify:"Verify",resend:"Resend",
+        setupProfile:"Setup Profile",username:"Display Name",bio:"Bio",
+        bioPlaceholder:"Write something about you...",
+        usernamePlaceholder:"Your display name",uploadPhoto:"Upload Photo",save:"Save",
+        chats:"Chats",newChat:"New Chat",search:"Search...",
+        typeMessage:"Type a message...",send:"Send",
+        settings:"Settings",language:"Language",logout:"Sign Out",
+        online:"Online",offline:"Offline",typing:"is typing...",
+        noChats:"No conversations yet",startChat:"Start a new chat",
+        copyright:"© 2026 SRISP v1.0",back:"Back",chooseTheme:"Choose Theme",
+        fbOk:"✅ Firebase connected",fbNo:"⚠️ Connecting Firebase...",
+        otpError:"Failed to send OTP. Check phone number.",
+        verifyError:"Wrong or expired code.",noName:"Name is required",
+        reply:"Reply",forward:"Forward",delete:"Delete message",copy:"Copy",
+        status:"Status",addStatus:"Add Status",
+        statusPlaceholder:"What are you up to?",
+        myStatus:"My Status",recentStatus:"Recent Updates",
+        lastseenat:"Last seen at",
+        autoTheme:"Auto Theme (follow system)",
+        editProfile:"Edit Profile",deleteMsg:"Message deleted",forwardTo:"Forward to...",
+      },
+    };
+
+    // ── DEMO DATA ────────────────────────────────────────────
+    const DEMO_CONTACTS = [
+      {id:"1",name:"Rina Sari",phone:"+6281234567890",avatarUrl:null,online:true,lastSeen:new Date(),bio:"Suka kopi ☕",status:{text:"Lagi sibuk kerja 😅",time:new Date(Date.now()-3600000)}},
+      {id:"2",name:"Budi Santoso",phone:"+6289876543210",avatarUrl:null,online:false,lastSeen:new Date(Date.now()-1800000),bio:"Developer 🎮",status:null},
+      {id:"3",name:"Dewi Kusuma",phone:"+6285555666777",avatarUrl:null,online:true,lastSeen:new Date(),bio:"Travel lover ✈️",status:{text:"Liburan di Bali! 🌴",time:new Date(Date.now()-7200000)}},
+    ];
+    const DEMO_MSGS = {
+      "1":[
+        {id:"m1",text:"Halo! Apa kabar? 😊",from:"1",time:new Date(Date.now()-7200000),read:true,deleted:false,replyTo:null},
+        {id:"m2",text:"Baik banget! Kamu gimana?",from:"me",time:new Date(Date.now()-7100000),read:true,deleted:false,replyTo:null},
+        {id:"m3",text:"Alhamdulillah. Udah coba Vena Talks?",from:"1",time:new Date(Date.now()-3600000),read:true,deleted:false,replyTo:null},
+        {id:"m4",text:"Lagi nyoba nih, keren banget! 🔥",from:"me",time:new Date(Date.now()-1800000),read:true,deleted:false,replyTo:null},
+      ],
+      "2":[
+        {id:"m5",text:"Bro, meeting jam berapa?",from:"2",time:new Date(Date.now()-7200000),read:true,deleted:false,replyTo:null},
+        {id:"m6",text:"Jam 3 sore ya",from:"me",time:new Date(Date.now()-7000000),read:true,deleted:false,replyTo:null},
+      ],
+      "3":[{id:"m7",text:"Hai! 👋",from:"3",time:new Date(Date.now()-600000),read:false,deleted:false,replyTo:null}],
+    };
+    const REPLIES=["Oke siap! 👍","Haha iya betul 😄","Wah keren!","Makasih ya 🙏","Beneran? 😮","Sip sip!","Nanti aku kabarin","Ok noted!","Setuju 👌","Siap boss 😎","Gas terus 💪"];
+
+    // ── UTILS ────────────────────────────────────────────────
+    const fmtTime = d => d instanceof Date&&!isNaN(d)?d.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"}):"";
+    const fmtDate = d => {
+      if(!(d instanceof Date)||isNaN(d))return"";
+      const diff=new Date()-d;
+      if(diff<86400000)return fmtTime(d);
+      if(diff<172800000)return"Kemarin";
+      return d.toLocaleDateString("id-ID",{day:"2-digit",month:"short"});
+    };
+    const initials = n=>(n||"?").split(" ").map(x=>x[0]).join("").toUpperCase().slice(0,2);
+    const avatarBg = (name,theme)=>{const c=[theme.primary,theme.accent,theme.primaryDark,theme.accentDark];return c[(name||"A").charCodeAt(0)%c.length];};
+
+    // ── FIREBASE HELPERS ─────────────────────────────────────
+    async function uploadFile(path,dataUrl){
+      if(!dataUrl||!window._fb)return dataUrl;
+      const {stor,ref,uploadString,getDownloadURL}=window._fb;
+      const r=ref(stor,path);
+      await uploadString(r,dataUrl,"data_url");
+      return getDownloadURL(r);
+    }
+    async function fsSet(col,id,data){
+      if(!window._fb)return;
+      const {db,doc,setDoc}=window._fb;
+      await setDoc(doc(db,col,id),data,{merge:true});
+    }
+
+    // ── COMPONENTS ───────────────────────────────────────────
+    function Avatar({contact,size=44,theme,showStatus=false}){
+      return React.createElement("div",{style:{position:"relative",flexShrink:0}},
+        contact.avatarUrl
+          ? React.createElement("img",{src:contact.avatarUrl,alt:contact.name,style:{width:size,height:size,borderRadius:"50%",objectFit:"cover",border:`2px solid ${theme.border}`}})
+          : React.createElement("div",{style:{width:size,height:size,borderRadius:"50%",background:`linear-gradient(135deg,${avatarBg(contact.name,theme)},${theme.accent})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:size*0.36,fontWeight:700,color:"#fff",fontFamily:theme.fontDisplay,border:`2px solid ${theme.border}`}},initials(contact.name)),
+        showStatus&&React.createElement("div",{style:{width:Math.max(10,size*0.22),height:Math.max(10,size*0.22),borderRadius:"50%",background:contact.online?"#22C55E":theme.textMuted,border:`2px solid ${theme.surface}`,position:"absolute",bottom:0,right:0}})
+      );
+    }
+
+    function CtxMenu({items,pos,onClose,theme}){
+      const ref=useRef();
+      useEffect(()=>{
+        const h=e=>{if(ref.current&&!ref.current.contains(e.target))onClose();};
+        document.addEventListener("mousedown",h);document.addEventListener("touchstart",h);
+        return()=>{document.removeEventListener("mousedown",h);document.removeEventListener("touchstart",h);};
+      },[onClose]);
+      const top=Math.min(pos.y,window.innerHeight-220);
+      const left=Math.min(pos.x,window.innerWidth-180);
+      return React.createElement("div",{ref,style:{position:"fixed",top,left,zIndex:1000,background:theme.surface,borderRadius:14,boxShadow:`0 8px 32px ${theme.shadow},0 2px 8px rgba(0,0,0,0.15)`,border:`1px solid ${theme.border}`,overflow:"hidden",minWidth:160,animation:"fadeUp 0.15s ease"}},
+        items.map((item,i)=>React.createElement("button",{key:i,onClick:()=>{item.action();onClose();},style:{display:"flex",alignItems:"center",gap:10,width:"100%",padding:"12px 16px",background:"none",border:"none",cursor:"pointer",color:item.danger?"#EF4444":theme.text,fontFamily:theme.font,fontSize:14,textAlign:"left"},onMouseEnter:e=>e.currentTarget.style.background=theme.bgSecondary,onMouseLeave:e=>e.currentTarget.style.background="none"},
+          React.createElement("span",null,item.icon),React.createElement("span",null,item.label)
+        ))
+      );
+    }
+
+    // ── SPLASH ───────────────────────────────────────────────
+    function Splash({theme,t}){
+      return React.createElement("div",{style:{minHeight:"100vh",background:theme.gradient,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:theme.font}},
+        React.createElement("div",{style:{textAlign:"center",animation:"fadeUp 0.8s ease"}},
+          React.createElement("div",{style:{fontSize:80,marginBottom:16,animation:"pulse 2s infinite"}},theme.emoji),
+          React.createElement("h1",{style:{fontFamily:theme.fontDisplay,fontSize:44,fontWeight:700,background:theme.headerGrad,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",margin:"0 0 8px"}},"Vena Talks"),
+          React.createElement("p",{style:{color:theme.textMuted,fontSize:16,margin:0}},t.tagline),
+          React.createElement("div",{style:{marginTop:48,display:"flex",gap:6,justifyContent:"center"}},
+            [0,1,2].map(i=>React.createElement("div",{key:i,style:{width:8,height:8,borderRadius:"50%",background:theme.primary,opacity:0.3+i*0.35,animation:`bounce 1s ease ${i*0.2}s infinite`}}))
+          )
+        ),
+        React.createElement("p",{style:{position:"absolute",bottom:24,color:theme.textMuted,fontSize:12}},t.copyright)
+      );
+    }
+
+    // ── LOGIN ────────────────────────────────────────────────
+    function Login({theme,t,onLogin,fbReady}){
+      const [step,setStep]=useState("phone");
+      const [phone,setPhone]=useState("");
+      const [otp,setOtp]=useState(["","","","","",""]);
+      const [loading,setLoading]=useState(false);
+      const [error,setError]=useState("");
+      const [confirm,setConfirm]=useState(null);
+      const [countdown,setCountdown]=useState(0);
+      const otpRefs=useRef([]);
+      const rcRef=useRef();
+
+      useEffect(()=>{if(countdown>0){const ti=setTimeout(()=>setCountdown(c=>c-1),1000);return()=>clearTimeout(ti);}},[countdown]);
+
+      const sendOtp=async()=>{
+        if(phone.replace(/\D/g,"").length<9){setError("Nomor HP tidak valid");return;}
+        setLoading(true);setError("");
+        try{
+          if(fbReady&&window._fb){
+            const {auth,RecaptchaVerifier,signInWithPhoneNumber}=window._fb;
+            if(!window._recaptcha){window._recaptcha=new RecaptchaVerifier(auth,rcRef.current,{size:"invisible"});}
+            const r=await signInWithPhoneNumber(auth,phone,window._recaptcha);
+            setConfirm(r);
+          } else {await new Promise(r=>setTimeout(r,1200));}
+          setStep("otp");setCountdown(60);
+        }catch(e){console.error(e);setError(t.otpError);}
+        setLoading(false);
+      };
+
+      const otpChange=(i,val)=>{
+        if(!/^\d*$/.test(val))return;
+        const n=[...otp];n[i]=val.slice(-1);setOtp(n);
+        if(val&&i<5)otpRefs.current[i+1]?.focus();
+        if(n.every(d=>d!==""))doVerify(n.join(""));
+      };
+
+      const doVerify=async code=>{
+        setLoading(true);setError("");
+        try{
+          if(fbReady&&confirm){const u=await confirm.confirm(code);onLogin(phone,u.user.uid);}
+          else{await new Promise(r=>setTimeout(r,1000));onLogin(phone,"demo_"+Date.now());}
+        }catch(e){setError(t.verifyError);setLoading(false);}
+      };
+
+      const inp={width:"100%",padding:"14px 16px",borderRadius:14,border:`2px solid ${theme.border}`,background:theme.surfaceSecondary,color:theme.text,fontFamily:theme.font,fontSize:16,outline:"none",boxSizing:"border-box"};
+      const btn={width:"100%",padding:15,borderRadius:14,background:theme.headerGrad,border:"none",color:"#fff",fontFamily:theme.font,fontSize:16,fontWeight:700,cursor:"pointer",opacity:loading?0.7:1};
+
+      return React.createElement("div",{style:{minHeight:"100vh",background:theme.gradient,display:"flex",flexDirection:"column",fontFamily:theme.font}},
+        React.createElement("div",{style:{background:fbReady?"#DCFCE7":"#FEF9C3",padding:"8px 16px",textAlign:"center"}},
+          React.createElement("span",{style:{fontSize:12,color:fbReady?"#166534":"#854D0E"}},fbReady?t.fbOk:t.fbNo)
+        ),
+        React.createElement("div",{style:{flex:1,display:"flex",alignItems:"center",justifyContent:"center",padding:24}},
+          React.createElement("div",{style:{width:"100%",maxWidth:400,background:theme.surface,borderRadius:24,padding:32,boxShadow:`0 20px 60px ${theme.shadow}`,animation:"fadeUp 0.5s ease"}},
+            React.createElement("div",{style:{textAlign:"center",marginBottom:28}},
+              React.createElement("div",{style:{fontSize:52,marginBottom:8}},theme.emoji),
+              React.createElement("h2",{style:{fontFamily:theme.fontDisplay,fontSize:28,fontWeight:700,background:theme.headerGrad,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",margin:"0 0 4px"}},"Vena Talks"),
+              React.createElement("p",{style:{color:theme.textMuted,fontSize:14,margin:0}},t.tagline)
+            ),
+            step==="phone"
+              ? React.createElement(React.Fragment,null,
+                  React.createElement("label",{style:{display:"block",color:theme.textSecondary,fontSize:13,fontWeight:600,marginBottom:6}},t.phoneNumber),
+                  React.createElement("input",{style:inp,placeholder:t.phonePlaceholder,value:phone,onChange:e=>setPhone(e.target.value),type:"tel",onKeyDown:e=>e.key==="Enter"&&sendOtp()}),
+                  error&&React.createElement("p",{style:{color:"#EF4444",fontSize:13,margin:"6px 0 0"}},error),
+                  React.createElement("div",{ref:rcRef,id:"recaptcha-container"}),
+                  React.createElement("button",{style:{...btn,marginTop:20},onClick:sendOtp,disabled:loading},loading?"⏳ Mengirim...":t.sendOtp)
+                )
+              : React.createElement(React.Fragment,null,
+                  React.createElement("p",{style:{color:theme.textMuted,fontSize:14,marginBottom:20,textAlign:"center"}},t.otpSent," ",React.createElement("strong",{style:{color:theme.text}},phone)),
+                  React.createElement("div",{style:{display:"flex",gap:8,justifyContent:"center",marginBottom:20}},
+                    otp.map((d,i)=>React.createElement("input",{key:i,ref:el=>otpRefs.current[i]=el,style:{width:44,height:52,textAlign:"center",fontSize:22,fontWeight:700,borderRadius:12,border:`2px solid ${d?theme.primary:theme.border}`,background:theme.surfaceSecondary,color:theme.text,fontFamily:theme.font,outline:"none"},maxLength:1,value:d,onChange:e=>otpChange(i,e.target.value),onKeyDown:e=>{if(e.key==="Backspace"&&!otp[i]&&i>0)otpRefs.current[i-1]?.focus();}}))
+                  ),
+                  error&&React.createElement("p",{style:{color:"#EF4444",fontSize:13,margin:"0 0 12px",textAlign:"center"}},error),
+                  React.createElement("button",{style:btn,onClick:()=>doVerify(otp.join("")),disabled:loading||otp.some(d=>!d)},loading?"⏳ Memverifikasi...":t.verify),
+                  React.createElement("div",{style:{textAlign:"center",marginTop:14}},
+                    countdown>0
+                      ? React.createElement("span",{style:{fontSize:13,color:theme.textMuted}},"Kirim ulang dalam ",countdown,"s")
+                      : React.createElement("button",{onClick:()=>{setStep("phone");setOtp(["","","","","",""]);},style:{background:"none",border:"none",color:theme.primary,fontFamily:theme.font,fontSize:13,cursor:"pointer"}},t.resend)
+                  )
+                )
+          )
+        ),
+        React.createElement("p",{style:{textAlign:"center",padding:"0 0 20px",color:theme.textMuted,fontSize:12}},t.copyright)
+      );
+    }
+
+    // ── SETUP PROFILE ────────────────────────────────────────
+    function SetupProfile({theme,t,phone,uid,fbReady,onSave}){
+      const [name,setName]=useState("");
+      const [bio,setBio]=useState("");
+      const [avatar,setAvatar]=useState(null);
+      const [loading,setLoading]=useState(false);
+      const [error,setError]=useState("");
+      const fileRef=useRef();
+
+      const pickPhoto=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>setAvatar(ev.target.result);r.readAsDataURL(f);};
+
+      const save=async()=>{
+        if(!name.trim()){setError(t.noName);return;}
+        setLoading(true);
+        try{
+          let av=avatar;
+          if(fbReady&&avatar&&uid)av=await uploadFile(`avatars/${uid}.jpg`,avatar);
+          const p={name:name.trim(),bio:bio.trim(),phone,avatarUrl:av,uid};
+          if(fbReady&&uid)await fsSet("users",uid,{...p,createdAt:new Date(),online:true,lastSeen:new Date()});
+          onSave(p);
+        }catch(e){console.error(e);setLoading(false);}
+      };
+
+      return React.createElement("div",{style:{minHeight:"100vh",background:theme.gradient,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:theme.font,padding:24}},
+        React.createElement("div",{style:{width:"100%",maxWidth:420,background:theme.surface,borderRadius:24,padding:32,boxShadow:`0 20px 60px ${theme.shadow}`,animation:"fadeUp 0.5s ease"}},
+          React.createElement("h2",{style:{fontFamily:theme.fontDisplay,fontSize:24,fontWeight:700,color:theme.text,margin:"0 0 4px"}},t.setupProfile),
+          React.createElement("p",{style:{color:theme.textMuted,fontSize:14,margin:"0 0 24px"}},phone),
+          React.createElement("div",{style:{textAlign:"center",marginBottom:24}},
+            React.createElement("div",{onClick:()=>fileRef.current.click(),style:{width:100,height:100,borderRadius:"50%",margin:"0 auto 10px",background:avatar?"transparent":theme.bgSecondary,border:`3px dashed ${theme.primary}`,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",overflow:"hidden"}},
+              avatar?React.createElement("img",{src:avatar,style:{width:"100%",height:"100%",objectFit:"cover"}}):React.createElement("span",{style:{fontSize:36}},"📷")
+            ),
+            React.createElement("input",{ref:fileRef,type:"file",accept:"image/*",style:{display:"none"},onChange:pickPhoto}),
+            React.createElement("button",{onClick:()=>fileRef.current.click(),style:{background:"none",border:`1.5px solid ${theme.primary}`,color:theme.primary,borderRadius:8,padding:"6px 14px",fontFamily:theme.font,fontSize:13,cursor:"pointer"}},t.uploadPhoto)
+          ),
+          [{label:t.username,val:name,set:setName,ph:t.usernamePlaceholder},{label:t.bio,val:bio,set:setBio,ph:t.bioPlaceholder}].map(({label,val,set,ph},i)=>
+            React.createElement("div",{key:i,style:{marginBottom:16}},
+              React.createElement("label",{style:{display:"block",color:theme.textSecondary,fontSize:13,fontWeight:600,marginBottom:6}},label),
+              React.createElement("input",{style:{width:"100%",padding:"13px 16px",borderRadius:14,border:`2px solid ${theme.border}`,background:theme.surfaceSecondary,color:theme.text,fontFamily:theme.font,fontSize:15,outline:"none",boxSizing:"border-box"},placeholder:ph,value:val,onChange:e=>{set(e.target.value);if(i===0)setError("");}})
+            )
+          ),
+          error&&React.createElement("p",{style:{color:"#EF4444",fontSize:13,margin:"-8px 0 12px"}},error),
+          React.createElement("button",{onClick:save,disabled:loading,style:{width:"100%",padding:15,borderRadius:14,background:theme.headerGrad,border:"none",color:"#fff",fontFamily:theme.font,fontSize:16,fontWeight:700,cursor:"pointer",opacity:loading?0.7:1}},loading?"⏳ Menyimpan...":t.save)
+        )
+      );
+    }
+
+    // ── CHAT LIST ────────────────────────────────────────────
+    function ChatList({theme,t,user,contacts,messages,onOpen,onNew,onSettings}){
+      const [search,setSearch]=useState("");
+      const filtered=contacts.filter(c=>c.name.toLowerCase().includes(search.toLowerCase())||c.phone.includes(search));
+      const lastMsg=id=>{const m=messages[id]||[];return m[m.length-1]||null;};
+      const unread=id=>(messages[id]||[]).filter(m=>m.from!=="me"&&!m.read).length;
+
+      return React.createElement("div",{style:{minHeight:"100vh",background:theme.bg,fontFamily:theme.font,display:"flex",flexDirection:"column",maxWidth:480,margin:"0 auto"}},
+        // Header
+        React.createElement("div",{style:{background:theme.headerGrad,padding:"20px 20px 14px",position:"sticky",top:0,zIndex:10}},
+          React.createElement("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}},
+            React.createElement("div",{style:{display:"flex",alignItems:"center",gap:10}},
+              React.createElement("div",{onClick:onSettings,style:{cursor:"pointer"}},React.createElement(Avatar,{contact:user,theme,size:38})),
+              React.createElement("div",null,
+                React.createElement("h2",{style:{margin:0,fontSize:18,fontWeight:700,color:"#fff",fontFamily:theme.fontDisplay}},"Vena Talks"),
+                React.createElement("p",{style:{margin:0,fontSize:12,color:"rgba(255,255,255,0.8)"}},user.name)
+              )
+            ),
+            React.createElement("div",{style:{display:"flex",gap:8}},
+              React.createElement("button",{onClick:onNew,style:{background:"rgba(255,255,255,0.2)",border:"none",borderRadius:"50%",width:38,height:38,cursor:"pointer",fontSize:16,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center"}},"✏️"),
+              React.createElement("button",{onClick:onSettings,style:{background:"rgba(255,255,255,0.2)",border:"none",borderRadius:"50%",width:38,height:38,cursor:"pointer",fontSize:16,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center"}},"⚙️")
+            )
+          ),
+          React.createElement("div",{style:{position:"relative"}},
+            React.createElement("span",{style:{position:"absolute",left:14,top:"50%",transform:"translateY(-50%)",fontSize:14,opacity:0.7}},"🔍"),
+            React.createElement("input",{style:{width:"100%",padding:"10px 14px 10px 38px",borderRadius:14,border:"none",background:"rgba(255,255,255,0.25)",color:"#fff",fontFamily:theme.font,fontSize:14,outline:"none",boxSizing:"border-box"},placeholder:t.search,value:search,onChange:e=>setSearch(e.target.value)})
+          )
+        ),
+        // List
+        React.createElement("div",{style:{flex:1,overflowY:"auto"}},
+          filtered.length===0
+            ? React.createElement("div",{style:{textAlign:"center",padding:60,color:theme.textMuted}},
+                React.createElement("div",{style:{fontSize:52,marginBottom:12}},"💬"),
+                React.createElement("p",{style:{fontSize:16,marginBottom:16}},t.noChats),
+                React.createElement("button",{onClick:onNew,style:{background:theme.headerGrad,border:"none",borderRadius:12,padding:"12px 24px",color:"#fff",fontFamily:theme.font,fontSize:14,fontWeight:700,cursor:"pointer"}},t.startChat)
+              )
+            : filtered.map((c,i)=>{
+                const lm=lastMsg(c.id);const ur=unread(c.id);
+                return React.createElement("div",{key:c.id,onClick:()=>onOpen(c),style:{display:"flex",alignItems:"center",gap:14,padding:"14px 20px",borderBottom:`1px solid ${theme.border}`,cursor:"pointer",background:theme.surface,transition:"background 0.15s",animation:`fadeUp 0.3s ease ${i*0.04}s both`},onMouseEnter:e=>e.currentTarget.style.background=theme.bgSecondary,onMouseLeave:e=>e.currentTarget.style.background=theme.surface},
+                  React.createElement("div",{style:{position:"relative"}},
+                    React.createElement(Avatar,{contact:c,theme,showStatus:true}),
+                    c.status&&(new Date()-c.status.time)<86400000&&React.createElement("div",{style:{position:"absolute",inset:-3,borderRadius:"50%",border:`2.5px solid ${theme.primary}`,pointerEvents:"none"}})
+                  ),
+                  React.createElement("div",{style:{flex:1,minWidth:0}},
+                    React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
+                      React.createElement("span",{style:{fontWeight:700,color:theme.text,fontSize:15}},c.name),
+                      lm&&React.createElement("span",{style:{fontSize:11,color:ur>0?theme.primary:theme.textMuted,fontWeight:ur>0?700:400}},fmtDate(lm.time))
+                    ),
+                    React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:2}},
+                      React.createElement("span",{style:{fontSize:13,color:ur>0?theme.textSecondary:theme.textMuted,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:220,fontWeight:ur>0?600:400}},
+                        lm?(lm.deleted?"🚫 Pesan dihapus":lm.from==="me"?"Kamu: "+(lm.image?"📷 Foto":lm.text):(lm.image?"📷 Foto":lm.text)):c.phone
+                      ),
+                      ur>0&&React.createElement("span",{style:{background:theme.primary,color:"#fff",borderRadius:"50%",minWidth:20,height:20,display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:700,padding:"0 4px",flexShrink:0}},ur)
+                    )
+                  )
+                );
+              })
+        ),
+        React.createElement("p",{style:{textAlign:"center",padding:"10px 0",color:theme.textMuted,fontSize:11}},t.copyright)
+      );
+    }
+
+    // ── CHAT ROOM ────────────────────────────────────────────
+    function ChatRoom({theme,t,user,contact,messages,onBack,onSend,onDelete,onForward,contacts}){
+      const [text,setText]=useState("");
+      const [replyTo,setReplyTo]=useState(null);
+      const [isTyping,setTyping]=useState(false);
+      const [uploading,setUploading]=useState(false);
+      const [ctxMenu,setCtxMenu]=useState(null);
+      const [fwdMsg,setFwdMsg]=useState(null);
+      const bottomRef=useRef();
+      const fileRef=useRef();
+      const typingRef=useRef();
+
+      useEffect(()=>{bottomRef.current?.scrollIntoView({behavior:"smooth"});},[messages]);
+      useEffect(()=>{const ti=setTimeout(()=>setTyping(true),6000);return()=>clearTimeout(ti);},[]);
+
+      const sendMsg=()=>{
+        if(!text.trim())return;
+        onSend(contact.id,{text:text.trim(),replyTo:replyTo?{id:replyTo.id,text:replyTo.text||"📷 Foto",from:replyTo.from}:null});
+        setText("");setReplyTo(null);setTyping(false);
+      };
+
+      const handleImg=e=>{
+        const f=e.target.files[0];if(!f)return;
+        setUploading(true);
+        const r=new FileReader();
+        r.onload=ev=>{onSend(contact.id,{text:"",image:ev.target.result,replyTo:null});setUploading(false);};
+        r.readAsDataURL(f);e.target.value="";
+      };
+
+      const handleKey=e=>{
+        if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendMsg();}
+        clearTimeout(typingRef.current);typingRef.current=setTimeout(()=>setTyping(false),2000);
+      };
+
+      const longPress=(msg,e)=>{
+        e.preventDefault();
+        setCtxMenu({msg,pos:{x:e.touches?e.touches[0].clientX:e.clientX,y:e.touches?e.touches[0].clientY:e.clientY}});
+      };
+
+      const ctxItems=msg=>{
+        const items=[
+          {icon:"↩️",label:t.reply,action:()=>setReplyTo(msg)},
+          {icon:"📋",label:t.copy,action:()=>navigator.clipboard?.writeText(msg.text||"")},
+          {icon:"↗️",label:t.forward,action:()=>setFwdMsg(msg)},
+        ];
+        if(msg.from==="me")items.push({icon:"🗑️",label:t.delete,danger:true,action:()=>onDelete(contact.id,msg.id)});
+        return items;
+      };
+
+      const lastSeen=contact.online?t.online:`${t.lastseenat} ${fmtTime(contact.lastSeen)}`;
+
+      return React.createElement("div",{style:{height:"100vh",display:"flex",flexDirection:"column",background:theme.bg,fontFamily:theme.font,maxWidth:480,margin:"0 auto"},onClick:()=>ctxMenu&&setCtxMenu(null)},
+        // Header
+        React.createElement("div",{style:{background:theme.headerGrad,padding:"12px 16px",display:"flex",alignItems:"center",gap:12,boxShadow:`0 2px 12px ${theme.shadow}`}},
+          React.createElement("button",{onClick:onBack,style:{background:"rgba(255,255,255,0.2)",border:"none",borderRadius:"50%",width:36,height:36,cursor:"pointer",color:"#fff",fontSize:20,display:"flex",alignItems:"center",justifyContent:"center"}},"←"),
+          React.createElement(Avatar,{contact,theme,size:40,showStatus:true}),
+          React.createElement("div",{style:{flex:1}},
+            React.createElement("p",{style:{margin:0,fontWeight:700,color:"#fff",fontSize:16}},contact.name),
+            React.createElement("p",{style:{margin:0,fontSize:12,color:"rgba(255,255,255,0.85)"}},isTyping?t.typing:lastSeen)
+          ),
+          React.createElement("button",{style:{background:"rgba(255,255,255,0.2)",border:"none",borderRadius:"50%",width:36,height:36,cursor:"pointer",color:"#fff",fontSize:16,display:"flex",alignItems:"center",justifyContent:"center"}},"📞"),
+          React.createElement("button",{style:{background:"rgba(255,255,255,0.2)",border:"none",borderRadius:"50%",width:36,height:36,cursor:"pointer",color:"#fff",fontSize:16,display:"flex",alignItems:"center",justifyContent:"center"}},"📹")
+        ),
+        // Messages
+        React.createElement("div",{style:{flex:1,overflowY:"auto",padding:"12px 16px",display:"flex",flexDirection:"column",gap:6}},
+          messages.map((msg,i)=>{
+            const isMe=msg.from==="me";
+            const showDate=i===0||new Date(messages[i-1].time).toDateString()!==new Date(msg.time).toDateString();
+            return React.createElement("div",{key:msg.id},
+              showDate&&React.createElement("div",{style:{textAlign:"center",margin:"8px 0"}},
+                React.createElement("span",{style:{background:theme.bgSecondary,color:theme.textMuted,fontSize:11,padding:"4px 12px",borderRadius:20}},new Date(msg.time).toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long"}))
+              ),
+              React.createElement("div",{style:{display:"flex",justifyContent:isMe?"flex-end":"flex-start",animation:"fadeUp 0.2s ease both"}},
+                !isMe&&React.createElement("div",{style:{marginRight:6,alignSelf:"flex-end"}},React.createElement(Avatar,{contact,theme,size:26})),
+                React.createElement("div",{
+                  onContextMenu:e=>!msg.deleted&&longPress(msg,e),
+                  onTouchStart:e=>{if(msg.deleted)return;const ti=setTimeout(()=>longPress(msg,e),500);e.currentTarget._lt=ti;},
+                  onTouchEnd:e=>clearTimeout(e.currentTarget._lt),
+                  style:{maxWidth:"72%",padding:msg.image&&!msg.deleted?"6px":"10px 14px",borderRadius:isMe?"18px 18px 4px 18px":"18px 18px 18px 4px",background:isMe?theme.bubbleOwn:theme.bubble,color:isMe?theme.bubbleOwnText:theme.text,boxShadow:`0 2px 8px ${theme.shadow}`,cursor:"context-menu"}
+                },
+                  msg.replyTo&&!msg.deleted&&React.createElement("div",{style:{background:isMe?"rgba(0,0,0,0.15)":"rgba(0,0,0,0.06)",borderLeft:`3px solid ${isMe?"#fff":theme.primary}`,borderRadius:8,padding:"6px 10px",marginBottom:6}},
+                    React.createElement("p",{style:{margin:0,fontWeight:700,opacity:0.8,fontSize:11}},msg.replyTo.from==="me"?user.name:contact.name),
+                    React.createElement("p",{style:{margin:0,opacity:0.7,fontSize:12,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:200}},msg.replyTo.text)
+                  ),
+                  msg.deleted
+                    ? React.createElement("p",{style:{margin:0,fontSize:13,fontStyle:"italic",opacity:0.6}},"🚫 ",t.deleteMsg)
+                    : React.createElement(React.Fragment,null,
+                        msg.image&&React.createElement("img",{src:msg.image,alt:"img",style:{maxWidth:"100%",maxHeight:220,borderRadius:10,display:"block",objectFit:"cover"}}),
+                        msg.text&&React.createElement("p",{style:{margin:0,fontSize:15,lineHeight:1.5,wordBreak:"break-word"}},msg.text)
+                      ),
+                  React.createElement("div",{style:{display:"flex",alignItems:"center",justifyContent:"flex-end",gap:3,marginTop:3}},
+                    React.createElement("span",{style:{fontSize:10,opacity:0.6}},fmtTime(msg.time)),
+                    isMe&&!msg.deleted&&React.createElement("span",{style:{fontSize:11,opacity:msg.read?1:0.5}},msg.read?"✓✓":"✓")
+                  )
+                )
+              )
+            );
+          }),
+          isTyping&&React.createElement("div",{style:{display:"flex",alignItems:"center",gap:8}},
+            React.createElement(Avatar,{contact,theme,size:26}),
+            React.createElement("div",{style:{padding:"10px 14px",borderRadius:"18px 18px 18px 4px",background:theme.bubble,display:"flex",gap:4,alignItems:"center"}},
+              [0,1,2].map(i=>React.createElement("div",{key:i,style:{width:7,height:7,borderRadius:"50%",background:theme.textMuted,animation:`bounce 1s ease ${i*0.2}s infinite`}}))
+            )
+          ),
+          React.createElement("div",{ref:bottomRef})
+        ),
+        // Reply preview
+        replyTo&&React.createElement("div",{style:{padding:"8px 16px",background:theme.surface,borderTop:`1px solid ${theme.border}`,display:"flex",alignItems:"center",gap:10}},
+          React.createElement("div",{style:{flex:1,borderLeft:`3px solid ${theme.primary}`,paddingLeft:10}},
+            React.createElement("p",{style:{margin:0,fontSize:12,color:theme.primary,fontWeight:700}},replyTo.from==="me"?user.name:contact.name),
+            React.createElement("p",{style:{margin:0,fontSize:13,color:theme.textMuted,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}},replyTo.image?"📷 Foto":replyTo.text)
+          ),
+          React.createElement("button",{onClick:()=>setReplyTo(null),style:{background:"none",border:"none",color:theme.textMuted,cursor:"pointer",fontSize:18}},"✕")
+        ),
+        // Input
+        React.createElement("div",{style:{padding:"10px 14px",background:theme.surface,borderTop:`1px solid ${theme.border}`,display:"flex",alignItems:"flex-end",gap:8}},
+          React.createElement("input",{ref:fileRef,type:"file",accept:"image/*",style:{display:"none"},onChange:handleImg}),
+          React.createElement("button",{onClick:()=>fileRef.current.click(),disabled:uploading,style:{background:theme.bgSecondary,border:"none",borderRadius:"50%",width:42,height:42,cursor:"pointer",fontSize:18,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}},uploading?"⏳":"📷"),
+          React.createElement("textarea",{value:text,onChange:e=>setText(e.target.value),onKeyDown:handleKey,placeholder:t.typeMessage,rows:1,style:{flex:1,padding:"11px 14px",borderRadius:22,border:`2px solid ${theme.border}`,background:theme.bgSecondary,color:theme.text,fontFamily:theme.font,fontSize:15,outline:"none",resize:"none",boxSizing:"border-box",maxHeight:100,overflowY:"auto",lineHeight:1.5}}),
+          React.createElement("button",{onClick:sendMsg,disabled:!text.trim(),style:{background:text.trim()?theme.headerGrad:theme.border,border:"none",borderRadius:"50%",width:42,height:42,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",cursor:text.trim()?"pointer":"not-allowed",fontSize:18,transition:"all 0.2s"}},
+            React.createElement("span",{style:{transform:"rotate(45deg)",display:"block",color:"#fff"}},"➤")
+          )
+        ),
+        // Context menu
+        ctxMenu&&React.createElement(CtxMenu,{items:ctxItems(ctxMenu.msg),pos:ctxMenu.pos,onClose:()=>setCtxMenu(null),theme}),
+        // Forward modal
+        fwdMsg&&React.createElement("div",{style:{position:"fixed",inset:0,background:"rgba(0,0,0,0.5)",zIndex:200,display:"flex",alignItems:"flex-end",justifyContent:"center"},onClick:()=>setFwdMsg(null)},
+          React.createElement("div",{style:{background:theme.surface,borderRadius:"24px 24px 0 0",padding:24,width:"100%",maxWidth:480,maxHeight:"60vh",overflowY:"auto"},onClick:e=>e.stopPropagation()},
+            React.createElement("h3",{style:{margin:"0 0 16px",color:theme.text,fontFamily:theme.fontDisplay}},t.forwardTo),
+            contacts.filter(c=>c.id!==contact.id).map(c=>
+              React.createElement("div",{key:c.id,onClick:()=>{onForward(c.id,fwdMsg);setFwdMsg(null);},style:{display:"flex",alignItems:"center",gap:12,padding:"10px 0",cursor:"pointer",borderBottom:`1px solid ${theme.border}`}},
+                React.createElement(Avatar,{contact:c,theme,size:40}),
+                React.createElement("p",{style:{margin:0,fontWeight:700,color:theme.text}},c.name)
+              )
+            )
+          )
+        )
+      );
+    }
+
+    // ── SETTINGS ─────────────────────────────────────────────
+    function Settings({theme,t,user,curTheme,lang,autoTheme,onTheme,onLang,onAuto,onLogout,onBack,onEditProfile}){
+      return React.createElement("div",{style:{minHeight:"100vh",background:theme.bg,fontFamily:theme.font,maxWidth:480,margin:"0 auto"}},
+        React.createElement("div",{style:{background:theme.headerGrad,padding:"16px 20px",display:"flex",alignItems:"center",gap:12}},
+          React.createElement("button",{onClick:onBack,style:{background:"rgba(255,255,255,0.2)",border:"none",borderRadius:"50%",width:36,height:36,cursor:"pointer",color:"#fff",fontSize:20,display:"flex",alignItems:"center",justifyContent:"center"}},"←"),
+          React.createElement("h2",{style:{margin:0,color:"#fff",fontFamily:theme.fontDisplay,fontSize:20}},t.settings)
+        ),
+        // Profile
+        React.createElement("div",{style:{margin:20,background:theme.surface,borderRadius:18,padding:20,display:"flex",alignItems:"center",gap:14,boxShadow:`0 4px 20px ${theme.shadow}`,cursor:"pointer"},onClick:onEditProfile},
+          React.createElement(Avatar,{contact:user,theme,size:60}),
+          React.createElement("div",{style:{flex:1}},
+            React.createElement("p",{style:{margin:0,fontWeight:700,fontSize:17,color:theme.text}},user.name),
+            React.createElement("p",{style:{margin:0,fontSize:13,color:theme.textMuted}},user.bio||user.phone),
+            React.createElement("p",{style:{margin:"4px 0 0",fontSize:12,color:theme.primary,fontWeight:600}},t.editProfile+" →")
+          )
+        ),
+        // Theme
+        React.createElement("div",{style:{margin:"0 20px 16px",background:theme.surface,borderRadius:18,padding:20,boxShadow:`0 4px 20px ${theme.shadow}`}},
+          React.createElement("h3",{style:{margin:"0 0 14px",color:theme.text,fontSize:15,fontWeight:700}},t.chooseTheme),
+          React.createElement("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14,padding:"10px 14px",background:theme.bgSecondary,borderRadius:12}},
+            React.createElement("span",{style:{fontSize:13,color:theme.text}},"🌙 "+t.autoTheme),
+            React.createElement("div",{onClick:onAuto,style:{width:44,height:24,borderRadius:12,background:autoTheme?theme.primary:theme.border,cursor:"pointer",position:"relative",transition:"background 0.2s"}},
+              React.createElement("div",{style:{position:"absolute",top:2,left:autoTheme?22:2,width:20,height:20,borderRadius:"50%",background:"#fff",transition:"left 0.2s",boxShadow:"0 1px 4px rgba(0,0,0,0.2)"}})
+            )
+          ),
+          React.createElement("div",{style:{display:"flex",gap:8}},
+            Object.entries(THEMES).map(([key,th])=>
+              React.createElement("button",{key,onClick:()=>onTheme(key),style:{flex:1,padding:"12px 6px",borderRadius:12,cursor:"pointer",border:`2px solid ${curTheme===key?th.primary:theme.border}`,background:curTheme===key?th.primaryLight:theme.bgSecondary,fontFamily:theme.font,fontSize:12,fontWeight:600,color:curTheme===key?th.primaryDark:theme.textMuted,transition:"all 0.2s"}},
+                React.createElement("div",{style:{fontSize:20,marginBottom:4}},th.emoji),
+                lang==="id"?th.nameId:th.name
+              )
+            )
+          )
+        ),
+        // Language
+        React.createElement("div",{style:{margin:"0 20px 16px",background:theme.surface,borderRadius:18,padding:20,boxShadow:`0 4px 20px ${theme.shadow}`}},
+          React.createElement("h3",{style:{margin:"0 0 14px",color:theme.text,fontSize:15,fontWeight:700}},t.language),
+          React.createElement("div",{style:{display:"flex",gap:10}},
+            ["id","en"].map(l=>
+              React.createElement("button",{key:l,onClick:()=>onLang(l),style:{flex:1,padding:12,borderRadius:12,cursor:"pointer",border:`2px solid ${lang===l?theme.primary:theme.border}`,background:lang===l?theme.primaryLight:theme.bgSecondary,fontFamily:theme.font,fontSize:14,fontWeight:600,color:lang===l?theme.primaryDark:theme.textMuted}},
+                l==="id"?"🇮🇩 Indonesia":"🇬🇧 English"
+              )
+            )
+          )
+        ),
+        React.createElement("div",{style:{margin:"0 20px"}},
+          React.createElement("button",{onClick:onLogout,style:{width:"100%",padding:14,borderRadius:14,background:"#FEE2E2",border:"2px solid #FECACA",color:"#DC2626",fontFamily:theme.font,fontSize:15,fontWeight:700,cursor:"pointer"}},"🚪 "+t.logout)
+        ),
+        React.createElement("p",{style:{textAlign:"center",padding:"20px 0 12px",color:theme.textMuted,fontSize:11}},t.copyright)
+      );
+    }
+
+    // ── EDIT PROFILE ─────────────────────────────────────────
+    function EditProfile({theme,t,user,onBack,onSave,fbReady}){
+      const [name,setName]=useState(user.name||"");
+      const [bio,setBio]=useState(user.bio||"");
+      const [avatar,setAvatar]=useState(user.avatarUrl||null);
+      const [saving,setSaving]=useState(false);
+      const fileRef=useRef();
+
+      const save=async()=>{
+        setSaving(true);
+        try{
+          let av=avatar;
+          if(fbReady&&avatar&&user.uid&&avatar.startsWith("data:"))av=await uploadFile(`avatars/${user.uid}.jpg`,avatar);
+          const updated={...user,name,bio,avatarUrl:av};
+          if(fbReady&&user.uid)await fsSet("users",user.uid,{name,bio,avatarUrl:av});
+          onSave(updated);
+        }catch(e){console.error(e);}
+        setSaving(false);
+      };
+
+      return React.createElement("div",{style:{minHeight:"100vh",background:theme.bg,fontFamily:theme.font,maxWidth:480,margin:"0 auto"}},
+        React.createElement("div",{style:{background:theme.headerGrad,padding:"16px 20px",display:"flex",alignItems:"center",gap:12}},
+          React.createElement("button",{onClick:onBack,style:{background:"rgba(255,255,255,0.2)",border:"none",borderRadius:"50%",width:36,height:36,cursor:"pointer",color:"#fff",fontSize:20,display:"flex",alignItems:"center",justifyContent:"center"}},"←"),
+          React.createElement("h2",{style:{margin:0,color:"#fff",fontFamily:theme.fontDisplay,fontSize:20}},t.editProfile)
+        ),
+        React.createElement("div",{style:{padding:24}},
+          React.createElement("div",{style:{textAlign:"center",marginBottom:24}},
+            React.createElement("div",{onClick:()=>fileRef.current.click(),style:{width:100,height:100,borderRadius:"50%",margin:"0 auto 10px",overflow:"hidden",cursor:"pointer",border:`3px solid ${theme.primary}`}},
+              avatar?React.createElement("img",{src:avatar,style:{width:"100%",height:"100%",objectFit:"cover"}}):React.createElement("div",{style:{width:"100%",height:"100%",background:theme.bgSecondary,display:"flex",alignItems:"center",justifyContent:"center",fontSize:36}},"📷")
+            ),
+            React.createElement("input",{ref:fileRef,type:"file",accept:"image/*",style:{display:"none"},onChange:e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>setAvatar(ev.target.result);r.readAsDataURL(f);}}),
+            React.createElement("button",{onClick:()=>fileRef.current.click(),style:{background:"none",border:`1.5px solid ${theme.primary}`,color:theme.primary,borderRadius:8,padding:"5px 14px",fontFamily:theme.font,fontSize:13,cursor:"pointer"}},t.uploadPhoto)
+          ),
+          [{label:t.username,val:name,set:setName},{label:t.bio,val:bio,set:setBio}].map(({label,val,set},i)=>
+            React.createElement("div",{key:i,style:{marginBottom:16}},
+              React.createElement("label",{style:{display:"block",color:theme.textSecondary,fontSize:13,fontWeight:600,marginBottom:6}},label),
+              React.createElement("input",{style:{width:"100%",padding:"13px 16px",borderRadius:14,border:`2px solid ${theme.border}`,background:theme.surfaceSecondary,color:theme.text,fontFamily:theme.font,fontSize:15,outline:"none",boxSizing:"border-box"},value:val,onChange:e=>set(e.target.value)})
+            )
+          ),
+          React.createElement("p",{style:{color:theme.textMuted,fontSize:13,margin:"0 0 16px"}},user.phone),
+          React.createElement("button",{onClick:save,disabled:saving,style:{width:"100%",padding:14,borderRadius:14,background:theme.headerGrad,border:"none",color:"#fff",fontFamily:theme.font,fontSize:15,fontWeight:700,cursor:"pointer",opacity:saving?0.7:1}},saving?"⏳ Menyimpan...":t.save)
+        )
+      );
+    }
+
+    // ── NEW CHAT ─────────────────────────────────────────────
+    function NewChat({theme,t,contacts,onSelect,onBack}){
+      const [search,setSearch]=useState("");
+      const filtered=contacts.filter(c=>c.name.toLowerCase().includes(search.toLowerCase())||c.phone.includes(search));
+      return React.createElement("div",{style:{minHeight:"100vh",background:theme.bg,fontFamily:theme.font,maxWidth:480,margin:"0 auto"}},
+        React.createElement("div",{style:{background:theme.headerGrad,padding:"16px 20px",display:"flex",alignItems:"center",gap:12}},
+          React.createElement("button",{onClick:onBack,style:{background:"rgba(255,255,255,0.2)",border:"none",borderRadius:"50%",width:36,height:36,cursor:"pointer",color:"#fff",fontSize:20,display:"flex",alignItems:"center",justifyContent:"center"}},"←"),
+          React.createElement("h2",{style:{margin:0,color:"#fff",fontFamily:theme.fontDisplay,fontSize:20}},t.newChat)
+        ),
+        React.createElement("div",{style:{padding:16}},
+          React.createElement("input",{style:{width:"100%",padding:"12px 16px",borderRadius:14,border:`2px solid ${theme.border}`,background:theme.surface,color:theme.text,fontFamily:theme.font,fontSize:15,outline:"none",boxSizing:"border-box"},placeholder:t.search,value:search,onChange:e=>setSearch(e.target.value),autoFocus:true})
+        ),
+        filtered.map(c=>
+          React.createElement("div",{key:c.id,onClick:()=>onSelect(c),style:{display:"flex",alignItems:"center",gap:14,padding:"12px 20px",cursor:"pointer",borderBottom:`1px solid ${theme.border}`,background:theme.surface,transition:"background 0.15s"},onMouseEnter:e=>e.currentTarget.style.background=theme.bgSecondary,onMouseLeave:e=>e.currentTarget.style.background=theme.surface},
+            React.createElement(Avatar,{contact:c,theme,showStatus:true}),
+            React.createElement("div",null,
+              React.createElement("p",{style:{margin:0,fontWeight:700,color:theme.text}},c.name),
+              React.createElement("p",{style:{margin:0,fontSize:13,color:theme.textMuted}},c.bio||c.phone)
+            )
+          )
+        )
+      );
+    }
+
+    // ── MAIN APP ─────────────────────────────────────────────
+    function App(){
+      const [screen,setScreen]=useState("splash");
+      const [themeName,setThemeName]=useState("soft");
+      const [lang,setLang]=useState("id");
+      const [autoTheme,setAutoTheme]=useState(true);
+      const [user,setUser]=useState(null);
+      const [contacts]=useState(DEMO_CONTACTS);
+      const [messages,setMessages]=useState(DEMO_MSGS);
+      const [active,setActive]=useState(null);
+      const [fbReady,setFbReady]=useState(false);
+      const [pPhone,setPPhone]=useState(null);
+      const [pUid,setPUid]=useState(null);
+
+      const prefersDark=window.matchMedia?.("(prefers-color-scheme: dark)").matches;
+      const theme=(()=>{
+        if(autoTheme&&prefersDark&&THEMES_DARK[themeName])return THEMES_DARK[themeName];
+        return THEMES[themeName];
+      })();
+      const t=T[lang];
+
+      useEffect(()=>{
+        // Wait for Firebase
+        if(window._fbReady){setFbReady(true);}
+        else{window.addEventListener("fbReady",()=>setFbReady(true),{once:true});}
+        const ti=setTimeout(()=>setScreen("login"),2200);
+        return()=>clearTimeout(ti);
+      },[]);
+
+      const openChat=c=>{
+        setMessages(prev=>({...prev,[c.id]:(prev[c.id]||[]).map(m=>({...m,read:true}))}));
+        setActive(c);setScreen("chat");
+      };
+
+      const sendMsg=(cid,data)=>{
+        const msg={id:"m"+Date.now(),...data,from:"me",time:new Date(),read:false,deleted:false};
+        setMessages(prev=>({...prev,[cid]:[...(prev[cid]||[]),msg]}));
+        setTimeout(()=>{
+          const r={id:"r"+Date.now(),text:REPLIES[Math.floor(Math.random()*REPLIES.length)],from:cid,time:new Date(),read:false,deleted:false,replyTo:null};
+          setMessages(prev=>({...prev,[cid]:[...(prev[cid]||[]),r]}));
+        },1500+Math.random()*2000);
+      };
+
+      const deleteMsg=(cid,mid)=>setMessages(prev=>({...prev,[cid]:(prev[cid]||[]).map(m=>m.id===mid?{...m,deleted:true,text:"",image:null}:m)}));
+      const forwardMsg=(toId,msg)=>{sendMsg(toId,{text:msg.text,image:msg.image||null,replyTo:null});openChat(contacts.find(c=>c.id===toId));};
+
+      return React.createElement(React.Fragment,null,
+        screen==="splash" && React.createElement(Splash,{theme,t}),
+        screen==="login"  && React.createElement(Login,{theme,t,onLogin:(p,u)=>{setPPhone(p);setPUid(u);setScreen("setup");},fbReady}),
+        screen==="setup"  && React.createElement(SetupProfile,{theme,t,phone:pPhone,uid:pUid,fbReady,onSave:p=>{setUser(p);setScreen("chats");}}),
+        screen==="chats"  && user && React.createElement(ChatList,{theme,t,user,contacts,messages,onOpen:openChat,onNew:()=>setScreen("newchat"),onSettings:()=>setScreen("settings")}),
+        screen==="chat"   && active && React.createElement(ChatRoom,{theme,t,user,contact:active,messages:messages[active.id]||[],onBack:()=>setScreen("chats"),onSend:sendMsg,onDelete:deleteMsg,onForward:forwardMsg,contacts}),
+        screen==="settings" && React.createElement(Settings,{theme,t,user,curTheme:themeName,lang,autoTheme,onTheme:setThemeName,onLang:setLang,onAuto:()=>setAutoTheme(v=>!v),onLogout:()=>{setUser(null);setScreen("login");},onBack:()=>setScreen("chats"),onEditProfile:()=>setScreen("profile")}),
+        screen==="profile"  && React.createElement(EditProfile,{theme,t,user,onBack:()=>setScreen("settings"),onSave:p=>{setUser(p);setScreen("settings");},fbReady}),
+        screen==="newchat"  && React.createElement(NewChat,{theme,t,contacts,onSelect:openChat,onBack:()=>setScreen("chats")})
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+  </script>
+</body>
+</html>
