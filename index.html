@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#0a2a1a"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<title>Vena Talks</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;font-family:'Inter',sans-serif;overflow:hidden;
+  background:linear-gradient(160deg,#061a0e,#0a2a18,#061620)}
+#app{position:fixed;inset:0;max-width:480px;margin:0 auto;display:flex;flex-direction:column;color:#f0fff4}
+
+/* Glass */
+.g{background:rgba(255,255,255,0.08);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.12);border-radius:18px}
+.g2{background:rgba(255,255,255,0.12);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.18);border-radius:18px}
+
+/* Header */
+.hdr{background:rgba(6,26,14,0.8);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.08);
+  padding:12px 16px;display:flex;align-items:center;gap:11px;flex-shrink:0}
+
+/* Button */
+.btn{background:linear-gradient(135deg,rgba(26,107,58,0.9),rgba(26,58,143,0.9));
+  border:1px solid rgba(255,255,255,0.15);border-radius:50px;color:#fff;
+  font-family:'Inter',sans-serif;font-weight:600;cursor:pointer;
+  transition:opacity 0.2s;box-shadow:0 4px 20px rgba(34,168,85,0.2)}
+.btn:active{opacity:0.8}
+.btn:disabled{opacity:0.4;cursor:not-allowed}
+.btn-ghost{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);
+  border-radius:50px;color:rgba(240,255,244,0.7);font-family:'Inter',sans-serif;
+  cursor:pointer;transition:background 0.2s}
+.btn-ghost:active{background:rgba(255,255,255,0.15)}
+
+/* Input */
+.inp{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);
+  border-radius:14px;color:#f0fff4;font-family:'Inter',sans-serif;
+  width:100%;outline:none;padding:12px 16px;font-size:15px}
+.inp:focus{border-color:rgba(34,168,85,0.6)}
+.inp::placeholder{color:rgba(240,255,244,0.35)}
+
+/* Avatar */
+.av{border-radius:50%;border:1.5px solid rgba(255,255,255,0.2);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-weight:700;
+  background:linear-gradient(135deg,#1a6b3a,#1a3a8f);color:#fff}
+.dot-on{position:absolute;bottom:0;right:0;width:10px;height:10px;border-radius:50%;
+  background:#22c55e;border:2px solid #061a0e}
+.dot-off{position:absolute;bottom:0;right:0;width:10px;height:10px;border-radius:50%;
+  background:#64748b;border:2px solid #061a0e}
+
+/* Bubbles */
+.bm{background:linear-gradient(135deg,rgba(26,107,58,0.8),rgba(26,58,143,0.7));
+  border:1px solid rgba(34,168,85,0.2);border-radius:18px 18px 4px 18px}
+.bo{background:rgba(255,255,255,0.09);border:1px solid rgba(255,255,255,0.1);
+  border-radius:18px 18px 18px 4px}
+
+/* Logo */
+.logo{border-radius:50%;background:rgba(255,255,255,0.1);border:1.5px solid rgba(34,168,85,0.4);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-v{font-size:22px;font-weight:700;background:linear-gradient(135deg,#2dd670,#60a5fa);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+/* Misc */
+.sp{border:2px solid rgba(34,168,85,0.2);border-top:2px solid #22a855;
+  border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0}
+.mbg{flex:1;overflow-y:auto;padding:11px 13px;display:flex;flex-direction:column;gap:4px;
+  background:rgba(6,26,14,0.4)}
+.ibar{background:rgba(6,26,14,0.9);backdrop-filter:blur(20px);
+  border-top:1px solid rgba(255,255,255,0.08);padding:9px 12px;
+  display:flex;align-items:flex-end;gap:8px;flex-shrink:0}
+.row{display:flex;align-items:center;gap:12px;padding:11px 15px;cursor:pointer;
+  border-bottom:1px solid rgba(255,255,255,0.04);transition:background 0.15s}
+.row:active{background:rgba(255,255,255,0.05)}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px">
+    <div class="logo" style="width:72px;height:72px"><span class="logo-v">V</span></div>
+    <div class="sp" style="width:28px;height:28px"></div>
+    <p style="color:rgba(34,168,85,0.5);font-size:11px;font-family:monospace">v8.5</p>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut,browserLocalPersistence,setPersistence}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getDatabase,ref,push,onValue,update,get,set,off}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+// Storage tidak dipakai - foto disimpan di Realtime Database
+
+const app=initializeApp({
+  apiKey:"AIzaSyCXD0MNvi7LCZbBnP-CdbVE3jsyUhxnhXE",
+  authDomain:"appsvena-talks.firebaseapp.com",
+  databaseURL:"https://appsvena-talks-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"appsvena-talks",
+  storageBucket:"appsvena-talks.firebasestorage.app",
+  messagingSenderId:"48785751855",
+  appId:"1:48785751855:web:4d349b50005fc8d3256bda"
+});
+
+const AUTH=getAuth(app);
+const DB=getDatabase(app);
+
+
+// Set persistence dulu
+setPersistence(AUTH,browserLocalPersistence).catch(()=>{});
+
+window.VT={
+  AUTH,DB,
+  // Auth
+  login:(email,pass)=>signInWithEmailAndPassword(AUTH,email,pass),
+  logout:()=>signOut(AUTH),
+  onAuth:(cb)=>onAuthStateChanged(AUTH,cb),
+  // DB
+  dbSet:(path,data)=>set(ref(DB,path),data),
+  dbUpdate:(path,data)=>update(ref(DB,path),data),
+  dbGet:async(path)=>{const s=await get(ref(DB,path));return s.exists()?s.val():null;},
+  dbPush:(path,data)=>push(ref(DB,path),data),
+  dbListen:(path,cb)=>{const r=ref(DB,path);onValue(r,snap=>cb(snap.val()),()=>{});return()=>off(r);},
+};
+window.VT_READY=true;
+window.dispatchEvent(new Event("vt_ready"));
+console.log("VT ready");
+</script>
+
+<script>
+// ── SERVICE WORKER ───────────────────────────────────────────
+const CURRENT_VERSION = "vt-v8.5";
+
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("/Talks/sw.js", {scope:"/Talks/"})
+    .then(reg=>{
+      window._sw = reg;
+      console.log("SW registered");
+
+      // Cek update otomatis
+      reg.addEventListener("updatefound", ()=>{
+        const newSW = reg.installing;
+        newSW.addEventListener("statechange", ()=>{
+          if(newSW.state === "installed" && navigator.serviceWorker.controller){
+            // Ada versi baru!
+            const banner = document.createElement("div");
+            banner.style.cssText = "position:fixed;top:0;left:0;right:0;z-index:9999;background:linear-gradient(135deg,rgba(26,107,58,0.95),rgba(26,58,143,0.95));backdrop-filter:blur(20px);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:480px;margin:0 auto;border-bottom:1px solid rgba(255,255,255,0.15)";
+            banner.innerHTML = `
+              <p style="margin:0;color:#f0fff4;font-size:13px;font-weight:600">🔄 Ada versi baru tersedia!</p>
+              <button style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.3);border-radius:20px;color:#fff;padding:5px 14px;font-size:12px;cursor:pointer;font-family:Inter,sans-serif" onclick="location.reload(true)">Update</button>
+            `;
+            document.body.appendChild(banner);
+          }
+        });
+      });
+
+      // Request notif permission
+      if(typeof Notification !== "undefined" && Notification.permission === "default"){
+        Notification.requestPermission().catch(()=>{});
+      }
+    })
+    .catch(e => console.log("SW failed:", e.message));
+
+  // Listen pesan dari SW
+  navigator.serviceWorker.addEventListener("message", e => {
+    if(e.data?.type === "VERSION" && e.data.version !== CURRENT_VERSION){
+      location.reload(true);
+    }
+  });
+}
+
+// Notifikasi saat app aktif (suara) atau background (popup SW)
+window.sendNotif = (title, body) => {
+  // Suara selalu bunyi
+  try{
+    const ctx = new(window.AudioContext || window.webkitAudioContext)();
+    [[880,0],[1100,0.15]].forEach(([f,t]) => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.frequency.value = f; o.type = "sine";
+      const s = ctx.currentTime + t;
+      g.gain.setValueAtTime(0, s);
+      g.gain.linearRampToValueAtTime(0.2, s+0.01);
+      g.gain.exponentialRampToValueAtTime(0.001, s+0.25);
+      o.start(s); o.stop(s+0.25);
+    });
+  }catch(e){}
+
+  // Popup kalau app tidak aktif
+  if(document.visibilityState === "visible") return;
+  try{
+    if(typeof Notification === "undefined") return;
+    if(Notification.permission !== "granted") return;
+    if(window._sw){
+      window._sw.showNotification(title, {
+        body, vibrate:[200,100,200], tag:"vt", renotify:true
+      });
+    } else {
+      new Notification(title, {body});
+    }
+  }catch(e){}
+};
+
+// ── UTILS ────────────────────────────────────────────────────
+const $=id=>document.getElementById(id);
+const app=document.getElementById("app");
+const show=el=>{app.innerHTML="";app.appendChild(el);};
+
+const ini=n=>(n||"?").split(" ").map(x=>x[0]).join("").toUpperCase().slice(0,2);
+const fmtT=d=>{try{return new Date(d).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});}catch{return"";}};
+const fmtD=d=>{try{const dt=new Date(d);const diff=Date.now()-dt;if(diff<86400000)return fmtT(d);return dt.toLocaleDateString("id-ID",{day:"2-digit",month:"short"});}catch{return"";}};
+
+const toEmail=p=>{
+  let n=p.replace(/[^0-9]/g,"");
+  if(n.startsWith("08"))n="62"+n.slice(1);
+  else if(n.startsWith("8")&&n.length>=9)n="62"+n;
+  return n+"@vena.app";
+};
+
+const chatId=(a,b)=>[a,b].sort().join("_");
+
+// ── STATE ─────────────────────────────────────────────────────
+let ME=null;          // profil saya
+let CONTACTS=[];      // daftar kontak
+let ACTIVE=null;      // kontak yang sedang dichat
+let UNSUB=null;       // unsubscribe listener chat
+let UNSUB_LIST=[];    // unsubscribe listeners chat list
+
+// Compress gambar sebelum upload
+const compress=(dataUrl,max=600)=>new Promise(res=>{
+  const img=new Image();
+  img.onload=()=>{
+    const c=document.createElement("canvas");
+    let w=img.width,h=img.height;
+    if(w>max||h>max){if(w>h){h=Math.round(h*max/w);w=max;}else{w=Math.round(w*max/h);h=max;}}
+    c.width=w;c.height=h;
+    c.getContext("2d").drawImage(img,0,0,w,h);
+    res(c.toDataURL("image/jpeg",0.7));
+  };
+  img.onerror=()=>res(dataUrl);
+  img.src=dataUrl;
+});
+
+// ── KOMPONEN ─────────────────────────────────────────────────
+function mkAv(name,avatarUrl,size=44,online=null){
+  const wrap=document.createElement("div");
+  wrap.style.cssText=`position:relative;flex-shrink:0;width:${size}px;height:${size}px`;
+  if(avatarUrl){
+    const img=document.createElement("img");
+    img.src=avatarUrl;
+    img.style.cssText=`width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(255,255,255,0.2)`;
+    wrap.appendChild(img);
+  }else{
+    const d=document.createElement("div");
+    d.className="av";
+    d.style.cssText=`width:${size}px;height:${size}px;font-size:${Math.round(size*.33)}px`;
+    d.textContent=ini(name);
+    wrap.appendChild(d);
+  }
+  if(online!==null){
+    const dot=document.createElement("div");
+    dot.className=online?"dot-on":"dot-off";
+    wrap.appendChild(dot);
+  }
+  return wrap;
+}
+
+function mkSpin(size=20){
+  const d=document.createElement("div");
+  d.className="sp";d.style.width=size+"px";d.style.height=size+"px";
+  return d;
+}
+
+// ── LAYAR 1: LOGIN ────────────────────────────────────────────
+function showLogin(){
+  const w=document.createElement("div");
+  w.style.cssText="flex:1;overflow-y:auto;display:flex;flex-direction:column;animation:fu 0.4s ease";
+
+  w.innerHTML=`
+    <div style="padding:40px 20px 20px;text-align:center">
+      <div class="logo" style="width:72px;height:72px;margin:0 auto 16px">
+        <span class="logo-v">V</span>
+      </div>
+      <h1 style="font-size:26px;font-weight:700;background:linear-gradient(135deg,#2dd670,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px">Vena Talks</h1>
+      <p style="color:rgba(240,255,244,0.45);font-size:13px">Bicara lebih dekat</p>
+    </div>
+    <div class="g2" style="margin:0 18px 20px;padding:22px">
+      <div style="margin-bottom:14px">
+        <label style="display:block;color:rgba(240,255,244,0.45);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">NOMOR HP</label>
+        <input id="inp_phone" class="inp" type="tel" placeholder="085xxx..."/>
+      </div>
+      <div style="margin-bottom:6px">
+        <label style="display:block;color:rgba(240,255,244,0.45);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">PASSWORD</label>
+        <div style="position:relative">
+          <input id="inp_pass" class="inp" type="password" placeholder="Password dari admin" style="padding-right:46px"/>
+          <button id="btn_eye" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:rgba(240,255,244,0.4);font-size:16px">👁️</button>
+        </div>
+      </div>
+      <p id="login_err" style="color:#f87171;font-size:12px;min-height:18px;margin-bottom:10px;display:none"></p>
+      <p style="color:rgba(240,255,244,0.3);font-size:12px;margin-bottom:16px;text-align:center">Belum punya akun? Hubungi admin.</p>
+      <button id="btn_login" class="btn" style="width:100%;padding:13px;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px">
+        <span id="btn_login_txt">Masuk</span>
+      </button>
+    </div>
+    <p style="text-align:center;padding-bottom:20px;color:rgba(240,255,244,0.2);font-size:10px">© 2026 SRISP | Vena Talks v8.5</p>
+  `;
+
+  show(w);
+
+  const phoneInp=document.getElementById("inp_phone");
+  const passInp=document.getElementById("inp_pass");
+  const errEl=document.getElementById("login_err");
+  const btn=document.getElementById("btn_login");
+  const btnTxt=document.getElementById("btn_login_txt");
+  const eyeBtn=document.getElementById("btn_eye");
+
+  let showPass=false;
+  eyeBtn.onclick=()=>{showPass=!showPass;passInp.type=showPass?"text":"password";eyeBtn.textContent=showPass?"🙈":"👁️";};
+
+  const doLogin=async()=>{
+    const phone=phoneInp.value.trim();
+    const pass=passInp.value;
+    if(!phone||!pass){errEl.textContent="Isi nomor HP dan password";errEl.style.display="block";return;}
+    btn.disabled=true;
+    const spin=mkSpin(18);btn.insertBefore(spin,btnTxt);
+    btnTxt.textContent="Memverifikasi...";
+    errEl.style.display="none";
+    try{
+      // Tunggu VT siap max 5 detik
+      if(!window.VT){
+        await new Promise((res,rej)=>{
+          window.addEventListener("vt_ready",res,{once:true});
+          setTimeout(()=>rej(new Error("Firebase tidak bisa dimuat. Cek koneksi internet.")),5000);
+        });
+      }
+      const email=toEmail(phone);
+      console.log("Login as:",email);
+      await window.VT.login(email,pass);
+      // onAuthStateChanged akan handle navigasi
+    }catch(e){
+      console.error(e.code,e.message);
+      if(e.code==="auth/invalid-credential"||e.code==="auth/wrong-password"){
+        const email=toEmail(phone);
+        errEl.textContent="Salah. Email: "+email;
+      }else if(e.code==="auth/user-not-found"){
+        errEl.textContent="Akun tidak ada. Hubungi admin.";
+      }else{
+        errEl.textContent=e.message||"Login gagal";
+      }
+      errEl.style.display="block";
+      btn.disabled=false;spin.remove();btnTxt.textContent="Masuk";
+    }
+  };
+
+  btn.onclick=doLogin;
+  [phoneInp,passInp].forEach(i=>i.addEventListener("keydown",e=>{if(e.key==="Enter")doLogin();}));
+}
+
+// ── LAYAR 2: SETUP PROFIL ─────────────────────────────────────
+function showSetup(uid,phone){
+  const w=document.createElement("div");
+  w.style.cssText="flex:1;overflow-y:auto;animation:fu 0.4s ease";
+  w.innerHTML=`
+    <div style="padding:30px 20px 40px">
+      <div style="text-align:center;margin-bottom:24px">
+        <div class="logo" style="width:56px;height:56px;margin:0 auto 10px"><span class="logo-v" style="font-size:22px">V</span></div>
+        <h2 style="font-size:20px;font-weight:700;color:#f0fff4">Lengkapi Profil</h2>
+        <p style="color:rgba(240,255,244,0.4);font-size:12px">${phone}</p>
+      </div>
+      <div class="g2" style="padding:20px">
+        <div style="text-align:center;margin-bottom:18px">
+          <div id="av_wrap" style="width:80px;height:80px;margin:0 auto 10px;cursor:pointer;border-radius:50%;overflow:hidden;border:2px solid rgba(34,168,85,0.4);display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.06)">
+            <span style="font-size:28px;color:rgba(240,255,244,0.3)">📷</span>
+          </div>
+          <input id="av_inp" type="file" accept="image/*" style="display:none"/>
+          <button class="btn-ghost" id="av_btn" style="font-size:12px;padding:5px 14px;border:none">📷 Upload Foto</button>
+        </div>
+        <div style="margin-bottom:12px">
+          <label style="display:block;color:rgba(240,255,244,0.45);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">NAMA</label>
+          <input id="inp_name" class="inp" placeholder="Nama kamu..."/>
+        </div>
+        <div style="margin-bottom:14px">
+          <label style="display:block;color:rgba(240,255,244,0.45);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">BIO</label>
+          <input id="inp_bio" class="inp" placeholder="Ceritakan dirimu..."/>
+        </div>
+        <p id="setup_err" style="color:#f87171;font-size:12px;margin-bottom:10px;display:none"></p>
+        <button id="btn_save" class="btn" style="width:100%;padding:13px;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px">
+          <span id="btn_save_txt">Simpan & Masuk</span>
+        </button>
+      </div>
+    </div>
+  `;
+  show(w);
+
+  let avData=null;
+  const avInp=document.getElementById("av_inp");
+  const avWrap=document.getElementById("av_wrap");
+  const avBtn=document.getElementById("av_btn");
+  const nameInp=document.getElementById("inp_name");
+  const bioInp=document.getElementById("inp_bio");
+  const errEl=document.getElementById("setup_err");
+  const saveBtn=document.getElementById("btn_save");
+  const saveTxt=document.getElementById("btn_save_txt");
+
+  const pickAv=()=>avInp.click();
+  avWrap.onclick=pickAv;avBtn.onclick=pickAv;
+  avInp.onchange=e=>{
+    const f=e.target.files[0];if(!f)return;
+    const r=new FileReader();
+    r.onload=ev=>{
+      avData=ev.target.result;
+      avWrap.innerHTML=`<img src="${avData}" style="width:100%;height:100%;object-fit:cover"/>`;
+    };
+    r.readAsDataURL(f);
+  };
+
+  saveBtn.onclick=async()=>{
+    const name=nameInp.value.trim();
+    if(!name){errEl.textContent="Nama wajib diisi";errEl.style.display="block";return;}
+    saveBtn.disabled=true;
+    const spin=mkSpin(18);saveBtn.insertBefore(spin,saveTxt);
+    saveTxt.textContent="Menyimpan...";
+
+    try{
+      // Normalisasi phone
+      let ph=phone.replace(/[^0-9]/g,"");
+      if(ph.startsWith("08"))ph="62"+ph.slice(1);
+      else if(ph.startsWith("8"))ph="62"+ph;
+
+      const prof={uid,name,phone:ph,bio:bioInp.value.trim(),avatarUrl:null,online:true,createdAt:Date.now()};
+
+      // Simpan profil dulu
+      await window.VT.dbSet("users/"+uid,prof);
+      // Index phone
+      await window.VT.dbSet("phones/"+ph,{uid});
+
+      ME={...prof};
+      localStorage.setItem("vt_me",JSON.stringify(ME));
+
+      // Simpan foto di Realtime Database sebagai base64
+      if(avData){
+        compress(avData,200).then(small=>{
+          ME.avatarUrl=small;
+          localStorage.setItem("vt_me",JSON.stringify(ME));
+          window.VT.dbUpdate("users/"+uid,{avatarUrl:small}).catch(()=>{});
+        }).catch(()=>{});
+      }
+
+      loadContacts();
+      showChats();
+    }catch(e){
+      errEl.textContent=e.message||"Error";
+      errEl.style.display="block";
+      saveBtn.disabled=false;spin.remove();saveTxt.textContent="Simpan & Masuk";
+    }
+  };
+}
+
+// ── LAYAR 3: CHAT LIST ────────────────────────────────────────
+function showChats(){
+  UNSUB_LIST.forEach(u=>u());UNSUB_LIST=[];
+
+  const w=document.createElement("div");
+  w.style.cssText="display:flex;flex-direction:column;flex:1;overflow:hidden;animation:fu 0.3s ease";
+
+  // Header
+  const hdr=document.createElement("div");
+  hdr.className="hdr";
+  hdr.innerHTML=`
+    <div style="position:relative;cursor:pointer" id="hdr_av"></div>
+    <div style="flex:1;cursor:pointer" id="hdr_title">
+      <h2 style="margin:0;font-size:16px;font-weight:700;background:linear-gradient(135deg,#2dd670,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Vena Talks</h2>
+      <p style="margin:0;font-size:11px;color:rgba(240,255,244,0.4)">${ME?.name||""}</p>
+    </div>
+    <button class="btn-ghost" id="btn_newchat" style="width:36px;height:36px;padding:0;font-size:17px;border:none;display:flex;align-items:center;justify-content:center">✏️</button>
+    <button class="btn-ghost" id="btn_settings" style="width:36px;height:36px;padding:0;font-size:17px;border:none;display:flex;align-items:center;justify-content:center">⚙️</button>
+  `;
+
+  const avEl=hdr.querySelector("#hdr_av");
+  avEl.appendChild(mkAv(ME?.name,ME?.avatarUrl,34,null));
+  hdr.querySelector("#btn_newchat").onclick=showNewChat;
+  hdr.querySelector("#btn_settings").onclick=showSettings;
+  w.appendChild(hdr);
+
+  // Search
+  const srch=document.createElement("div");
+  srch.style.cssText="padding:9px 13px;background:rgba(0,0,0,0.2);border-bottom:1px solid rgba(255,255,255,0.04)";
+  srch.innerHTML=`<input class="inp" id="search_inp" placeholder="🔍 Cari..." style="border-radius:50px;padding:9px 14px;font-size:14px"/>`;
+  w.appendChild(srch);
+
+  // List
+  const list=document.createElement("div");
+  list.style.cssText="flex:1;overflow-y:auto";
+  w.appendChild(list);
+
+  // Copyright
+  const copy=document.createElement("p");
+  copy.style.cssText="text-align:center;padding:7px 0;color:rgba(240,255,244,0.15);font-size:10px;background:rgba(0,0,0,0.2)";
+  copy.textContent="© 2026 SRISP | Vena Talks v8.5";
+  w.appendChild(copy);
+
+  show(w);
+
+  // Render list
+  const searchInp=document.getElementById("search_inp");
+  let lastMsgs={};
+  let unread={};
+
+  function renderList(){
+    const q=searchInp.value.toLowerCase();
+    const filtered=CONTACTS.filter(c=>(c.name||"").toLowerCase().includes(q)||(c.phone||"").includes(q));
+    list.innerHTML="";
+    if(filtered.length===0){
+      list.innerHTML=`<div style="text-align:center;padding:60px 20px;color:rgba(240,255,244,0.3)">
+        <div style="font-size:40px;margin-bottom:12px;opacity:.4">💬</div>
+        <p style="font-size:14px;margin-bottom:14px">Belum ada percakapan</p>
+        <button class="btn" style="padding:11px 22px;font-size:13px" onclick="showNewChat()">Mulai chat</button>
+      </div>`;
+      return;
+    }
+    filtered.forEach((c,i)=>{
+      const lm=lastMsgs[c.uid];
+      const ur=unread[c.uid]||0;
+      const row=document.createElement("div");
+      row.className="row";
+      row.style.animation=`fu 0.3s ease ${i*.03}s both`;
+      const avWrap=document.createElement("div");
+      avWrap.style.cssText="position:relative;flex-shrink:0";
+      avWrap.appendChild(mkAv(c.name,c.avatarUrl,48,c.online||false));
+      const info=document.createElement("div");
+      info.style.cssText="flex:1;min-width:0";
+      const prev=lm?(lm.deleted?"🚫 Pesan dihapus":lm.fromUid===ME.uid?"Kamu: "+(lm.image?"📷":lm.text||""):(lm.image?"📷":lm.text||"")):(c.bio||c.phone||"");
+      info.innerHTML=`
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
+          <span style="font-weight:600;font-size:15px">${c.name||c.phone}</span>
+          ${lm?`<span style="font-size:11px;color:${ur>0?"#2dd670":"rgba(240,255,244,0.3)"};font-weight:${ur>0?600:400}">${fmtD(lm.time)}</span>`:""}
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:13px;color:${ur>0?"rgba(240,255,244,0.8)":"rgba(240,255,244,0.35)"};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:210px">${prev}</span>
+          ${ur>0?`<div style="background:linear-gradient(135deg,#1a6b3a,#1a3a8f);color:#fff;border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;padding:0 3px;flex-shrink:0">${ur}</div>`:""}
+        </div>
+      `;
+      row.appendChild(avWrap);
+      row.appendChild(info);
+      row.onclick=()=>showChat(c);
+      list.appendChild(row);
+    });
+  }
+
+  // Subscribe last messages
+  CONTACTS.forEach(c=>{
+    const cid=chatId(ME.uid,c.uid);
+    const unsub=window.VT.dbListen("chats/"+cid+"/messages",data=>{
+      if(!data)return;
+      const msgs=Object.entries(data).map(([id,m])=>({id,...m})).sort((a,b)=>(a.time||0)-(b.time||0));
+      if(msgs.length===0)return;
+      const last=msgs[msgs.length-1];
+      const prev=lastMsgs[c.uid];
+      // Notif pesan baru
+      if(prev&&last.fromUid!==ME.uid&&!last.deleted&&(last.time||0)>(prev.time||0)){
+        window.sendNotif(c.name,last.image?"📷 Foto":last.text);
+      }
+      lastMsgs[c.uid]=last;
+      unread[c.uid]=msgs.filter(m=>m.toUid===ME.uid&&!m.read&&!m.deleted).length;
+      renderList();
+    });
+    UNSUB_LIST.push(unsub);
+  });
+
+  searchInp.addEventListener("input",renderList);
+  renderList();
+}
+
+// ── LAYAR 4: CHAT ─────────────────────────────────────────────
+function showChat(contact){
+  ACTIVE=contact;
+  if(UNSUB){UNSUB();UNSUB=null;}
+
+  const CID=chatId(ME.uid,contact.uid);
+  let msgs=[];
+
+  const w=document.createElement("div");
+  w.style.cssText="display:flex;flex-direction:column;flex:1;overflow:hidden;animation:fu 0.3s ease";
+
+  // Header
+  w.innerHTML=`
+    <div class="hdr">
+      <button class="btn-ghost" id="btn_back" style="width:36px;height:36px;padding:0;font-size:20px;border:none;display:flex;align-items:center;justify-content:center">←</button>
+      <div id="chat_av" style="position:relative"></div>
+      <div style="flex:1">
+        <p style="margin:0;font-weight:600;font-size:16px">${contact.name||contact.phone}</p>
+        <p id="chat_status" style="margin:0;font-size:11px;color:rgba(240,255,244,0.45)">${contact.online?"Online":"Offline"}</p>
+      </div>
+    </div>
+    <div class="mbg" id="msg_area"></div>
+    <div id="reply_bar" style="display:none;padding:7px 13px;background:rgba(6,26,14,0.9);border-top:1px solid rgba(255,255,255,0.07);align-items:center;gap:10px;flex-shrink:0">
+      <div style="flex:1;border-left:2px solid #2dd670;padding-left:9px">
+        <p id="reply_name" style="margin:0;font-size:11px;color:#2dd670;font-weight:600"></p>
+        <p id="reply_text" style="margin:0;font-size:12px;color:rgba(240,255,244,0.4);overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></p>
+      </div>
+      <button id="reply_close" style="background:none;border:none;color:rgba(240,255,244,0.3);cursor:pointer;font-size:18px;padding:0 4px">✕</button>
+    </div>
+    <div id="edit_bar" style="display:none;padding:7px 13px;background:rgba(6,26,14,0.9);border-top:1px solid rgba(255,255,255,0.07);align-items:center;gap:10px;flex-shrink:0">
+      <div style="flex:1;border-left:2px solid #60a5fa;padding-left:9px">
+        <p style="margin:0;font-size:11px;color:#60a5fa;font-weight:600">Edit pesan</p>
+        <p id="edit_text" style="margin:0;font-size:12px;color:rgba(240,255,244,0.4);overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></p>
+      </div>
+      <button id="edit_close" style="background:none;border:none;color:rgba(240,255,244,0.3);cursor:pointer;font-size:18px;padding:0 4px">✕</button>
+    </div>
+    <div class="ibar">
+      <input type="file" accept="image/*" id="img_inp" style="display:none"/>
+      <button class="btn-ghost" id="img_btn" style="width:42px;height:42px;padding:0;font-size:18px;border:none;display:flex;align-items:center;justify-content:center">📷</button>
+      <textarea id="msg_inp" placeholder="Pesan..." rows="1" style="flex:1;padding:10px 14px;border-radius:22px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.08);color:#f0fff4;font-family:Inter,sans-serif;font-size:15px;outline:none;resize:none;max-height:100px;line-height:1.5"></textarea>
+      <button class="btn" id="send_btn" style="width:42px;height:42px;padding:0;border-radius:50%;font-size:16px;display:flex;align-items:center;justify-content:center">➤</button>
+    </div>
+  `;
+
+  show(w);
+
+  // Avatar di header
+  document.getElementById("chat_av").appendChild(mkAv(contact.name,contact.avatarUrl,38,contact.online||false));
+
+  // Back
+  document.getElementById("btn_back").onclick=()=>{
+    if(UNSUB){UNSUB();UNSUB=null;}
+    ACTIVE=null;
+    showChats();
+  };
+
+  // Render messages
+  const msgArea=document.getElementById("msg_area");
+  const tInp=document.getElementById("msg_inp");
+
+  // State reply & edit
+  let replyMsg=null;
+
+  // Context menu
+  function openCtx(msg,x,y){
+    document.querySelectorAll(".ctx-menu").forEach(c=>c.remove());
+    const isMe=msg.fromUid===ME.uid;
+    const menu=document.createElement("div");
+    menu.className="ctx-menu";
+    menu.style.cssText=`position:fixed;z-index:1000;top:${Math.min(y,window.innerHeight-220)}px;left:${Math.min(x,window.innerWidth-170)}px;background:rgba(8,24,14,0.97);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.15);border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.5);min-width:160px;animation:fu 0.15s ease`;
+    const items=[
+      {ic:"↩️",lb:"Balas",fn:()=>setReply(msg)},
+      {ic:"📋",lb:"Salin",fn:()=>navigator.clipboard?.writeText(msg.text||"")},
+      ...(isMe&&!msg.deleted?[
+        {ic:"✏️",lb:"Edit",fn:()=>editMsg(msg)},
+        {ic:"🗑️",lb:"Hapus",danger:true,fn:()=>deleteMsg(msg)},
+      ]:[])
+    ];
+    items.forEach(item=>{
+      const btn=document.createElement("button");
+      btn.style.cssText=`display:flex;align-items:center;gap:10px;width:100%;padding:11px 15px;background:none;border:none;cursor:pointer;color:${item.danger?"#f87171":"#f0fff4"};font-family:Inter,sans-serif;font-size:14px;text-align:left`;
+      btn.innerHTML=`<span>${item.ic}</span><span>${item.lb}</span>`;
+      btn.onclick=()=>{item.fn();menu.remove();};
+      btn.onmouseenter=()=>btn.style.background="rgba(255,255,255,0.08)";
+      btn.onmouseleave=()=>btn.style.background="none";
+      menu.appendChild(btn);
+    });
+    document.body.appendChild(menu);
+    setTimeout(()=>document.addEventListener("click",()=>menu.remove(),{once:true}),100);
+  }
+
+  function setReply(msg){
+    replyMsg=msg;
+    const rb=document.getElementById("reply_bar");
+    const rn=document.getElementById("reply_name");
+    const rt=document.getElementById("reply_text");
+    if(rb&&rn&&rt){
+      rn.textContent=msg.fromUid===ME.uid?"Kamu":contact.name;
+      rt.textContent=msg.image?"📷 Foto":msg.text;
+      rb.style.display="flex";
+    }
+    tInp&&tInp.focus();
+  }
+
+  async function deleteMsg(msg){
+    try{
+      await window.VT.dbUpdate("chats/"+CID+"/messages/"+msg.id,{deleted:true,text:"",image:null});
+    }catch(e){console.error("Delete:",e);}
+  }
+
+  function editMsg(msg){
+    if(!tInp)return;
+    tInp.value=msg.text||"";
+    tInp.focus();
+    tInp.dataset.editId=msg.id;
+    const editBar=document.getElementById("edit_bar");
+    const editTxt=document.getElementById("edit_text");
+    if(editBar&&editTxt){
+      editTxt.textContent=msg.text||"";
+      editBar.style.display="flex";
+    }
+  }
+
+  function renderMsgs(){
+    msgArea.innerHTML="";
+    msgs.forEach((msg,i)=>{
+      const isMe=msg.fromUid===ME.uid;
+      // Date separator
+      if(i===0||(new Date(msgs[i-1].time||0).toDateString()!==new Date(msg.time||0).toDateString())){
+        const sep=document.createElement("div");
+        sep.style.cssText="text-align:center;margin:8px 0";
+        const lbl=document.createElement("span");
+        lbl.style.cssText="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.08);border-radius:20px;font-size:10px;padding:3px 12px;color:rgba(240,255,244,0.4)";
+        try{lbl.textContent=new Date(msg.time||0).toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long"});}catch(e){}
+        sep.appendChild(lbl);msgArea.appendChild(sep);
+      }
+      const row=document.createElement("div");
+      row.style.cssText=`display:flex;justify-content:${isMe?"flex-end":"flex-start"};margin-bottom:3px`;
+      if(!isMe){
+        const avEl=document.createElement("div");
+        avEl.style.cssText="margin-right:5px;align-self:flex-end";
+        avEl.appendChild(mkAv(contact.name,contact.avatarUrl,24,null));
+        row.appendChild(avEl);
+      }
+      const bub=document.createElement("div");
+      bub.className=isMe?"bm":"bo";
+      bub.style.cssText=`max-width:72%;padding:${msg.image&&!msg.deleted?"5px":"9px 12px"};cursor:pointer;user-select:none;-webkit-user-select:none`;
+      // Long press
+      let lt=null;
+      bub.addEventListener("touchstart",e=>{
+        if(msg.deleted)return;
+        const t=e.touches[0];
+        lt=setTimeout(()=>{
+          navigator.vibrate&&navigator.vibrate(50);
+          openCtx(msg,t.clientX,t.clientY);
+        },500);
+      },{passive:true});
+      bub.addEventListener("touchend",()=>{clearTimeout(lt);lt=null;});
+      bub.addEventListener("touchmove",()=>{clearTimeout(lt);lt=null;});
+      bub.addEventListener("contextmenu",e=>{e.preventDefault();if(!msg.deleted)openCtx(msg,e.clientX,e.clientY);});
+      // Reply preview
+      if(msg.replyTo&&!msg.deleted){
+        const rp=document.createElement("div");
+        rp.style.cssText=`background:rgba(0,0,0,0.2);border-left:2px solid ${isMe?"rgba(255,255,255,0.4)":"#2dd670"};border-radius:8px;padding:5px 9px;margin-bottom:5px`;
+        rp.innerHTML=`<p style="margin:0;font-weight:600;font-size:10px;color:${isMe?"rgba(255,255,255,0.6)":"#2dd670"}">${msg.replyTo.fromUid===ME.uid?"Kamu":contact.name}</p><p style="margin:0;font-size:11px;color:rgba(240,255,244,0.45);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${msg.replyTo.text}</p>`;
+        bub.appendChild(rp);
+      }
+      if(msg.deleted){
+        bub.innerHTML+=`<p style="margin:0;font-size:13px;font-style:italic;color:rgba(240,255,244,0.35)">🚫 Pesan dihapus</p>`;
+      }else{
+        if(msg.image)bub.innerHTML+=`<img src="${msg.image}" style="max-width:100%;max-height:200px;border-radius:10px;display:block;object-fit:cover"/>`;
+        if(msg.text)bub.innerHTML+=`<p style="margin:0;font-size:15px;line-height:1.5;word-break:break-word;color:#f0fff4">${msg.text}${msg.edited?'<span style="font-size:10px;opacity:.45;margin-left:4px">(diedit)</span>':''}</p>`;
+      }
+      bub.innerHTML+=`<div style="display:flex;align-items:center;justify-content:flex-end;gap:3px;margin-top:3px">
+        <span style="font-size:10px;color:rgba(240,255,244,0.3)">${fmtT(msg.time)}</span>
+        ${isMe&&!msg.deleted?`<span style="font-size:10px;color:${msg.read?"#60a5fa":"rgba(240,255,244,0.3)"}">${msg.read?"✓✓":"✓"}</span>`:""}
+      </div>`;
+      row.appendChild(bub);
+      msgArea.appendChild(row);
+    });
+    // Scroll bawah
+    msgArea.scrollTop=msgArea.scrollHeight;
+  }
+
+  // Kirim pesan
+  const sBtn=document.getElementById("send_btn");
+
+  async function doSend(){
+    const txt=tInp.value.trim();if(!txt)return;
+    const editId=tInp.dataset.editId;
+    tInp.value="";tInp.style.height="auto";
+    delete tInp.dataset.editId;
+
+    // Sembunyikan edit/reply bar
+    const editBar=document.getElementById("edit_bar");
+    const replyBar=document.getElementById("reply_bar");
+    if(editBar)editBar.style.display="none";
+    if(replyBar)replyBar.style.display="none";
+
+    try{
+      if(editId){
+        // Edit pesan yang ada
+        await window.VT.dbUpdate("chats/"+CID+"/messages/"+editId,{
+          text:txt,edited:true,editedAt:Date.now()
+        });
+      }else{
+        // Kirim pesan baru
+        const replyData=replyMsg?{id:replyMsg.id,text:replyMsg.image?"📷":replyMsg.text,fromUid:replyMsg.fromUid}:null;
+        replyMsg=null;
+        await window.VT.dbPush("chats/"+CID+"/messages",{
+          text:txt,image:null,
+          fromUid:ME.uid,toUid:contact.uid,
+          read:false,deleted:false,
+          replyTo:replyData,
+          time:Date.now()
+        });
+      }
+    }catch(e){console.error("Send:",e);}
+  }
+
+  // Reply/Edit close buttons
+  setTimeout(()=>{
+    const rc=document.getElementById("reply_close");
+    const ec=document.getElementById("edit_close");
+    if(rc)rc.onclick=()=>{replyMsg=null;document.getElementById("reply_bar").style.display="none";};
+    if(ec)ec.onclick=()=>{
+      delete tInp.dataset.editId;
+      tInp.value="";
+      document.getElementById("edit_bar").style.display="none";
+    };
+  },100);
+
+  sBtn.onclick=doSend;
+  tInp.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();doSend();}});
+  tInp.addEventListener("input",()=>{tInp.style.height="auto";tInp.style.height=Math.min(tInp.scrollHeight,100)+"px";});
+
+  // Kirim gambar
+  const imgInp=document.getElementById("img_inp");
+  const imgBtn=document.getElementById("img_btn");
+  imgBtn.onclick=()=>imgInp.click();
+  imgInp.onchange=async e=>{
+    const f=e.target.files[0];if(!f)return;
+    imgBtn.disabled=true;imgBtn.textContent="⏳";
+    try{
+      const r=new FileReader();
+      r.onload=async ev=>{
+        try{
+          // Compress kecil untuk hemat DB (max 400px, quality 0.5)
+          const c=await compress(ev.target.result,400);
+          await window.VT.dbPush("chats/"+CID+"/messages",{
+            text:"",image:c,fromUid:ME.uid,toUid:contact.uid,
+            read:false,deleted:false,time:Date.now()
+          });
+        }catch(err){alert("Gagal kirim foto: "+err.message);}
+        imgBtn.disabled=false;imgBtn.textContent="📷";
+      };
+      r.readAsDataURL(f);
+    }catch(err){imgBtn.disabled=false;imgBtn.textContent="📷";}
+    e.target.value="";
+  };
+
+  // Listen messages REAL-TIME
+  UNSUB=window.VT.dbListen("chats/"+CID+"/messages",data=>{
+    const prev=msgs.length;
+    msgs=data?Object.entries(data).map(([id,m])=>({id,...m})).sort((a,b)=>(a.time||0)-(b.time||0)):[];
+    renderMsgs();
+    // Mark as read
+    msgs.forEach(m=>{
+      if(m.toUid===ME.uid&&!m.read&&!m.deleted){
+        window.VT.dbUpdate("chats/"+CID+"/messages/"+m.id,{read:true}).catch(()=>{});
+      }
+    });
+  });
+
+  // Listen status kontak
+  const statusUnsub=window.VT.dbListen("users/"+contact.uid,data=>{
+    if(!data)return;
+    const statusEl=document.getElementById("chat_status");
+    if(statusEl)statusEl.textContent=data.online?"Online":"Offline";
+  });
+  const origUnsub=UNSUB;
+  UNSUB=()=>{origUnsub();statusUnsub();};
+}
+
+// ── SETTINGS ─────────────────────────────────────────────────
+function showSettings(){
+  const w=document.createElement("div");
+  w.style.cssText="display:flex;flex-direction:column;flex:1;overflow:hidden";
+  w.innerHTML=`
+    <div class="hdr">
+      <button class="btn-ghost" style="width:36px;height:36px;padding:0;font-size:20px;border:none;display:flex;align-items:center;justify-content:center" onclick="showChats()">←</button>
+      <h2 style="flex:1;font-size:17px;font-weight:600">Pengaturan</h2>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:14px">
+      <div class="g2" style="padding:16px;display:flex;align-items:center;gap:13px;margin-bottom:12px;cursor:pointer" onclick="showEditProfile()">
+        <div id="set_av"></div>
+        <div style="flex:1">
+          <p style="margin:0;font-weight:700;font-size:17px">${ME?.name||""}</p>
+          <p style="margin:0;font-size:13px;color:rgba(240,255,244,0.4)">${ME?.bio||ME?.phone||""}</p>
+          <p style="margin:3px 0 0;font-size:12px;color:#2dd670;font-weight:500">Edit Profil →</p>
+        </div>
+      </div>
+      <button class="btn-ghost" id="btn_update" style="width:100%;padding:13px;font-size:14px;color:#2dd670;border:1px solid rgba(45,214,112,0.2);border-radius:14px;margin-bottom:8px">🔄 Periksa Update</button>
+      <button class="btn-ghost" style="width:100%;padding:13px;font-size:14px;color:#f87171;border:1px solid rgba(248,113,113,0.2);border-radius:14px" id="btn_logout">🚪 Keluar</button>
+      <p style="text-align:center;margin-top:20px;color:rgba(240,255,244,0.15);font-size:10px">© 2026 SRISP | Vena Talks v8.5</p>
+    </div>
+  `;
+  show(w);
+  document.getElementById("set_av").appendChild(mkAv(ME?.name,ME?.avatarUrl,56,null));
+  document.getElementById("btn_update").onclick=()=>{
+    if("caches" in window){
+      caches.keys().then(keys=>Promise.all(keys.map(k=>caches.delete(k)))).then(()=>{
+        location.reload(true);
+      });
+    }else{
+      location.reload(true);
+    }
+    // Trigger SW update check
+    if(window._sw) window._sw.update();
+  };
+  document.getElementById("btn_logout").onclick=async()=>{
+    if(ME)await window.VT.dbUpdate("users/"+ME.uid,{online:false}).catch(()=>{});
+    await window.VT.logout();
+    localStorage.removeItem("vt_me");
+    localStorage.removeItem("vt_c");
+    ME=null;CONTACTS=[];
+    showLogin();
+  };
+}
+
+// Edit profil
+function showEditProfile(){
+  if(ME)showSetup(ME.uid,ME.phone||"");
+}
+
+// New chat
+function showNewChat(){
+  const w=document.createElement("div");
+  w.style.cssText="display:flex;flex-direction:column;flex:1;overflow:hidden";
+  w.innerHTML=`
+    <div class="hdr">
+      <button class="btn-ghost" style="width:36px;height:36px;padding:0;font-size:20px;border:none;display:flex;align-items:center;justify-content:center" onclick="showChats()">←</button>
+      <h2 style="flex:1;font-size:17px;font-weight:600">Chat Baru</h2>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:14px">
+      <div style="display:flex;gap:8px;margin-bottom:14px">
+        <input class="inp" id="search_phone" type="tel" placeholder="Cari nomor HP teman..." style="border-radius:50px"/>
+        <button class="btn" id="btn_search" style="padding:11px 18px;font-size:14px;flex-shrink:0">Cari</button>
+      </div>
+      <div id="search_result"></div>
+    </div>
+  `;
+  show(w);
+
+  const searchInp=document.getElementById("search_phone");
+  const searchBtn=document.getElementById("btn_search");
+  const resultEl=document.getElementById("search_result");
+
+  const doSearch=async()=>{
+    const q=searchInp.value.trim();if(!q)return;
+    searchBtn.disabled=true;searchBtn.textContent="...";
+    resultEl.innerHTML="";
+    try{
+      // Cari di phones index
+      let n=q.replace(/[^0-9]/g,"");
+      if(n.startsWith("08"))n="62"+n.slice(1);
+      else if(n.startsWith("8")&&n.length>=9)n="62"+n;
+
+      const data=await window.VT.dbGet("phones/"+n);
+      if(data?.uid&&data.uid!==ME.uid){
+        const user=await window.VT.dbGet("users/"+data.uid);
+        if(user){
+          const card=document.createElement("div");
+          card.className="g2";
+          card.style.cssText="padding:14px;display:flex;align-items:center;gap:13px;border-radius:16px";
+          const avEl=document.createElement("div");
+          avEl.appendChild(mkAv(user.name,user.avatarUrl,52,user.online||false));
+          card.appendChild(avEl);
+          const info=document.createElement("div");
+          info.style.flex="1";
+          info.innerHTML=`<p style="margin:0;font-weight:600;font-size:16px">${user.name||user.phone}</p><p style="margin:0;font-size:13px;color:rgba(240,255,244,0.4)">${user.phone}</p>${user.bio?`<p style="margin:2px 0 0;font-size:12px;color:rgba(240,255,244,0.3)">${user.bio}</p>`:""}`;
+          card.appendChild(info);
+          const startBtn=document.createElement("button");
+          startBtn.className="btn";
+          startBtn.style.cssText="padding:9px 16px;font-size:13px;flex-shrink:0";
+          startBtn.textContent="Chat";
+          startBtn.onclick=()=>{
+            // Tambah ke kontak
+            const u={...user,uid:data.uid};
+            if(!CONTACTS.find(x=>x.uid===u.uid)){
+              CONTACTS.push(u);
+              localStorage.setItem("vt_c",JSON.stringify(CONTACTS));
+              window.VT.dbSet("contacts/"+ME.uid+"/"+u.uid,{uid:u.uid,addedAt:Date.now()}).catch(()=>{});
+            }
+            showChat(u);
+          };
+          card.appendChild(startBtn);
+          resultEl.appendChild(card);
+        }else{
+          resultEl.innerHTML=`<p style="text-align:center;color:rgba(240,255,244,0.35);font-size:14px;margin-top:20px">User tidak ditemukan</p>`;
+        }
+      }else{
+        resultEl.innerHTML=`<p style="text-align:center;color:rgba(240,255,244,0.35);font-size:14px;margin-top:20px">User tidak ditemukan</p>`;
+      }
+    }catch(e){resultEl.innerHTML=`<p style="text-align:center;color:#f87171;font-size:13px;margin-top:16px">${e.message}</p>`;}
+    searchBtn.disabled=false;searchBtn.textContent="Cari";
+  };
+
+  searchBtn.onclick=doSearch;
+  searchInp.addEventListener("keydown",e=>{if(e.key==="Enter")doSearch();});
+}
+
+// ── NOTIFIKASI & SUARA ────────────────────────────────────────
+// Notif dan suara sudah di atas (sendNotif)
+
+// ── LOAD KONTAK ───────────────────────────────────────────────
+function loadContacts(){
+  // Load dari localStorage dulu
+  try{
+    const saved=localStorage.getItem("vt_c");
+    if(saved)CONTACTS=JSON.parse(saved);
+  }catch(e){}
+
+  // Load dari DB
+  if(!ME?.uid)return;
+  window.VT.dbGet("contacts/"+ME.uid).then(async data=>{
+    if(!data)return;
+    const uids=Object.keys(data);
+    const fresh=[];
+    for(const uid of uids){
+      const u=await window.VT.dbGet("users/"+uid).catch(()=>null);
+      if(u)fresh.push({...u,uid});
+    }
+    if(fresh.length>0){
+      CONTACTS=fresh;
+      localStorage.setItem("vt_c",JSON.stringify(CONTACTS));
+    }
+  }).catch(()=>{});
+}
+
+// ── INIT ─────────────────────────────────────────────────────
+function init(){
+  // Tunggu Firebase siap
+  const start=()=>{
+    window.VT.onAuth(async user=>{
+      if(user){
+        // Sudah login
+        let prof=await window.VT.dbGet("users/"+user.uid).catch(()=>null);
+        if(prof){
+          ME={...prof,uid:user.uid};
+          localStorage.setItem("vt_me",JSON.stringify(ME));
+          window.VT.dbUpdate("users/"+user.uid,{online:true}).catch(()=>{});
+          loadContacts();
+          // Tunggu sebentar agar kontak load
+          setTimeout(showChats,500);
+        }else{
+          // Profil belum ada - setup
+          const phone=user.email?.replace("@vena.app","")||"";
+          showSetup(user.uid,phone);
+        }
+      }else{
+        // Belum login
+        showLogin();
+      }
+    });
+  };
+
+  if(window.VT_READY){
+    start();
+  }else{
+    window.addEventListener("vt_ready",start,{once:true});
+    // Fallback 5 detik
+    setTimeout(()=>{
+      if(!window.VT_READY)showLogin();
+    },5000);
+  }
+
+  // Online/offline
+  window.addEventListener("beforeunload",()=>{
+    if(ME?.uid)window.VT.dbUpdate("users/"+ME.uid,{online:false}).catch(()=>{});
+  });
+  document.addEventListener("visibilitychange",()=>{
+    if(!ME?.uid)return;
+    window.VT.dbUpdate("users/"+ME.uid,{online:document.visibilityState!=="hidden"}).catch(()=>{});
+  });
+  // Back button
+  window.history.pushState(null,"",location.href);
+  window.addEventListener("popstate",()=>{
+    window.history.pushState(null,"",location.href);
+    if(ACTIVE){if(UNSUB){UNSUB();UNSUB=null;}ACTIVE=null;showChats();}
+    else if(document.querySelector(".hdr button[onclick='showChats()']")){showChats();}
+  });
+}
+
+// Expose functions
+window.showChats=showChats;
+window.showNewChat=showNewChat;
+window.showSettings=showSettings;
+window.showEditProfile=showEditProfile;
+
+init();
+</script>
+</body>
+</html>
